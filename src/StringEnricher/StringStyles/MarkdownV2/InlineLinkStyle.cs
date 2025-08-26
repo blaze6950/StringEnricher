@@ -1,7 +1,24 @@
 namespace StringEnricher.StringStyles.MarkdownV2;
 
+/// <summary>
+/// Provides methods to create inline link styles in MarkdownV2 format.
+/// Example: "[test](https://example.com)"
+/// </summary>
 public static class InlineLinkMarkdownV2
 {
+    /// <summary>
+    /// Applies the inline link style to the given link title and link URL using plain text style.
+    /// </summary>
+    /// <param name="linkTitle">
+    /// The link title as a plain text string.
+    /// </param>
+    /// <param name="linkUrl">
+    /// The link URL as a plain text string.
+    /// </param>
+    /// <returns>
+    /// A new instance of the <see cref="InlineLinkStyle{PlainTextStyle}"/> struct
+    /// with the specified link title and link URL.
+    /// </returns>
     public static InlineLinkStyle<PlainTextStyle> Apply(string linkTitle, string linkUrl) =>
         InlineLinkStyle<PlainTextStyle>.Apply(linkTitle, linkUrl);
 
@@ -9,28 +26,69 @@ public static class InlineLinkMarkdownV2
         InlineLinkStyle<T>.Apply(linkTitle, linkUrl);
 }
 
+/// <summary>
+/// Represents inline link text in MarkdownV2 format.
+/// Example: "[test](https://example.com)"
+/// </summary>
+/// <typeparam name="TInner">
+/// The type of the inner style that will be wrapped with inline link syntax.
+/// </typeparam>
 public readonly struct InlineLinkStyle<TInner> : IStyle
     where TInner : IStyle
 {
+    /// <summary>
+    /// The prefix for the inline link style in MarkdownV2 format.
+    /// </summary>
     public const string Prefix = "[";
+
+    /// <summary>
+    /// The separator between the link title and link URL in MarkdownV2 format.
+    /// </summary>
     public const string LinkSeparator = "](";
+
+    /// <summary>
+    /// The suffix for the inline link style in MarkdownV2 format.
+    /// </summary>
     public const string Suffix = ")";
 
     private readonly TInner _linkTitle;
     private readonly TInner _linkUrl;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="InlineLinkStyle{TInner}"/> struct.
+    /// </summary>
+    /// <param name="linkTitle">
+    /// The inner style representing the link title.
+    /// </param>
+    /// <param name="linkUrl">
+    /// The inner style representing the link URL.
+    /// </param>
     public InlineLinkStyle(TInner linkTitle, TInner linkUrl)
     {
         _linkTitle = linkTitle;
         _linkUrl = linkUrl;
     }
 
+    /// <summary>
+    /// Returns the string representation of the inline link style in MarkdownV2 format.
+    /// Note: This method allocates a new string in the most efficient way possible.
+    /// Use this method when you finished all styling operations and need the final string.
+    /// </summary>
+    /// <returns>The created string representation</returns>
     public override string ToString() => string.Create(TotalLength, this, static (span, style) => style.CopyTo(span));
 
+    /// <summary>
+    /// Gets the length of the inner content (link title + link URL).
+    /// </summary>
     public int InnerLength => _linkTitle.TotalLength + _linkUrl.TotalLength;
+
+    /// <inheritdoc />
     public int SyntaxLength => Prefix.Length + LinkSeparator.Length + Suffix.Length;
+
+    /// <inheritdoc />
     public int TotalLength => SyntaxLength + InnerLength;
 
+    /// <inheritdoc />
     public int CopyTo(Span<char> destination)
     {
         var totalLength = TotalLength;
@@ -40,22 +98,41 @@ public readonly struct InlineLinkStyle<TInner> : IStyle
         }
 
         var pos = 0;
+
+        // Copy Prefix
         Prefix.AsSpan().CopyTo(destination.Slice(pos, Prefix.Length));
         pos += Prefix.Length;
 
+        // Copy Link Title
         _linkTitle.CopyTo(destination.Slice(pos, _linkTitle.TotalLength));
         pos += _linkTitle.TotalLength;
 
+        // Copy Link Separator
         LinkSeparator.AsSpan().CopyTo(destination.Slice(pos, LinkSeparator.Length));
         pos += LinkSeparator.Length;
 
+        // Copy Link URL
         _linkUrl.CopyTo(destination.Slice(pos, _linkUrl.TotalLength));
         pos += _linkUrl.TotalLength;
 
+        // Copy Suffix
         Suffix.AsSpan().CopyTo(destination.Slice(pos, Suffix.Length));
 
         return totalLength;
     }
 
+    /// <summary>
+    /// Applies the inline link style to the given link title and link URL.
+    /// </summary>
+    /// <param name="linkTitle">
+    /// The inner style representing the link title.
+    /// </param>
+    /// <param name="linkUrl">
+    /// The inner style representing the link URL.
+    /// </param>
+    /// <returns>
+    /// A new instance of the <see cref="InlineLinkStyle{TInner}"/> struct
+    /// with the specified link title and link URL.
+    /// </returns>
     public static InlineLinkStyle<TInner> Apply(TInner linkTitle, TInner linkUrl) => new(linkTitle, linkUrl);
 }
