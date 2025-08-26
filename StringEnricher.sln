@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringEnricher", "src\StringEnricher\StringEnricher.csproj", "{567BAA0C-2B0A-4C4E-A04A-FFA680422B77}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{93388C7A-C54C-4804-8B12-ADF2715DAD11}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F4432770-D04F-4DD2-AEB1-5C7308C19D04}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringEnricher.Tests", "tests\StringEnricher.Tests\StringEnricher.Tests.csproj", "{3811BAFB-ED2F-440E-AAC3-D0F58D831575}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{567BAA0C-2B0A-4C4E-A04A-FFA680422B77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{567BAA0C-2B0A-4C4E-A04A-FFA680422B77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{567BAA0C-2B0A-4C4E-A04A-FFA680422B77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{567BAA0C-2B0A-4C4E-A04A-FFA680422B77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3811BAFB-ED2F-440E-AAC3-D0F58D831575}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3811BAFB-ED2F-440E-AAC3-D0F58D831575}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3811BAFB-ED2F-440E-AAC3-D0F58D831575}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3811BAFB-ED2F-440E-AAC3-D0F58D831575}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{567BAA0C-2B0A-4C4E-A04A-FFA680422B77} = {93388C7A-C54C-4804-8B12-ADF2715DAD11}
+		{3811BAFB-ED2F-440E-AAC3-D0F58D831575} = {F4432770-D04F-4DD2-AEB1-5C7308C19D04}
+	EndGlobalSection
+EndGlobal
