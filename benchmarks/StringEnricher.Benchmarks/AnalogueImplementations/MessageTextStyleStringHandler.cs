@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
 
-namespace StringEnricher.Benchmarks.SingleBoldStyleBenchmarks.AnalogueImplementations;
+namespace StringEnricher.Benchmarks.AnalogueImplementations;
 
 public record MessageTextStyleStringHandler
 {
