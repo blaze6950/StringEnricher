@@ -1,33 +1,78 @@
 ﻿namespace StringEnricher.StringStyles.Html;
 
+/// <summary>
+/// Provides methods to apply strikethrough styling in HTML format.
+/// Example: "<s>strikethrough text</s>"
+/// </summary>
 public static class StrikethroughHtml
 {
+    /// <summary>
+    /// Applies strikethrough style to the given text.
+    /// </summary>
+    /// <param name="text">The text to be wrapped with strikethrough HTML tags.</param>
+    /// <returns>A new instance of <see cref="StrikethroughStyle{PlainTextStyle}"/> wrapping the provided text.</returns>
     public static StrikethroughStyle<PlainTextStyle> Apply(string text) =>
         StrikethroughStyle<PlainTextStyle>.Apply(text);
 
+    /// <summary>
+    /// Applies strikethrough style to the given style.
+    /// </summary>
+    /// <param name="style">The inner style to be wrapped with strikethrough HTML tags.</param>
+    /// <typeparam name="T">The type of the inner style that implements <see cref="IStyle"/>.</typeparam>
+    /// <returns>A new instance of <see cref="StrikethroughStyle{T}"/> wrapping the provided inner style.</returns>
     public static StrikethroughStyle<T> Apply<T>(T style) where T : IStyle =>
         StrikethroughStyle<T>.Apply(style);
 }
 
+/// <summary>
+/// Represents strikethrough text in HTML format.
+/// Example: "<s>strikethrough text</s>"
+/// </summary>
 public readonly struct StrikethroughStyle<TInner> : IStyle
     where TInner : IStyle
 {
+    /// <summary>
+    /// The opening strikethrough tag.
+    /// </summary>
     public const string Prefix = "<s>";
+    /// <summary>
+    /// The closing strikethrough tag.
+    /// </summary>
     public const string Suffix = "</s>";
 
     private readonly TInner _innerText;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StrikethroughStyle{TInner}"/> struct.
+    /// </summary>
+    /// <param name="inner">The inner style to be wrapped with strikethrough HTML tags.</param>
     public StrikethroughStyle(TInner inner)
     {
         _innerText = inner;
     }
 
+    /// <inheritdoc/>
     public override string ToString() => string.Create(TotalLength, this, static (span, style) => style.CopyTo(span));
 
+    /// <summary>
+    /// Gets the length of the inner text.
+    /// </summary>
     public int InnerLength => _innerText.TotalLength;
+    /// <summary>
+    /// Gets the total length of the HTML strikethrough syntax.
+    /// </summary>
     public int SyntaxLength => Prefix.Length + Suffix.Length;
+    /// <summary>
+    /// Gets the total length of the formatted text.
+    /// </summary>
     public int TotalLength => SyntaxLength + InnerLength;
 
+    /// <summary>
+    /// Copies the formatted strikethrough text to the provided span.
+    /// </summary>
+    /// <param name="destination">The span to copy the formatted text into.</param>
+    /// <returns>The total length of the formatted text.</returns>
+    /// <exception cref="ArgumentException">Thrown if the destination span is too small.</exception>
     public int CopyTo(Span<char> destination)
     {
         var totalLength = TotalLength;

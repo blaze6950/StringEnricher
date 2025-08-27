@@ -19,7 +19,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\StringEnricher\StringEnricher.csproj" />
+      <ProjectReference Include="..\..\src\StringEnricher\StringEnricher.csproj" />
     </ItemGroup>
 
 </Project>

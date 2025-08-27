@@ -1,36 +1,87 @@
 namespace StringEnricher.StringStyles.Html;
 
+/// <summary>
+/// Provides methods to apply Telegram emoji styling in HTML format.
+/// Example: "<tg-emoji emoji-id=\"id\">emoji</tg-emoji>"
+/// </summary>
 public static class TgEmojiHtml
 {
+    /// <summary>
+    /// Applies Telegram emoji style to the given default and custom emoji.
+    /// </summary>
+    /// <param name="linkTitle">The default emoji to be wrapped with Telegram emoji HTML tags.</param>
+    /// <param name="linkUrl">The custom emoji ID to be used in the emoji-id attribute.</param>
+    /// <returns>A new instance of <see cref="TgEmojiStyle{PlainTextStyle}"/> wrapping the provided emoji and ID.</returns>
     public static TgEmojiStyle<PlainTextStyle> Apply(string linkTitle, string linkUrl) =>
         TgEmojiStyle<PlainTextStyle>.Apply(linkTitle, linkUrl);
 
+    /// <summary>
+    /// Applies Telegram emoji style to the given styled default and custom emoji.
+    /// </summary>
+    /// <param name="linkTitle">The styled default emoji.</param>
+    /// <param name="linkUrl">The styled custom emoji ID.</param>
+    /// <typeparam name="T">The type of the inner style that implements <see cref="IStyle"/>.</typeparam>
+    /// <returns>A new instance of <see cref="TgEmojiStyle{T}"/> wrapping the provided styled emoji and ID.</returns>
     public static TgEmojiStyle<T> Apply<T>(T linkTitle, T linkUrl) where T : IStyle =>
         TgEmojiStyle<T>.Apply(linkTitle, linkUrl);
 }
 
+/// <summary>
+/// Represents Telegram emoji text in HTML format.
+/// Example: "<tg-emoji emoji-id=\"id\">emoji</tg-emoji>"
+/// </summary>
 public readonly struct TgEmojiStyle<TInner> : IStyle
     where TInner : IStyle
 {
+    /// <summary>
+    /// The opening Telegram emoji tag and emoji-id attribute.
+    /// </summary>
     public const string Prefix = "<tg-emoji emoji-id=\"";
+    /// <summary>
+    /// The separator between the emoji-id and the emoji.
+    /// </summary>
     public const string Separator = "\">";
+    /// <summary>
+    /// The closing Telegram emoji tag.
+    /// </summary>
     public const string Suffix = "</tg-emoji>";
 
     private readonly TInner _defaultEmoji;
     private readonly TInner _customEmoji;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TgEmojiStyle{TInner}"/> struct.
+    /// </summary>
+    /// <param name="defaultEmoji">The styled default emoji.</param>
+    /// <param name="customEmoji">The styled custom emoji ID.</param>
     public TgEmojiStyle(TInner defaultEmoji, TInner customEmoji)
     {
         _defaultEmoji = defaultEmoji;
         _customEmoji = customEmoji;
     }
 
+    /// <inheritdoc/>
     public override string ToString() => string.Create(TotalLength, this, static (span, style) => style.CopyTo(span));
 
+    /// <summary>
+    /// Gets the length of the default and custom emoji.
+    /// </summary>
     public int InnerLength => _defaultEmoji.TotalLength + _customEmoji.TotalLength;
+    /// <summary>
+    /// Gets the total length of the HTML Telegram emoji syntax.
+    /// </summary>
     public int SyntaxLength => Prefix.Length + Separator.Length + Suffix.Length;
+    /// <summary>
+    /// Gets the total length of the formatted text.
+    /// </summary>
     public int TotalLength => SyntaxLength + InnerLength;
 
+    /// <summary>
+    /// Copies the formatted Telegram emoji text to the provided span.
+    /// </summary>
+    /// <param name="destination">The span to copy the formatted text into.</param>
+    /// <returns>The total length of the formatted text.</returns>
+    /// <exception cref="ArgumentException">Thrown if the destination span is too small.</exception>
     public int CopyTo(Span<char> destination)
     {
         var totalLength = TotalLength;
@@ -57,5 +108,11 @@ public readonly struct TgEmojiStyle<TInner> : IStyle
         return totalLength;
     }
 
+    /// <summary>
+    /// Applies Telegram emoji style to the given default and custom emoji.
+    /// </summary>
+    /// <param name="linkTitle">The default emoji to be wrapped with Telegram emoji HTML tags.</param>
+    /// <param name="linkUrl">The custom emoji ID to be used in the emoji-id attribute.</param>
+    /// <returns>A new instance of <see cref="TgEmojiStyle{TInner}"/> wrapping the provided emoji and ID.</returns>
     public static TgEmojiStyle<TInner> Apply(TInner linkTitle, TInner linkUrl) => new(linkTitle, linkUrl);
 }
