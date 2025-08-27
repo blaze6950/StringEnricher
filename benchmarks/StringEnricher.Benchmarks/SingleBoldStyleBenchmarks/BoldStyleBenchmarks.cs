@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
-using BenchmarkDotNet.Running;
 using StringEnricher.Benchmarks.AnalogueImplementations;
 using StringEnricher.StringStyles.MarkdownV2;
 
