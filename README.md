@@ -45,6 +45,40 @@ var boldMd = BoldMarkdownV2.Apply("bold text").ToString();
 // boldMd == "*bold text*"
 ```
 
+## Using Aliases for Styles via GlobalUsings.cs
+
+To simplify switching between HTML and MarkdownV2 styles across your project, you can use C# `using` aliases in a `GlobalUsings.cs` file. This allows you to reference style helpers (like `Bold`, `Italic`, etc.) generically, and change the underlying format by updating just one file.
+
+### Example: GlobalUsings.cs
+```csharp
+// GlobalUsings.cs
+// Place this file in your project root or any folder included in compilation.
+
+global using Bold = StringEnricher.StringStyles.Html.BoldHtml;
+global using Italic = StringEnricher.StringStyles.Html.ItalicHtml;
+// Add other aliases as needed
+```
+
+To switch to MarkdownV2, simply update the aliases:
+```csharp
+// GlobalUsings.cs
+
+global using Bold = StringEnricher.StringStyles.MarkdownV2.BoldMarkdown;
+global using Italic = StringEnricher.StringStyles.MarkdownV2.ItalicMarkdown;
+// ...
+```
+
+### Usage in Your Code
+```csharp
+var styled = Bold.Apply(
+    Italic.Apply("important text").ToString()
+).ToString();
+// styled == "<b><i>important text</i></b>" (HTML)
+// styled == "* _important text_ *" (MarkdownV2)
+```
+
+This approach centralizes format selection, making it easy to switch formats for the entire project by editing only `GlobalUsings.cs`.
+
 ## Project Structure
 - `src/StringEnricher/`: Core library
   - `StringStyles/`: Style definitions for HTML, MarkdownV2, PlainText, etc.
@@ -60,4 +94,3 @@ MIT
 
 ---
 Feel free to contribute or open issues for feature requests and bug reports!
-
