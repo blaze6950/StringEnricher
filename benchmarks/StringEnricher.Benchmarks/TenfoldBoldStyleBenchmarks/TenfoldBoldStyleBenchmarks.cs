@@ -4,7 +4,7 @@ using BenchmarkDotNet.Order;
 using StringEnricher.Benchmarks.AnalogueImplementations;
 using StringEnricher.StringStyles.MarkdownV2;
 
-namespace StringEnricher.Benchmarks.TwoBoldStyleBenchmarks;
+namespace StringEnricher.Benchmarks.TenfoldBoldStyleBenchmarks;
 
 [MemoryDiagnoser]
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]

@@ -1,5 +1,4 @@
 ﻿using BenchmarkDotNet.Running;
-using StringEnricher.Benchmarks.TwoBoldStyleBenchmarks;
 
 namespace StringEnricher.Benchmarks;
 
@@ -13,6 +12,7 @@ public class Program
 
         //BenchmarkRunner.Run<BoldStyleBenchmarks>();
         //BenchmarkRunner.Run<DoubleBoldStyleBenchmarks>();
-        BenchmarkRunner.Run<TenfoldBoldStyleBenchmarks>();
+        //BenchmarkRunner.Run<TenfoldBoldStyleBenchmarks.TenfoldBoldStyleBenchmarks>();
+        BenchmarkRunner.Run<HardcoreTenfoldBoldStyleBenchmarks.HardcoreTenfoldBoldStyleBenchmarks>();
     }
 }
