@@ -92,5 +92,9 @@ This approach centralizes format selection, making it easy to switch formats for
 ## License
 MIT
 
+## Benchmarks
+
+Benchmarks are available in the `benchmarks` folder. You can run them using BenchmarkDotNet.
+
 ---
 Feel free to contribute or open issues for feature requests and bug reports!
