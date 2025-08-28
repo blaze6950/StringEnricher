@@ -1,4 +1,6 @@
 ﻿using BenchmarkDotNet.Running;
+using StringEnricher.Benchmarks.Escaping;
+using StringEnricher.Benchmarks.StringStyles.HardcoreTenfoldBoldStyleBenchmarks;
 
 namespace StringEnricher.Benchmarks;
 
@@ -13,6 +15,7 @@ public class Program
         //BenchmarkRunner.Run<BoldStyleBenchmarks>();
         //BenchmarkRunner.Run<DoubleBoldStyleBenchmarks>();
         //BenchmarkRunner.Run<TenfoldBoldStyleBenchmarks.TenfoldBoldStyleBenchmarks>();
-        BenchmarkRunner.Run<HardcoreTenfoldBoldStyleBenchmarks.HardcoreTenfoldBoldStyleBenchmarks>();
+        //BenchmarkRunner.Run<HardcoreTenfoldBoldStyleBenchmarks>();
+        BenchmarkRunner.Run<MarkdownV2EscapeBenchmarks>();
     }
 }

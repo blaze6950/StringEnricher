@@ -22,4 +22,8 @@
       <ProjectReference Include="..\..\src\StringEnricher\StringEnricher.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Html\Escaping\" />
+    </ItemGroup>
+
 </Project>
