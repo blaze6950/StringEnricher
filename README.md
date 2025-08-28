@@ -23,7 +23,8 @@ Add the project to your solution or reference the compiled DLL in your applicati
 ```csharp
 using StringEnricher.StringStyles.Html;
 
-var styledBold = BoldHtml.Apply("bold text").ToString();
+var styledBold = BoldHtml.Apply("bold text"); // 0 heap allocations here
+var styledBoldString = styledBold.ToString(); // 1 final string heap allocation here
 // styledBold == "<b>bold text</b>"
 ```
 
@@ -32,8 +33,9 @@ var styledBold = BoldHtml.Apply("bold text").ToString();
 using StringEnricher.StringStyles.Html;
 
 var styled = BoldHtml.Apply(
-    ItalicHtml.Apply("important text").ToString()
-).ToString();
+    ItalicHtml.Apply("important text") // 0 heap allocations here
+); // 0 heap allocations here
+var styledString = styled.ToString(); // 1 final string heap allocation here
 // styled == "<b><i>important text</i></b>"
 ```
 
@@ -41,7 +43,8 @@ var styled = BoldHtml.Apply(
 ```csharp
 using StringEnricher.StringStyles.MarkdownV2;
 
-var boldMd = BoldMarkdownV2.Apply("bold text").ToString();
+var boldMd = BoldMarkdownV2.Apply("bold text"); // 0 heap allocations here
+var boldMdString = boldMd.ToString(); // 1 final string heap allocation here
 // boldMd == "*bold text*"
 ```
 
@@ -71,8 +74,9 @@ global using Italic = StringEnricher.StringStyles.MarkdownV2.ItalicMarkdown;
 ### Usage in Your Code
 ```csharp
 var styled = Bold.Apply(
-    Italic.Apply("important text").ToString()
-).ToString();
+    Italic.Apply("important text") // 0 heap allocations here
+); // 0 heap allocations here
+var styledString = styled.ToString(); // 1 final string heap allocation here
 // styled == "<b><i>important text</i></b>" (HTML)
 // styled == "* _important text_ *" (MarkdownV2)
 ```
