@@ -1,10 +1,5 @@
 namespace StringEnricher.StringStyles.MarkdownV2;
 
-// todo avoid issue with big text to quote - may cause stack overflow
-// try to implement an indexer for every style to avoid stack allocation of big spans
-// so instead of allocating a destination array we can get every character by index
-// and copy it to destination span char by char
-
 /// <summary>
 /// Provides methods to apply blockquote style in MarkdownV2 format.
 /// Example: ">blockquote text example\n>new blockquote line"
@@ -52,7 +47,7 @@ public readonly struct BlockquoteStyle<TInner> : IStyle
     /// <summary>
     /// The prefix used for each line in a blockquote in MarkdownV2.
     /// </summary>
-    public const string LinePrefix = ">";
+    public const char LinePrefix = '>';
 
     /// <summary>
     /// The character used to separate lines in the blockquote.
@@ -81,6 +76,9 @@ public readonly struct BlockquoteStyle<TInner> : IStyle
     /// <returns>The created string representation</returns>
     public override string ToString() => string.Create(TotalLength, this, static (span, style) => style.CopyTo(span));
 
+    /// <summary>
+    /// Gets the length of the inner text without the blockquote syntax.
+    /// </summary>
     public int InnerLength => _innerText.TotalLength;
 
     /// <inheritdoc />
@@ -98,35 +96,13 @@ public readonly struct BlockquoteStyle<TInner> : IStyle
             throw new ArgumentException("The destination span is too small to hold the formatted text.");
         }
 
-        // Copy inner text to a stack-allocated span
-        Span<char> innerTextSpan = stackalloc char[_innerText.TotalLength];
-        _innerText.CopyTo(innerTextSpan);
-
+        var iterator = GetCharacterIterator();
         var pos = 0;
 
-        // Copy the line prefix for the first line
-        LinePrefix.AsSpan().CopyTo(destination.Slice(pos, LinePrefix.Length));
-        pos += LinePrefix.Length;
-
-        // Iterate through each character in the inner text
-        for (var i = 0; i < innerTextSpan.Length; i++)
+        while (iterator.MoveNext(out var character))
         {
-            var character = innerTextSpan[i];
-            if (character != LineSeparator)
-            {
-                // Regular character, just copy it
-                destination[pos] = character;
-                pos++;
-                continue;
-            }
-
-            // It's a line separator, so we need to add the line prefix after the new line character
             destination[pos] = character;
             pos++;
-
-            // Add the line prefix for the new line
-            LinePrefix.AsSpan().CopyTo(destination.Slice(pos, LinePrefix.Length));
-            pos += LinePrefix.Length;
         }
 
         return totalLength;
@@ -143,11 +119,11 @@ public readonly struct BlockquoteStyle<TInner> : IStyle
 
         if (index == 0)
         {
-            character = LinePrefix[0];
+            character = LinePrefix;
             return true;
         }
 
-        var neededIndex = index - LinePrefix.Length;
+        var neededIndex = index - 1; // Adjust for the first line prefix character that is always present at index 0
         var virtualIndex = 0;
         var originalIndex = 0;
         while (_innerText.TryGetChar(originalIndex, out character))
@@ -167,7 +143,7 @@ public readonly struct BlockquoteStyle<TInner> : IStyle
                 }
 
                 // Add the line prefix character virtually
-                character = LinePrefix[0];
+                character = LinePrefix;
                 virtualIndex++;
 
                 if (virtualIndex == neededIndex)
@@ -192,6 +168,13 @@ public readonly struct BlockquoteStyle<TInner> : IStyle
     }
 
     /// <summary>
+    /// Creates a new character iterator for efficient sequential access to all characters.
+    /// Use this when you need to iterate through all characters sequentially for O(n) performance.
+    /// </summary>
+    /// <returns>A new <see cref="CharacterIterator"/> instance.</returns>
+    public CharacterIterator GetCharacterIterator() => new(this);
+
+    /// <summary>
     /// Applies the blockquote style to the given inner style.
     /// </summary>
     /// <param name="innerStyle">
@@ -210,22 +193,120 @@ public readonly struct BlockquoteStyle<TInner> : IStyle
     /// The inner text whose lines will be counted to determine the syntax length.
     /// </param>
     /// <returns>
-    /// The total length of the blockquote syntax, which is the number of lines multiplied by the length of the line prefix.
+    /// The total length of the blockquote syntax, which is the number of lines.
     /// </returns>
     private static int CalculateSyntaxLength(TInner innerText)
     {
-        var newLinesInTextCount = 0;
-        Span<char> span = stackalloc char[innerText.TotalLength];
-        innerText.CopyTo(span);
-        for (var i = 0; i < span.Length; i++)
+        var lines = 1;
+
+        for (var i = 0; innerText.TryGetChar(i, out var ch); i++)
         {
-            if (span[i] == '\n')
+            if (ch == LineSeparator)
             {
-                newLinesInTextCount++;
+                lines++;
             }
         }
 
-        var prefixCount = newLinesInTextCount + 1; // one prefix for each line
-        return LinePrefix.Length * prefixCount;
+        return lines;
+    }
+
+    /// <summary>
+    /// A stateful iterator that maintains internal state for efficient sequential character access.
+    /// This allows O(n) iteration through all characters instead of O(n²) in case of <see cref="TryGetChar"/>.
+    /// </summary>
+    public struct CharacterIterator
+    {
+        private readonly BlockquoteStyle<TInner> _blockquoteStyle;
+        private int _currentVirtualIndex;
+        private int _currentOriginalIndex;
+        private bool _isAtLinePrefix;
+        private bool _hasReachedEnd;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CharacterIterator"/> struct.
+        /// </summary>
+        /// <param name="blockquoteStyle">The blockquote style to iterate through.</param>
+        public CharacterIterator(BlockquoteStyle<TInner> blockquoteStyle)
+        {
+            _blockquoteStyle = blockquoteStyle;
+            _currentVirtualIndex = 0;
+            _currentOriginalIndex = 0;
+            _isAtLinePrefix = true; // Start with the first line prefix
+            _hasReachedEnd = false;
+        }
+
+        /// <summary>
+        /// Gets the current virtual index position in the output string.
+        /// </summary>
+        public int CurrentIndex => _currentVirtualIndex - 1;
+
+        /// <summary>
+        /// Gets a value indicating whether the iterator has reached the end.
+        /// </summary>
+        public bool HasReachedEnd => _hasReachedEnd;
+
+        /// <summary>
+        /// Moves to the next character and returns it.
+        /// Returns true if a character was successfully retrieved, false if the end was reached.
+        /// </summary>
+        /// <param name="character">When this method returns, contains the character at the current position.</param>
+        /// <returns>true if a character was successfully retrieved; otherwise, false.</returns>
+        public bool MoveNext(out char character)
+        {
+            if (_hasReachedEnd)
+            {
+                character = '\0';
+                return false;
+            }
+
+            // Handle the first line prefix
+            if (_currentVirtualIndex == 0)
+            {
+                character = LinePrefix;
+                _currentVirtualIndex++;
+                _isAtLinePrefix = false;
+                return true;
+            }
+
+            // If we're currently at a line prefix position after a line separator
+            if (_isAtLinePrefix)
+            {
+                character = LinePrefix;
+                _currentVirtualIndex++;
+                _isAtLinePrefix = false;
+                return true;
+            }
+
+            // Try to get the next character from the inner text
+            if (_blockquoteStyle._innerText.TryGetChar(_currentOriginalIndex, out character))
+            {
+                _currentOriginalIndex++;
+                _currentVirtualIndex++;
+
+                // If this character is a line separator, the next character should be a line prefix
+                if (character == LineSeparator)
+                {
+                    _isAtLinePrefix = true;
+                }
+
+                return true;
+            }
+
+            // No more characters available
+            _hasReachedEnd = true;
+            character = '\0';
+            return false;
+        }
+
+        /// <summary>
+        /// Resets the iterator to the beginning.
+        /// </summary>
+        public void Reset()
+        {
+            _currentVirtualIndex = 0;
+            _currentOriginalIndex = 0;
+            _isAtLinePrefix = true;
+            _hasReachedEnd = false;
+        }
     }
 }
