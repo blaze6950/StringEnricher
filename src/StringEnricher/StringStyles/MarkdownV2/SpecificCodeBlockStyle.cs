@@ -135,6 +135,50 @@ public readonly struct SpecificCodeBlockStyle<TInner> : IStyle
         return totalLength;
     }
 
+    /// <inheritdoc />
+    public bool TryGetChar(int index, out char character)
+    {
+        if (index < 0 || index >= TotalLength)
+        {
+            character = '\0';
+            return false;
+        }
+
+        if (index < Prefix.Length)
+        {
+            character = Prefix[index];
+            return true;
+        }
+
+        index -= Prefix.Length;
+
+        if (index < _language.TotalLength)
+        {
+            return _language.TryGetChar(index, out character);
+        }
+
+        index -= _language.TotalLength;
+
+        if (index < Separator.Length)
+        {
+            character = Separator[index];
+            return true;
+        }
+
+        index -= Separator.Length;
+
+        if (index < _innerCodeBlock.TotalLength)
+        {
+            return _innerCodeBlock.TryGetChar(index, out character);
+        }
+
+        index -= _innerCodeBlock.TotalLength;
+
+        // At this point, index must be within the suffix
+        character = Suffix[index];
+        return true;
+    }
+
     /// <summary>
     /// Creates a new instance of the <see cref="SpecificCodeBlockStyle{TInner}"/> struct.
     /// </summary>

@@ -111,6 +111,32 @@ public readonly struct UnderlineStyle<TInner> : IStyle
         return totalLength;
     }
 
+    /// <inheritdoc />
+    public bool TryGetChar(int index, out char character)
+    {
+        if (index < 0 || index >= TotalLength)
+        {
+            character = '\0';
+            return false;
+        }
+
+        if (index < Prefix.Length)
+        {
+            character = Prefix[index];
+            return true;
+        }
+
+        var innerIndex = index - Prefix.Length;
+        if (innerIndex < InnerLength)
+        {
+            return _innerText.TryGetChar(innerIndex, out character);
+        }
+
+        var suffixIndex = innerIndex - InnerLength;
+        character = Suffix[suffixIndex];
+        return true;
+    }
+
     /// <summary>
     /// Applies the underline style to the given inner style.
     /// </summary>

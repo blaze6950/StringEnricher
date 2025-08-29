@@ -2,33 +2,33 @@ namespace StringEnricher.StringStyles.Html;
 
 /// <summary>
 /// Provides methods to apply Telegram emoji styling in HTML format.
-/// Example: "<tg-emoji emoji-id=\"id\">emoji</tg-emoji>"
+/// Example: "<tg-emoji emoji-id="id">emoji</tg-emoji>"
 /// </summary>
 public static class TgEmojiHtml
 {
     /// <summary>
     /// Applies Telegram emoji style to the given default and custom emoji.
     /// </summary>
-    /// <param name="linkTitle">The default emoji to be wrapped with Telegram emoji HTML tags.</param>
-    /// <param name="linkUrl">The custom emoji ID to be used in the emoji-id attribute.</param>
+    /// <param name="defaultEmoji">The default emoji to be wrapped with Telegram emoji HTML tags.</param>
+    /// <param name="customEmoji">The custom emoji ID to be used in the emoji-id attribute.</param>
     /// <returns>A new instance of <see cref="TgEmojiStyle{PlainTextStyle}"/> wrapping the provided emoji and ID.</returns>
-    public static TgEmojiStyle<PlainTextStyle> Apply(string linkTitle, string linkUrl) =>
-        TgEmojiStyle<PlainTextStyle>.Apply(linkTitle, linkUrl);
+    public static TgEmojiStyle<PlainTextStyle> Apply(string defaultEmoji, string customEmoji) =>
+        TgEmojiStyle<PlainTextStyle>.Apply(defaultEmoji, customEmoji);
 
     /// <summary>
     /// Applies Telegram emoji style to the given styled default and custom emoji.
     /// </summary>
-    /// <param name="linkTitle">The styled default emoji.</param>
-    /// <param name="linkUrl">The styled custom emoji ID.</param>
+    /// <param name="defaultEmoji">The styled default emoji.</param>
+    /// <param name="customEmoji">The styled custom emoji ID.</param>
     /// <typeparam name="T">The type of the inner style that implements <see cref="IStyle"/>.</typeparam>
     /// <returns>A new instance of <see cref="TgEmojiStyle{T}"/> wrapping the provided styled emoji and ID.</returns>
-    public static TgEmojiStyle<T> Apply<T>(T linkTitle, T linkUrl) where T : IStyle =>
-        TgEmojiStyle<T>.Apply(linkTitle, linkUrl);
+    public static TgEmojiStyle<T> Apply<T>(T defaultEmoji, T customEmoji) where T : IStyle =>
+        TgEmojiStyle<T>.Apply(defaultEmoji, customEmoji);
 }
 
 /// <summary>
 /// Represents Telegram emoji text in HTML format.
-/// Example: "<tg-emoji emoji-id=\"id\">emoji</tg-emoji>"
+/// Example: "<tg-emoji emoji-id="id">emoji</tg-emoji>"
 /// </summary>
 public readonly struct TgEmojiStyle<TInner> : IStyle
     where TInner : IStyle
@@ -37,10 +37,12 @@ public readonly struct TgEmojiStyle<TInner> : IStyle
     /// The opening Telegram emoji tag and emoji-id attribute.
     /// </summary>
     public const string Prefix = "<tg-emoji emoji-id=\"";
+
     /// <summary>
     /// The separator between the emoji-id and the emoji.
     /// </summary>
     public const string Separator = "\">";
+
     /// <summary>
     /// The closing Telegram emoji tag.
     /// </summary>
@@ -67,10 +69,12 @@ public readonly struct TgEmojiStyle<TInner> : IStyle
     /// Gets the length of the default and custom emoji.
     /// </summary>
     public int InnerLength => _defaultEmoji.TotalLength + _customEmoji.TotalLength;
+
     /// <summary>
     /// Gets the total length of the HTML Telegram emoji syntax.
     /// </summary>
     public int SyntaxLength => Prefix.Length + Separator.Length + Suffix.Length;
+
     /// <summary>
     /// Gets the total length of the formatted text.
     /// </summary>
@@ -108,11 +112,56 @@ public readonly struct TgEmojiStyle<TInner> : IStyle
         return totalLength;
     }
 
+    /// <inheritdoc />
+    public bool TryGetChar(int index, out char character)
+    {
+        var totalLength = TotalLength;
+        if (index < 0 || index >= totalLength)
+        {
+            character = '\0';
+            return false;
+        }
+
+        if (index < Prefix.Length)
+        {
+            character = Prefix[index];
+            return true;
+        }
+
+        index -= Prefix.Length;
+
+        if (index < _customEmoji.TotalLength)
+        {
+            return _customEmoji.TryGetChar(index, out character);
+        }
+
+        index -= _customEmoji.TotalLength;
+
+        if (index < Separator.Length)
+        {
+            character = Separator[index];
+            return true;
+        }
+
+        index -= Separator.Length;
+
+        if (index < _defaultEmoji.TotalLength)
+        {
+            return _defaultEmoji.TryGetChar(index, out character);
+        }
+
+        index -= _defaultEmoji.TotalLength;
+
+        // At this point, index must be within the Suffix
+        character = Suffix[index];
+        return true;
+    }
+
     /// <summary>
     /// Applies Telegram emoji style to the given default and custom emoji.
     /// </summary>
-    /// <param name="linkTitle">The default emoji to be wrapped with Telegram emoji HTML tags.</param>
-    /// <param name="linkUrl">The custom emoji ID to be used in the emoji-id attribute.</param>
+    /// <param name="defaultEmoji">The default emoji to be wrapped with Telegram emoji HTML tags.</param>
+    /// <param name="customEmoji">The custom emoji ID to be used in the emoji-id attribute.</param>
     /// <returns>A new instance of <see cref="TgEmojiStyle{TInner}"/> wrapping the provided emoji and ID.</returns>
-    public static TgEmojiStyle<TInner> Apply(TInner linkTitle, TInner linkUrl) => new(linkTitle, linkUrl);
+    public static TgEmojiStyle<TInner> Apply(TInner defaultEmoji, TInner customEmoji) => new(defaultEmoji, customEmoji);
 }

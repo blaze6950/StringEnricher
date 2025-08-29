@@ -111,6 +111,41 @@ public readonly struct StrikethroughStyle<TInner> : IStyle
         return totalLength;
     }
 
+    /// <inheritdoc />
+    public bool TryGetChar(int index, out char character)
+    {
+        if (index < 0 || index >= TotalLength)
+        {
+            character = '\0';
+            return false;
+        }
+
+        if (index < Prefix.Length)
+        {
+            character = Prefix[index];
+            return true;
+        }
+
+        index -= Prefix.Length;
+
+        if (index < InnerLength)
+        {
+            return _innerText.TryGetChar(index, out character);
+        }
+
+        index -= InnerLength;
+
+        if (index < Suffix.Length)
+        {
+            character = Suffix[index];
+            return true;
+        }
+
+        // This point should never be reached due to the initial bounds check.
+        character = '\0';
+        return false;
+    }
+
     /// <summary>
     /// Applies strikethrough style to the given inner style.
     /// </summary>

@@ -19,6 +19,7 @@ public readonly struct PlainTextStyle : IStyle
 
     /// <inheritdoc />
     public int SyntaxLength => 0;
+
     /// <inheritdoc />
     public int TotalLength => _text.Length;
 
@@ -34,6 +35,19 @@ public readonly struct PlainTextStyle : IStyle
         _text.AsSpan().CopyTo(destination);
 
         return textLength;
+    }
+
+    /// <inheritdoc />
+    public bool TryGetChar(int index, out char character)
+    {
+        if (index < 0 || index >= _text.Length)
+        {
+            character = '\0';
+            return false;
+        }
+
+        character = _text[index];
+        return true;
     }
 
     /// <summary>

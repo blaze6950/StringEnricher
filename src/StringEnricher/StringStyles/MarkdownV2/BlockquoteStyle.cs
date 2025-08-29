@@ -53,6 +53,7 @@ public readonly struct BlockquoteStyle<TInner> : IStyle
     /// The prefix used for each line in a blockquote in MarkdownV2.
     /// </summary>
     public const string LinePrefix = ">";
+
     /// <summary>
     /// The character used to separate lines in the blockquote.
     /// </summary>
@@ -129,6 +130,65 @@ public readonly struct BlockquoteStyle<TInner> : IStyle
         }
 
         return totalLength;
+    }
+
+    /// <inheritdoc />
+    public bool TryGetChar(int index, out char character)
+    {
+        if (index < 0 || index >= TotalLength)
+        {
+            character = '\0';
+            return false;
+        }
+
+        if (index == 0)
+        {
+            character = LinePrefix[0];
+            return true;
+        }
+
+        var neededIndex = index - LinePrefix.Length;
+        var virtualIndex = 0;
+        var originalIndex = 0;
+        while (_innerText.TryGetChar(originalIndex, out character))
+        {
+            if (character == LineSeparator)
+            {
+                // means that the next character should be a line prefix that should be virtually added
+                // so the next iteration should process a virtually added line prefix character
+                // original index should not be incremented in this case
+                // but virtual index should be incremented to account for the added character
+
+                if (virtualIndex == neededIndex)
+                {
+                    // We are at the position of the line separator
+                    // Return the line separator character
+                    return true;
+                }
+
+                // Add the line prefix character virtually
+                character = LinePrefix[0];
+                virtualIndex++;
+
+                if (virtualIndex == neededIndex)
+                {
+                    // We are at the position of the virtually added line prefix
+                    // Return the line prefix character
+                    return true;
+                }
+            }
+
+            if (virtualIndex == neededIndex)
+            {
+                return true;
+            }
+
+            originalIndex++;
+            virtualIndex++;
+        }
+
+        character = '\0';
+        return false;
     }
 
     /// <summary>

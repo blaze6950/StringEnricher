@@ -111,6 +111,31 @@ public readonly struct InlineCodeStyle<TInner> : IStyle
         return totalLength;
     }
 
+    /// <inheritdoc />
+    public bool TryGetChar(int index, out char character)
+    {
+        if (index < 0 || index >= TotalLength)
+        {
+            character = '\0';
+            return false;
+        }
+
+        if (index < Prefix.Length)
+        {
+            character = Prefix[index];
+            return true;
+        }
+
+        if (index < Prefix.Length + InnerLength)
+        {
+            return _innerText.TryGetChar(index - Prefix.Length, out character);
+        }
+
+        // Suffix part
+        character = Suffix[index - Prefix.Length - InnerLength];
+        return true;
+    }
+
     /// <summary>
     /// Creates a new instance of <see cref="InlineCodeStyle{TInner}"/> with the specified inner style.
     /// </summary>

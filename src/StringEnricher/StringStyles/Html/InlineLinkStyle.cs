@@ -108,6 +108,50 @@ public readonly struct InlineLinkStyle<TInner> : IStyle
         return totalLength;
     }
 
+    /// <inheritdoc />
+    public bool TryGetChar(int index, out char character)
+    {
+        if (index < 0 || index >= TotalLength)
+        {
+            character = '\0';
+            return false;
+        }
+
+        if (index < Prefix.Length)
+        {
+            character = Prefix[index];
+            return true;
+        }
+
+        index -= Prefix.Length;
+
+        if (index < _linkUrl.TotalLength)
+        {
+            return _linkUrl.TryGetChar(index, out character);
+        }
+
+        index -= _linkUrl.TotalLength;
+
+        if (index < LinkSeparator.Length)
+        {
+            character = LinkSeparator[index];
+            return true;
+        }
+
+        index -= LinkSeparator.Length;
+
+        if (index < _linkTitle.TotalLength)
+        {
+            return _linkTitle.TryGetChar(index, out character);
+        }
+
+        index -= _linkTitle.TotalLength;
+
+        // At this point, index must be within the Suffix
+        character = Suffix[index];
+        return true;
+    }
+
     /// <summary>
     /// Applies inline link style to the given title and URL.
     /// </summary>

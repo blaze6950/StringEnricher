@@ -103,5 +103,34 @@ public readonly struct BoldStyle<TInner> : IStyle
         return totalLength;
     }
 
+    /// <inheritdoc />
+    public bool TryGetChar(int index, out char character)
+    {
+        var totalLength = TotalLength;
+        if (index < 0 || index >= totalLength)
+        {
+            character = '\0';
+            return false;
+        }
+
+        if (index < Prefix.Length)
+        {
+            character = Prefix[index];
+            return true;
+        }
+
+        index -= Prefix.Length;
+
+        if (index < InnerLength)
+        {
+            return _innerText.TryGetChar(index, out character);
+        }
+
+        index -= InnerLength;
+
+        character = Suffix[index];
+        return true;
+    }
+
     public static BoldStyle<TInner> Apply(TInner innerStyle) => new(innerStyle);
 }

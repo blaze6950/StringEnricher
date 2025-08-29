@@ -93,5 +93,29 @@ public readonly struct ItalicStyle<TInner> : IStyle
         return totalLength;
     }
 
+    /// <inheritdoc />
+    public bool TryGetChar(int index, out char character)
+    {
+        if (index < 0 || index >= TotalLength)
+        {
+            character = '\0';
+            return false;
+        }
+
+        if (index < Prefix.Length)
+        {
+            character = Prefix[index];
+            return true;
+        }
+
+        if (index < Prefix.Length + InnerLength)
+        {
+            return _innerText.TryGetChar(index - Prefix.Length, out character);
+        }
+
+        character = Suffix[index - Prefix.Length - InnerLength];
+        return true;
+    }
+
     public static ItalicStyle<TInner> Apply(TInner innerStyle) => new(innerStyle);
 }

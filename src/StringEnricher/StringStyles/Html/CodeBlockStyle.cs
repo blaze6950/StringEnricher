@@ -103,5 +103,33 @@ public readonly struct CodeBlockStyle<TInner> : IStyle
         return totalLength;
     }
 
+    /// <inheritdoc />
+    public bool TryGetChar(int index, out char character)
+    {
+        if (index < 0 || index >= TotalLength)
+        {
+            character = '\0';
+            return false;
+        }
+
+        if (index < Prefix.Length)
+        {
+            character = Prefix[index];
+            return true;
+        }
+
+        index -= Prefix.Length;
+
+        if (index < InnerLength)
+        {
+            return _innerCodeBlock.TryGetChar(index, out character);
+        }
+
+        index -= InnerLength;
+
+        character = Suffix[index];
+        return true;
+    }
+
     public static CodeBlockStyle<TInner> Apply(TInner innerCodeBlock) => new(innerCodeBlock);
 }

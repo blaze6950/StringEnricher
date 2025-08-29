@@ -135,6 +135,50 @@ public readonly struct TgEmojiStyle<TInner> : IStyle
         return totalLength;
     }
 
+    /// <inheritdoc />
+    public bool TryGetChar(int index, out char character)
+    {
+        if (index < 0 || index >= TotalLength)
+        {
+            character = '\0';
+            return false;
+        }
+
+        if (index < Prefix.Length)
+        {
+            character = Prefix[index];
+            return true;
+        }
+
+        index -= Prefix.Length;
+
+        if (index < _defaultEmoji.TotalLength)
+        {
+            return _defaultEmoji.TryGetChar(index, out character);
+        }
+
+        index -= _defaultEmoji.TotalLength;
+
+        if (index < Separator.Length)
+        {
+            character = Separator[index];
+            return true;
+        }
+
+        index -= Separator.Length;
+
+        if (index < _customEmojiId.TotalLength)
+        {
+            return _customEmojiId.TryGetChar(index, out character);
+        }
+
+        index -= _customEmojiId.TotalLength;
+
+        // At this point, index must be within the Suffix
+        character = Suffix[index];
+        return true;
+    }
+
     /// <summary>
     /// Creates a new instance of the <see cref="TgEmojiStyle{TInner}"/> struct.
     /// </summary>

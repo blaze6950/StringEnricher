@@ -93,5 +93,30 @@ public readonly struct SpoilerStyle<TInner> : IStyle
         return totalLength;
     }
 
+    /// <inheritdoc />
+    public bool TryGetChar(int index, out char character)
+    {
+        var totalLength = TotalLength;
+        if (index < 0 || index >= totalLength)
+        {
+            character = '\0';
+            return false;
+        }
+
+        if (index < Prefix.Length)
+        {
+            character = Prefix[index];
+            return true;
+        }
+
+        if (index >= Prefix.Length + InnerLength)
+        {
+            character = Suffix[index - Prefix.Length - InnerLength];
+            return true;
+        }
+
+        return _innerText.TryGetChar(index - Prefix.Length, out character);
+    }
+
     public static SpoilerStyle<TInner> Apply(TInner innerStyle) => new(innerStyle);
 }
