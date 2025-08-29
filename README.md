@@ -48,6 +48,45 @@ var boldMdString = boldMd.ToString(); // 1 final string heap allocation here
 // boldMd == "*bold text*"
 ```
 
+### The `.CopyTo()` method for Zero Allocations
+```csharp
+using StringEnricher.StringStyles.Html;
+
+var styled = BoldHtml.Apply("bold text");
+Span<char> buffer = stackalloc char[styled.GetMaxLength()];
+int written = styled.CopyTo(buffer); // 0 heap allocations here
+var result = new string(buffer.Slice(0, written)); // 1 final string heap
+// result == "<b>bold text</b>"
+```
+
+Note: This approach is OK for small strings that fit on the stack (up to 1-2 KB). For larger strings, use `ToString()`.
+
+### `.ToString()` method for Final String Creation
+The `ToString()` method is used to create the final styled string. It performs a single heap allocation for the resulting string.
+Use it only when you finished building the entire styled string.
+
+### `.TryGetChar()` method for Single Character Access
+The `TryGetChar(int index, out char value)` method allows you to access individual characters in the styled string without creating the entire string. It returns `true` if the character at the specified index exists, otherwise `false`.
+```csharp
+using StringEnricher.StringStyles.Html;
+var styled = BoldHtml.Apply("bold text");
+if (styled.TryGetChar(0, out char character))
+{
+    // character == '*'
+}
+if (styled.TryGetChar(11, out char character))
+{
+    // character == '*'
+}
+if (styled.TryGetChar(12, out char character))
+{
+    // this is out of bounds
+}
+else {
+    // character == '\0'
+}
+```
+
 ## Using Aliases for Styles via GlobalUsings.cs
 
 To simplify switching between HTML and MarkdownV2 styles across your project, you can use C# `using` aliases in a `GlobalUsings.cs` file. This allows you to reference style helpers (like `Bold`, `Italic`, etc.) generically, and change the underlying format by updating just one file.
