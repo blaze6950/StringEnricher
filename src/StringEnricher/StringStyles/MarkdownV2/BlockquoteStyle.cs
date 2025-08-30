@@ -236,16 +236,6 @@ public readonly struct BlockquoteStyle<TInner> : IStyle
         }
 
         /// <summary>
-        /// Gets the current virtual index position in the output string.
-        /// </summary>
-        public int CurrentIndex => _currentVirtualIndex - 1;
-
-        /// <summary>
-        /// Gets a value indicating whether the iterator has reached the end.
-        /// </summary>
-        public bool HasReachedEnd => _hasReachedEnd;
-
-        /// <summary>
         /// Moves to the next character and returns it.
         /// Returns true if a character was successfully retrieved, false if the end was reached.
         /// </summary>
@@ -296,17 +286,6 @@ public readonly struct BlockquoteStyle<TInner> : IStyle
             _hasReachedEnd = true;
             character = '\0';
             return false;
-        }
-
-        /// <summary>
-        /// Resets the iterator to the beginning.
-        /// </summary>
-        public void Reset()
-        {
-            _currentVirtualIndex = 0;
-            _currentOriginalIndex = 0;
-            _isAtLinePrefix = true;
-            _hasReachedEnd = false;
         }
     }
 }
