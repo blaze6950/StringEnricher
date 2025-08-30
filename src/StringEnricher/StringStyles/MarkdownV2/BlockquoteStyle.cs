@@ -13,7 +13,7 @@ public static class BlockquoteMarkdownV2
     /// The text to be styled as a blockquote.
     /// </param>
     /// <returns>
-    /// A new instance of <see cref="BlockquoteStyle{PlainTextStyle}"/> containing the styled text.
+    /// A new instance of <see cref="BlockquoteStyle{TInner}"/> containing the styled text.
     /// </returns>
     public static BlockquoteStyle<PlainTextStyle> Apply(string text) =>
         BlockquoteStyle<PlainTextStyle>.Apply(text);
@@ -28,7 +28,7 @@ public static class BlockquoteMarkdownV2
     /// The type of the style that implements <see cref="IStyle"/>.
     /// </typeparam>
     /// <returns>
-    /// A new instance of <see cref="BlockquoteStyle{T}"/> containing the styled text.
+    /// A new instance of <see cref="BlockquoteStyle{TInner}"/> containing the styled text.
     /// </returns>
     public static BlockquoteStyle<T> Apply<T>(T style) where T : IStyle =>
         BlockquoteStyle<T>.Apply(style);
@@ -41,7 +41,7 @@ public static class BlockquoteMarkdownV2
 /// <typeparam name="TInner">
 /// The type of the inner style that will be wrapped with blockquote syntax.
 /// </typeparam>
-public readonly struct BlockquoteStyle<TInner> : IStyle
+public readonly partial struct BlockquoteStyle<TInner> : IStyle
     where TInner : IStyle
 {
     /// <summary>
@@ -168,13 +168,6 @@ public readonly struct BlockquoteStyle<TInner> : IStyle
     }
 
     /// <summary>
-    /// Creates a new character iterator for efficient sequential access to all characters.
-    /// Use this when you need to iterate through all characters sequentially for O(n) performance.
-    /// </summary>
-    /// <returns>A new <see cref="CharacterIterator"/> instance.</returns>
-    public CharacterIterator GetCharacterIterator() => new(this);
-
-    /// <summary>
     /// Applies the blockquote style to the given inner style.
     /// </summary>
     /// <param name="innerStyle">
@@ -209,6 +202,13 @@ public readonly struct BlockquoteStyle<TInner> : IStyle
 
         return lines;
     }
+
+    /// <summary>
+    /// Creates a new character iterator for efficient sequential access to all characters.
+    /// Use this when you need to iterate through all characters sequentially for O(n) performance.
+    /// </summary>
+    /// <returns>A new <see cref="CharacterIterator"/> instance.</returns>
+    private CharacterIterator GetCharacterIterator() => new(this);
 
     /// <summary>
     /// A stateful iterator that maintains internal state for efficient sequential character access.
