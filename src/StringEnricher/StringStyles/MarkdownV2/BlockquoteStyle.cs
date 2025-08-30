@@ -214,7 +214,7 @@ public readonly struct BlockquoteStyle<TInner> : IStyle
     /// A stateful iterator that maintains internal state for efficient sequential character access.
     /// This allows O(n) iteration through all characters instead of O(n²) in case of <see cref="TryGetChar"/>.
     /// </summary>
-    public struct CharacterIterator
+    private struct CharacterIterator
     {
         private readonly BlockquoteStyle<TInner> _blockquoteStyle;
         private int _currentVirtualIndex;
