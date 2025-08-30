@@ -41,7 +41,7 @@ public static class BlockquoteMarkdownV2
 /// <typeparam name="TInner">
 /// The type of the inner style that will be wrapped with blockquote syntax.
 /// </typeparam>
-public readonly partial struct BlockquoteStyle<TInner> : IStyle
+public readonly struct BlockquoteStyle<TInner> : IStyle
     where TInner : IStyle
 {
     /// <summary>
