@@ -9,7 +9,7 @@ public class MarkdownV2Tests
         const string expectedString = "string to escape";
 
         // Act
-        var styledBold = StringEnricher.Escaping.MarkdownV2.MarkdownV2.Escape("string to escape");
+        var styledBold = Helpers.MarkdownV2.MarkdownV2.Escape("string to escape");
 
         // Assert
         Assert.NotNull(styledBold);
@@ -25,7 +25,7 @@ public class MarkdownV2Tests
         const string expected = @"\_\*\~\`\#\+\-\=\.\!\[\]\(\)\{\}\>\|\\";
 
         // Act
-        var result = StringEnricher.Escaping.MarkdownV2.MarkdownV2.Escape(input);
+        var result = Helpers.MarkdownV2.MarkdownV2.Escape(input);
 
         // Assert
         Assert.Equal(expected, result);
@@ -39,7 +39,7 @@ public class MarkdownV2Tests
         const string expected = @"Hello\_World\!";
 
         // Act
-        var result = StringEnricher.Escaping.MarkdownV2.MarkdownV2.Escape(input);
+        var result = Helpers.MarkdownV2.MarkdownV2.Escape(input);
 
         // Assert
         Assert.Equal(expected, result);
@@ -53,7 +53,7 @@ public class MarkdownV2Tests
         const string expected = @"\_\_\*\*\!\!";
 
         // Act
-        var result = StringEnricher.Escaping.MarkdownV2.MarkdownV2.Escape(input);
+        var result = Helpers.MarkdownV2.MarkdownV2.Escape(input);
 
         // Assert
         Assert.Equal(expected, result);
@@ -67,7 +67,7 @@ public class MarkdownV2Tests
         const string expected = "";
 
         // Act
-        var result = StringEnricher.Escaping.MarkdownV2.MarkdownV2.Escape(input);
+        var result = Helpers.MarkdownV2.MarkdownV2.Escape(input);
 
         // Assert
         Assert.Equal(expected, result);
@@ -81,7 +81,7 @@ public class MarkdownV2Tests
         string expected = null;
 
         // Act
-        var result = StringEnricher.Escaping.MarkdownV2.MarkdownV2.Escape(input);
+        var result = Helpers.MarkdownV2.MarkdownV2.Escape(input);
 
         // Assert
         Assert.Equal(expected, result);
@@ -95,7 +95,7 @@ public class MarkdownV2Tests
         const string expected = @"\_start middle\* end\!";
 
         // Act
-        var result = StringEnricher.Escaping.MarkdownV2.MarkdownV2.Escape(input);
+        var result = Helpers.MarkdownV2.MarkdownV2.Escape(input);
 
         // Assert
         Assert.Equal(expected, result);
@@ -109,7 +109,7 @@ public class MarkdownV2Tests
         const string expected = @"\*\*\*";
 
         // Act
-        var result = StringEnricher.Escaping.MarkdownV2.MarkdownV2.Escape(input);
+        var result = Helpers.MarkdownV2.MarkdownV2.Escape(input);
 
         // Assert
         Assert.Equal(expected, result);
@@ -123,7 +123,7 @@ public class MarkdownV2Tests
         const string expected = @"Привет мир\!";
 
         // Act
-        var result = StringEnricher.Escaping.MarkdownV2.MarkdownV2.Escape(input);
+        var result = Helpers.MarkdownV2.MarkdownV2.Escape(input);
 
         // Assert
         Assert.Equal(expected, result);

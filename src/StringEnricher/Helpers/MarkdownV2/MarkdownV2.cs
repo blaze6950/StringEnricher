@@ -1,4 +1,4 @@
-﻿namespace StringEnricher.Escaping.MarkdownV2;
+﻿namespace StringEnricher.Helpers.MarkdownV2;
 
 /// <summary>
 /// Provides methods to escape special characters in a string for MarkdownV2 formatting.
