@@ -13,7 +13,7 @@ public static class BoldMarkdownV2
     /// The text to be wrapped with bold syntax.
     /// </param>
     /// <returns>
-    /// A new instance of <see cref="BoldStyle{PlainTextStyle}"/> wrapping the provided text.
+    /// A new instance of <see cref="BoldStyle{TInner}"/> wrapping the provided text.
     /// </returns>
     public static BoldStyle<PlainTextStyle> Apply(string text) =>
         BoldStyle<PlainTextStyle>.Apply(text);
@@ -28,7 +28,7 @@ public static class BoldMarkdownV2
     /// The type of the inner style that implements <see cref="IStyle"/>.
     /// </typeparam>
     /// <returns>
-    /// A new instance of <see cref="BoldStyle{T}"/> wrapping the provided inner style.
+    /// A new instance of <see cref="BoldStyle{TInner}"/> wrapping the provided inner style.
     /// </returns>
     public static BoldStyle<T> Apply<T>(T style) where T : IStyle =>
         BoldStyle<T>.Apply(style);
@@ -48,6 +48,7 @@ public readonly struct BoldStyle<TInner> : IStyle
     /// The prefix and suffix used for bold styling in MarkdownV2.
     /// </summary>
     public const string Prefix = "*";
+
     /// <summary>
     /// The suffix used for bold styling in MarkdownV2.
     /// </summary>
@@ -76,8 +77,10 @@ public readonly struct BoldStyle<TInner> : IStyle
     /// Gets the length of the inner text.
     /// </summary>
     public int InnerLength => _innerText.TotalLength;
+
     /// <inheritdoc />
     public int SyntaxLength => Prefix.Length + Suffix.Length;
+
     /// <inheritdoc />
     public int TotalLength => SyntaxLength + InnerLength;
 

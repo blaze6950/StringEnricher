@@ -167,7 +167,7 @@ public readonly struct InlineLinkStyle<TInner> : IStyle
 
     /// <summary>
     /// Applies the inline link style to the given link title and link URL.
-    /// </summary>
+    /// /// </summary>
     /// <param name="linkTitle">
     /// The inner style representing the link title.
     /// </param>
@@ -175,8 +175,8 @@ public readonly struct InlineLinkStyle<TInner> : IStyle
     /// The inner style representing the link URL.
     /// </param>
     /// <returns>
-    /// A new instance of the <see cref="InlineLinkStyle{TInner}"/> struct
-    /// with the specified link title and link URL.
+    /// A new instance of the <see cref="InlineLinkStyle{TInner}"/> struct.
     /// </returns>
-    public static InlineLinkStyle<TInner> Apply(TInner linkTitle, TInner linkUrl) => new(linkTitle, linkUrl);
+    public static InlineLinkStyle<TInner> Apply(TInner linkTitle, TInner linkUrl) =>
+        new(linkTitle, linkUrl);
 }

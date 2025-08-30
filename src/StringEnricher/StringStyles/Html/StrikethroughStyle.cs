@@ -35,6 +35,7 @@ public readonly struct StrikethroughStyle<TInner> : IStyle
     /// The opening strikethrough tag.
     /// </summary>
     public const string Prefix = "<s>";
+
     /// <summary>
     /// The closing strikethrough tag.
     /// </summary>
@@ -58,10 +59,12 @@ public readonly struct StrikethroughStyle<TInner> : IStyle
     /// Gets the length of the inner text.
     /// </summary>
     public int InnerLength => _innerText.TotalLength;
+
     /// <summary>
     /// Gets the total length of the HTML strikethrough syntax.
     /// </summary>
     public int SyntaxLength => Prefix.Length + Suffix.Length;
+
     /// <summary>
     /// Gets the total length of the formatted text.
     /// </summary>
@@ -121,5 +124,14 @@ public readonly struct StrikethroughStyle<TInner> : IStyle
         return true;
     }
 
+    /// <summary>
+    /// Applies strikethrough style to the given inner style.
+    /// </summary>
+    /// <param name="innerStyle">
+    /// The inner style to be wrapped with strikethrough HTML tags.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="StrikethroughStyle{TInner}"/> wrapping the provided inner style.
+    /// </returns>
     public static StrikethroughStyle<TInner> Apply(TInner innerStyle) => new(innerStyle);
 }

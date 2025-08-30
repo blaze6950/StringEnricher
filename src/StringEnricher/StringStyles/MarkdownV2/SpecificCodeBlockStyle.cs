@@ -174,7 +174,7 @@ public readonly struct SpecificCodeBlockStyle<TInner> : IStyle
 
         index -= _innerCodeBlock.TotalLength;
 
-        // At this point, index must be within the suffix
+        // At this point, index must be within the Suffix
         character = Suffix[index];
         return true;
     }
@@ -189,7 +189,8 @@ public readonly struct SpecificCodeBlockStyle<TInner> : IStyle
     /// The inner style representing the programming language of the code block.
     /// </param>
     /// <returns>
-    /// The created instance of the <see cref="SpecificCodeBlockStyle{TInner}"/> struct.
+    /// A new instance of the <see cref="SpecificCodeBlockStyle{TInner}"/> struct.
     /// </returns>
-    public static SpecificCodeBlockStyle<TInner> Apply(TInner codeBlock, TInner language) => new(codeBlock, language);
+    public static SpecificCodeBlockStyle<TInner> Apply(TInner codeBlock, TInner language) =>
+        new(codeBlock, language);
 }

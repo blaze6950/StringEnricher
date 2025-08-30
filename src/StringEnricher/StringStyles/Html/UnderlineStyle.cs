@@ -35,6 +35,7 @@ public readonly struct UnderlineStyle<TInner> : IStyle
     /// The opening underline tag.
     /// </summary>
     public const string Prefix = "<u>";
+
     /// <summary>
     /// The closing underline tag.
     /// </summary>
@@ -58,10 +59,12 @@ public readonly struct UnderlineStyle<TInner> : IStyle
     /// Gets the length of the inner text.
     /// </summary>
     public int InnerLength => _innerText.TotalLength;
+
     /// <summary>
     /// Gets the total length of the HTML underline syntax.
     /// </summary>
     public int SyntaxLength => Prefix.Length + Suffix.Length;
+
     /// <summary>
     /// Gets the total length of the formatted text.
     /// </summary>
@@ -122,5 +125,14 @@ public readonly struct UnderlineStyle<TInner> : IStyle
         return true;
     }
 
+    /// <summary>
+    /// Applies underline style to the given inner style.
+    /// </summary>
+    /// <param name="innerStyle">
+    /// The inner style to be wrapped with underline HTML tags.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="UnderlineStyle{TInner}"/> wrapping the provided inner style.
+    /// </returns>
     public static UnderlineStyle<TInner> Apply(TInner innerStyle) => new(innerStyle);
 }

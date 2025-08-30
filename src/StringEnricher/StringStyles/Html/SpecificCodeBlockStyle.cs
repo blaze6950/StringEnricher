@@ -2,7 +2,7 @@ namespace StringEnricher.StringStyles.Html;
 
 /// <summary>
 /// Provides methods to apply specific code block styling in HTML format with language class.
-/// Example: "<pre><code class=\"language-csharp\">code block</code></pre>"
+/// Example: "<pre><code class="language-csharp">code block</code></pre>"
 /// </summary>
 public static class SpecificCodeBlockHtml
 {
@@ -37,10 +37,12 @@ public readonly struct SpecificCodeBlockStyle<TInner> : IStyle
     /// The opening code block tag and language class.
     /// </summary>
     public const string Prefix = "<pre><code class=\"language-";
+
     /// <summary>
     /// The separator between the language and the code block.
     /// </summary>
     public const string Separator = "\">";
+
     /// <summary>
     /// The closing code block and pre tags.
     /// </summary>
@@ -67,10 +69,12 @@ public readonly struct SpecificCodeBlockStyle<TInner> : IStyle
     /// Gets the length of the inner code block and language.
     /// </summary>
     public int InnerLength => _innerCodeBlock.TotalLength + _language.TotalLength;
+
     /// <summary>
     /// Gets the total length of the HTML code block syntax.
     /// </summary>
     public int SyntaxLength => Prefix.Length + Separator.Length + Suffix.Length;
+
     /// <summary>
     /// Gets the total length of the formatted text.
     /// </summary>

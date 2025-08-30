@@ -35,6 +35,7 @@ public readonly struct ItalicStyle<TInner> : IStyle
     /// The opening italic tag.
     /// </summary>
     public const string Prefix = "<i>";
+
     /// <summary>
     /// The closing italic tag.
     /// </summary>
@@ -58,10 +59,12 @@ public readonly struct ItalicStyle<TInner> : IStyle
     /// Gets the length of the inner text.
     /// </summary>
     public int InnerLength => _innerText.TotalLength;
+
     /// <summary>
     /// Gets the total length of the HTML italic syntax.
     /// </summary>
     public int SyntaxLength => Prefix.Length + Suffix.Length;
+
     /// <summary>
     /// Gets the total length of the formatted text.
     /// </summary>

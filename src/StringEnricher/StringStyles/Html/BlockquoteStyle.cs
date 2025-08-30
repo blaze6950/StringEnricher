@@ -13,7 +13,7 @@ public static class BlockquoteHtml
     /// The text to be wrapped with blockquote HTML tags.
     /// </param>
     /// <returns>
-    /// A new instance of <see cref="BlockquoteStyle{PlainTextStyle}"/> wrapping the provided text.
+    /// A new instance of <see cref="BlockquoteStyle{TInner}"/> wrapping the provided text.
     /// </returns>
     public static BlockquoteStyle<PlainTextStyle> Apply(string text) =>
         BlockquoteStyle<PlainTextStyle>.Apply(text);
@@ -28,7 +28,7 @@ public static class BlockquoteHtml
     /// The type of the inner style that implements <see cref="IStyle"/>.
     /// </typeparam>
     /// <returns>
-    /// A new instance of <see cref="BlockquoteStyle{T}"/> wrapping the provided inner style.
+    /// A new instance of <see cref="BlockquoteStyle{TInner}"/> wrapping the provided inner style.
     /// </returns>
     public static BlockquoteStyle<T> Apply<T>(T style) where T : IStyle =>
         BlockquoteStyle<T>.Apply(style);

@@ -13,7 +13,7 @@ public static class CodeBlockHtml
     /// The text to be wrapped with code block HTML tags.
     /// </param>
     /// <returns>
-    /// A new instance of <see cref="CodeBlockStyle{PlainTextStyle}"/> wrapping the provided text.
+    /// A new instance of <see cref="CodeBlockStyle{TInner}"/> wrapping the provided text.
     /// </returns>
     public static CodeBlockStyle<PlainTextStyle> Apply(string codeBlock) =>
         CodeBlockStyle<PlainTextStyle>.Apply(codeBlock);
@@ -28,7 +28,7 @@ public static class CodeBlockHtml
     /// The type of the inner style that implements <see cref="IStyle"/>.
     /// </typeparam>
     /// <returns>
-    /// A new instance of <see cref="CodeBlockStyle{T}"/> wrapping the provided inner style.
+    /// A new instance of <see cref="CodeBlockStyle{TInner}"/> wrapping the provided inner style.
     /// </returns>
     public static CodeBlockStyle<T> Apply<T>(T codeBlock) where T : IStyle =>
         CodeBlockStyle<T>.Apply(codeBlock);

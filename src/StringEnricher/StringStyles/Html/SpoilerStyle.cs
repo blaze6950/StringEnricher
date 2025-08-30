@@ -35,6 +35,7 @@ public readonly struct SpoilerStyle<TInner> : IStyle
     /// The opening spoiler tag.
     /// </summary>
     public const string Prefix = "<tg-spoiler>";
+
     /// <summary>
     /// The closing spoiler tag.
     /// </summary>
@@ -58,10 +59,12 @@ public readonly struct SpoilerStyle<TInner> : IStyle
     /// Gets the length of the inner text.
     /// </summary>
     public int InnerLength => _innerText.TotalLength;
+
     /// <summary>
     /// Gets the total length of the HTML spoiler syntax.
     /// </summary>
     public int SyntaxLength => Prefix.Length + Suffix.Length;
+
     /// <summary>
     /// Gets the total length of the formatted text.
     /// </summary>

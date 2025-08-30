@@ -13,7 +13,7 @@ public static class CodeBlockMarkdownV2
     /// The plain text code block to be wrapped with code block syntax.
     /// </param>
     /// <returns>
-    /// A new instance of <see cref="CodeBlockStyle{PlainTextStyle}"/> wrapping the provided plain text.
+    /// A new instance of <see cref="CodeBlockStyle{TInner}"/> wrapping the provided plain text.
     /// </returns>
     public static CodeBlockStyle<PlainTextStyle> Apply(string codeBlock) =>
         CodeBlockStyle<PlainTextStyle>.Apply(codeBlock);
@@ -28,7 +28,7 @@ public static class CodeBlockMarkdownV2
     /// The type of the style that implements <see cref="IStyle"/>.
     /// </typeparam>
     /// <returns>
-    /// A new instance of <see cref="CodeBlockStyle{T}"/> wrapping the provided style.
+    /// A new instance of <see cref="CodeBlockStyle{TInner}"/> wrapping the provided style.
     /// </returns>
     public static CodeBlockStyle<T> Apply<T>(T codeBlock) where T : IStyle =>
         CodeBlockStyle<T>.Apply(codeBlock);

@@ -2,7 +2,7 @@ namespace StringEnricher.StringStyles.Html;
 
 /// <summary>
 /// Provides methods to apply inline link styling in HTML format.
-/// Example: "<a href=\"url\">title</a>"
+/// Example: "<a href="url">title</a>"
 /// </summary>
 public static class InlineLinkHtml
 {
@@ -28,7 +28,7 @@ public static class InlineLinkHtml
 
 /// <summary>
 /// Represents inline link text in HTML format.
-/// Example: "<a href=\"url\">title</a>"
+/// Example: "<a href="url">title</a>"
 /// </summary>
 public readonly struct InlineLinkStyle<TInner> : IStyle
     where TInner : IStyle
@@ -37,10 +37,12 @@ public readonly struct InlineLinkStyle<TInner> : IStyle
     /// The opening anchor tag and href attribute.
     /// </summary>
     public const string Prefix = "<a href=\"";
+
     /// <summary>
     /// The separator between the URL and the link title.
     /// </summary>
     public const string LinkSeparator = "\">";
+
     /// <summary>
     /// The closing anchor tag.
     /// </summary>
@@ -67,10 +69,12 @@ public readonly struct InlineLinkStyle<TInner> : IStyle
     /// Gets the length of the inner title and URL.
     /// </summary>
     public int InnerLength => _linkTitle.TotalLength + _linkUrl.TotalLength;
+
     /// <summary>
     /// Gets the total length of the HTML anchor syntax.
     /// </summary>
     public int SyntaxLength => Prefix.Length + LinkSeparator.Length + Suffix.Length;
+
     /// <summary>
     /// Gets the total length of the formatted text.
     /// </summary>
@@ -153,10 +157,10 @@ public readonly struct InlineLinkStyle<TInner> : IStyle
     }
 
     /// <summary>
-    /// Applies inline link style to the given title and URL.
+    /// Applies inline link style to the given link URL and title.
     /// </summary>
-    /// <param name="linkTitle">The link title to be wrapped with anchor HTML tags.</param>
-    /// <param name="linkUrl">The link URL to be used in the anchor tag.</param>
-    /// <returns>A new instance of <see cref="InlineLinkStyle{TInner}"/> wrapping the provided title and URL.</returns>
-    public static InlineLinkStyle<TInner> Apply(TInner linkTitle, TInner linkUrl) => new(linkTitle, linkUrl);
+    /// <param name="linkUrl">The link URL to be wrapped with inline link HTML tags.</param>
+    /// <param name="linkTitle">The link title to be used as the link text.</param>
+    /// <returns>A new instance of <see cref="InlineLinkStyle{TInner}"/> wrapping the provided URL and title.</returns>
+    public static InlineLinkStyle<TInner> Apply(TInner linkUrl, TInner linkTitle) => new(linkUrl, linkTitle);
 }
