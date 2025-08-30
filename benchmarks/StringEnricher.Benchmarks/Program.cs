@@ -1,6 +1,5 @@
 ﻿using BenchmarkDotNet.Running;
 using StringEnricher.Benchmarks.Escaping;
-using StringEnricher.Benchmarks.StringStyles.HardcoreTenfoldBoldStyleBenchmarks;
 
 namespace StringEnricher.Benchmarks;
 
