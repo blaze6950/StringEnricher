@@ -61,10 +61,10 @@ public readonly struct MessageBuilder
     /// The returned string is the only object that was allocated on the heap during this process, except for any allocations made within the build action itself.
     /// </returns>
     public string Create<TState>(TState state, Action<TState, MessageWriter> buildAction) =>
-        string.Create(_totalLength, state, (span, s) =>
+        string.Create(_totalLength, ValueTuple.Create(state, buildAction), static (span, s) =>
         {
             var context = new MessageWriter(span);
-            buildAction(s, context);
+            s.Item2(s.Item1, context);
         });
 
     /// <summary>
