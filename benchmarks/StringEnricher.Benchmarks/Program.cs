@@ -7,7 +7,7 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        // Choose the bench,ark to run
+        // Choose the benchmark to run
         // Uncomment the needed one
         // Comment all others
 
@@ -15,6 +15,7 @@ public class Program
         //BenchmarkRunner.Run<DoubleBoldStyleBenchmarks>();
         //BenchmarkRunner.Run<TenfoldBoldStyleBenchmarks.TenfoldBoldStyleBenchmarks>();
         //BenchmarkRunner.Run<HardcoreTenfoldBoldStyleBenchmarks>();
-        BenchmarkRunner.Run<MarkdownV2EscapeBenchmarks>();
+        //BenchmarkRunner.Run<MarkdownV2EscapeBenchmarks>();
+        BenchmarkRunner.Run<MethodExtractionBenchmarks>();
     }
 }

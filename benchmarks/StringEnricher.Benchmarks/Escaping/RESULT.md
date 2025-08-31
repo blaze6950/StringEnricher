@@ -66,6 +66,53 @@ The methods include using a custom escaping algorithms:
 | EscapeStringCreateFrozenSet | Приве(...)😃_😄 [27]   |     182.4218 ns |     2.5402 ns |     2.1212 ns |     182.5111 ns |     178.1298 ns |     185.8073 ns |  0.93 |    0.02 |    3 |  0.0210 |       - |      88 B |        0.31 |
 | EscapeStringBuilder         | Приве(...)😃_😄 [27]   |     196.2051 ns |     3.8487 ns |     3.7799 ns |     195.2035 ns |     191.0895 ns |     203.5181 ns |  1.00 |    0.03 |    4 |  0.0668 |       - |     280 B |        1.00 |
 
+| Method                 | Input                | Mean          | Error         | StdDev         | Median        | Min            | Max           | Ratio | RatioSD | Rank |
+|----------------------- |--------------------- |--------------:|--------------:|---------------:|--------------:|---------------:|--------------:|------:|--------:|-----:|
+| EscapeInlineSwitch     | ?                    |      1.496 ns |     0.3392 ns |      0.9732 ns |      1.404 ns |      0.0000 ns |      3.798 ns |     ? |       ? |    1 |
+| EscapeExtractedMethod  | ?                    |      2.189 ns |     0.5796 ns |      1.7090 ns |      1.910 ns |      0.0000 ns |      4.981 ns |     ? |       ? |    2 |
+| EscapeAggressiveInline | ?                    |      2.284 ns |     0.5513 ns |      1.6257 ns |      2.094 ns |      0.0000 ns |      5.357 ns |     ? |       ? |    2 |
+|                        |                      |               |               |                |               |                |               |       |         |      |
+| EscapeExtractedMethod  |                      |      1.099 ns |     0.3143 ns |      0.9017 ns |      1.052 ns |      0.0000 ns |      3.607 ns |     ? |       ? |    1 |
+| EscapeAggressiveInline |                      |      1.378 ns |     0.3563 ns |      0.9931 ns |      1.131 ns |      0.0000 ns |      3.962 ns |     ? |       ? |    2 |
+| EscapeInlineSwitch     |                      |      2.329 ns |     0.6413 ns |      1.8910 ns |      1.609 ns |      0.0000 ns |      6.325 ns |     ? |       ? |    3 |
+|                        |                      |               |               |                |               |                |               |       |         |      |
+| EscapeAggressiveInline | ___***!!!            |     64.475 ns |     3.5826 ns |      9.6859 ns |     62.481 ns |     46.3781 ns |     97.545 ns |  0.94 |    0.21 |    1 |
+| EscapeInlineSwitch     | ___***!!!            |     70.734 ns |     4.1135 ns |     11.9993 ns |     69.169 ns |     50.7615 ns |     98.781 ns |  1.03 |    0.25 |    1 |
+| EscapeExtractedMethod  | ___***!!!            |     99.357 ns |     7.4816 ns |     22.0597 ns |     92.309 ns |     67.7188 ns |    159.086 ns |  1.44 |    0.40 |    2 |
+|                        |                      |               |               |                |               |                |               |       |         |      |
+| EscapeInlineSwitch     | _*~`#+-=.![](){}>|\\ |    153.120 ns |    11.7572 ns |     34.6662 ns |    142.853 ns |    101.8660 ns |    229.509 ns |  1.05 |    0.33 |    1 |
+| EscapeAggressiveInline | _*~`#+-=.![](){}>|\\ |    156.490 ns |    13.2427 ns |     39.0464 ns |    148.778 ns |     91.8938 ns |    237.454 ns |  1.07 |    0.35 |    1 |
+| EscapeExtractedMethod  | _*~`#+-=.![](){}>|\\ |    195.229 ns |     9.1943 ns |     26.2318 ns |    197.208 ns |    147.3028 ns |    250.426 ns |  1.34 |    0.34 |    2 |
+|                        |                      |               |               |                |               |                |               |       |         |      |
+| EscapeInlineSwitch     | _*~`(...)=.![ [4096] | 29,311.234 ns | 2,141.3373 ns |  6,313.7817 ns | 27,999.406 ns | 18,436.0992 ns | 42,713.043 ns |  1.05 |    0.32 |    1 |
+| EscapeAggressiveInline | _*~`(...)=.![ [4096] | 35,938.276 ns | 2,934.4921 ns |  8,652.4167 ns | 35,237.885 ns | 20,661.1145 ns | 50,868.738 ns |  1.28 |    0.41 |    2 |
+| EscapeExtractedMethod  | _*~`(...)=.![ [4096] | 56,075.753 ns | 3,686.6510 ns | 10,870.1745 ns | 59,170.090 ns | 31,960.6583 ns | 69,219.078 ns |  2.00 |    0.58 |    3 |
+|                        |                      |               |               |                |               |                |               |       |         |      |
+| EscapeAggressiveInline | _start middle* end!  |    153.742 ns |    13.4852 ns |     39.3370 ns |    140.715 ns |     78.3827 ns |    244.926 ns |  1.00 |    0.36 |    1 |
+| EscapeInlineSwitch     | _start middle* end!  |    163.654 ns |    13.1046 ns |     38.6393 ns |    163.215 ns |     88.0501 ns |    231.087 ns |  1.06 |    0.37 |    1 |
+| EscapeExtractedMethod  | _start middle* end!  |    251.240 ns |    18.5279 ns |     54.6299 ns |    238.174 ns |    169.5850 ns |    370.320 ns |  1.63 |    0.55 |    2 |
+|                        |                      |               |               |                |               |                |               |       |         |      |
+| EscapeAggressiveInline | Hello_World!         |     62.660 ns |     3.9556 ns |     11.2214 ns |     59.785 ns |     43.4966 ns |     93.736 ns |  0.66 |    0.19 |    1 |
+| EscapeInlineSwitch     | Hello_World!         |    100.520 ns |     8.0027 ns |     23.5961 ns |     97.073 ns |     64.6892 ns |    151.997 ns |  1.06 |    0.35 |    2 |
+| EscapeExtractedMethod  | Hello_World!         |    154.631 ns |    16.2909 ns |     48.0339 ns |    151.304 ns |     75.3425 ns |    232.199 ns |  1.62 |    0.64 |    3 |
+|                        |                      |               |               |                |               |                |               |       |         |      |
+| EscapeInlineSwitch     | Lore(...)smo_ [4096] | 27,951.264 ns | 2,809.3122 ns |  8,283.3209 ns | 25,833.836 ns | 15,380.6625 ns | 43,939.436 ns |  1.09 |    0.46 |    1 |
+| EscapeAggressiveInline | Lore(...)smo_ [4096] | 33,239.316 ns | 2,115.3893 ns |  6,237.2735 ns | 33,545.465 ns | 20,852.8687 ns | 44,121.063 ns |  1.30 |    0.46 |    2 |
+| EscapeExtractedMethod  | Lore(...)smo_ [4096] | 45,180.292 ns | 3,896.1240 ns | 11,487.8103 ns | 42,021.655 ns | 27,735.0098 ns | 69,337.366 ns |  1.76 |    0.70 |    3 |
+|                        |                      |               |               |                |               |                |               |       |         |      |
+| EscapeAggressiveInline | Lore(...)smod [4096] |  8,453.256 ns |   604.7777 ns |  1,645.3424 ns |  8,279.865 ns |  5,890.9042 ns | 12,777.367 ns |  0.76 |    0.25 |    1 |
+| EscapeInlineSwitch     | Lore(...)smod [4096] | 11,974.914 ns | 1,166.6257 ns |  3,421.5115 ns | 10,884.671 ns |  6,968.1396 ns | 20,545.685 ns |  1.08 |    0.43 |    2 |
+| EscapeExtractedMethod  | Lore(...)smod [4096] | 16,318.118 ns | 1,252.0797 ns |  3,572.2542 ns | 15,735.759 ns | 10,300.6073 ns | 26,564.777 ns |  1.47 |    0.51 |    3 |
+|                        |                      |               |               |                |               |                |               |       |         |      |
+| EscapeAggressiveInline | string to escape     |     35.622 ns |     2.2990 ns |      6.5963 ns |     35.686 ns |     23.9308 ns |     52.724 ns |  1.01 |    0.26 |    1 |
+| EscapeInlineSwitch     | string to escape     |     36.455 ns |     2.1712 ns |      6.1594 ns |     36.160 ns |     25.4284 ns |     50.628 ns |  1.03 |    0.25 |    1 |
+| EscapeExtractedMethod  | string to escape     |     65.453 ns |     4.6843 ns |     13.6643 ns |     63.735 ns |     45.6563 ns |     96.563 ns |  1.85 |    0.51 |    2 |
+|                        |                      |               |               |                |               |                |               |       |         |      |
+| EscapeInlineSwitch     | Приве(...)😃_😄 [27] |    144.117 ns |     6.6862 ns |     18.6385 ns |    145.687 ns |    105.8477 ns |    193.388 ns |  1.02 |    0.19 |    1 |
+| EscapeAggressiveInline | Приве(...)😃_😄 [27] |    165.816 ns |    11.1742 ns |     32.0608 ns |    161.869 ns |    106.4782 ns |    254.896 ns |  1.17 |    0.28 |    1 |
+| EscapeExtractedMethod  | Приве(...)😃_😄 [27] |    247.159 ns |    16.7918 ns |     49.5110 ns |    231.270 ns |    170.6196 ns |    381.551 ns |  1.75 |    0.43 |    2 |
+
+
 # Analysis
 
 The benchmark results show that the EscapeStringCreate approach (using the logic from MarkdownV2.cs) is highly optimized and consistently delivers excellent performance across all tested scenarios.
@@ -79,3 +126,10 @@ Key points from the results:
 Conclusion:
 
 EscapeStringCreate (the logic in MarkdownV2.cs) is well-optimized and suitable for any case where MarkdownV2 escaping is required. It offers consistently high performance and low memory usage, making it the preferred choice for production use.
+
+---
+
+Keep the current implementation: The inline switch approach (EscapeInlineSwitch) is the most consistently performant
+Avoid method extraction for hot paths: Even simple method calls can introduce measurable overhead in performance-critical code
+Aggressive inlining is inconsistent: While it can help in some cases, it's not a reliable performance improvement
+The current design is well-optimized: The production MarkdownV2.Escape method using string.Create with inline switches appears to be the right choice
