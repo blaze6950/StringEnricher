@@ -24,7 +24,10 @@ StringEnricher is a powerful and extensible C# library for building and enrichin
 - .NET 9.0 or later
 
 ### Installation
-Add the project to your solution or reference the compiled DLL in your application.
+Execute the following command in your project directory:
+```bash
+dotnet add package StringEnricher
+```
 
 ## Usage
 
@@ -159,6 +162,25 @@ var styledString = styled.ToString(); // 1 final string heap allocation here
 ```
 
 This approach centralizes format selection, making it easy to switch formats for the entire project by editing only `GlobalUsings.cs`.
+
+## Notes
+- Prefer .CopyTo() for zero allocations.
+- Use .ToString() for final string creation.
+- .TryGetChar() for single character access.
+- .CombineWith() for merging nodes at a compile time.
+- MessageBuilder for fluent API and complex message construction at runtime.
+- Escape special characters using EscapeHtml or EscapeMarkdownV2 nodes.
+  - Also, available as static methods: `HtmlEscaper.Escape(string)` and `MarkdownV2Escaper.Escape(string)`. But these create intermediate strings.
+- It is recommended to use Html format for better performance and stability by format consumers (like TG) unless MarkdownV2 is specifically required.
+  - Html by its nature is more robust and less error-prone than MarkdownV2.
+  - MarkdownV2 has many edge cases and limitations that can lead to formatting issues.
+  - Html-related code paths are generally faster and more memory efficient than MarkdownV2 paths.
+- Despite the fact that every node implements INode interface, avoid using INode directly in performance-critical paths to prevent boxing allocations. Use concrete node types instead.
+  - The INode interface is used in this library only for generic definitions as a constraint. The library itself never uses INode directly as it will cause boxing/unboxing.
+- Check existing benchmarks in the `benchmarks` folder. You can run them using BenchmarkDotNet.
+  - You can find interesting results there, including comparisons of different string building approaches.
+  - I strongly recommend to review all benchmarks if you want to write the most performant code using this library. You will get understanding how the library works under the hood and how to use it in the most efficient way.
+  - Also, I recommend to write your custom benchmarks for your specific use cases to check performance and memory allocations. Sometimes the most optimal approach is not obvious and depends on the specific scenario.
 
 ## Project Structure
 - `src/StringEnricher/`: Core library
