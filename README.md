@@ -99,7 +99,7 @@ else {
 }
 ```
 
-### .CombineWith() method for Merging Nodes
+### `.CombineWith()` method for Merging Nodes
 The `CombineWith(INode other)` method allows you to merge two nodes into a single node. This is useful for building complex styled strings from multiple parts.
 ```csharp
 using StringEnricher.Node.Html;
@@ -110,7 +110,7 @@ var combinedString = combined.ToString(); // 1 final string heap allocation here
 // combinedString == "<b>bold text</b><i> and italic text</i
 ```
 
-### MessageBuilder for Fluent API
+### `MessageBuilder` for Fluent API
 ```csharp
 using StringEnricher;
 using StringEnricher.Node.Html;
@@ -127,6 +127,7 @@ var string result = messageBuilder.Create(state, static (state, writer) =>
     writer.Append(SpoilerHtml.Apply(state[6])); // "||style||" - 0 heap allocations here
     writer.Append(EscapeHtml.Apply(state[7])); // "style&amp;" - 0 heap allocations here
 }); // 1 final string allocated in heap without any intermediate allocations
+```
 
 ## Using Aliases for Node via GlobalUsings.cs
 
