@@ -1,88 +1,92 @@
-namespace StringEnricher.Nodes.Html;
+namespace StringEnricher.Nodes.MarkdownV2.Formatting;
 
 /// <summary>
-/// Provides methods to apply code block styling in HTML format.
-/// Example: "<pre>code block</pre>"
+/// Provides methods to apply code block styling in MarkdownV2 format.
+/// Example: "```\ncode block\n```"
 /// </summary>
-public static class CodeBlockHtml
+public static class CodeBlockMarkdownV2
 {
     /// <summary>
-    /// Applies code block style to the given text.
+    /// Applies the code block style to the given plain text code block.
     /// </summary>
     /// <param name="codeBlock">
-    /// The text to be wrapped with code block HTML tags.
+    /// The plain text code block to be wrapped with code block syntax.
     /// </param>
     /// <returns>
-    /// A new instance of <see cref="CodeBlockNode{TInner}"/> wrapping the provided text.
+    /// A new instance of <see cref="CodeBlockNode{TInner}"/> wrapping the provided plain text.
     /// </returns>
     public static CodeBlockNode<PlainTextNode> Apply(string codeBlock) =>
         CodeBlockNode<PlainTextNode>.Apply(codeBlock);
 
     /// <summary>
-    /// Applies code block style to the given style.
+    /// Applies the code block style to the given styled code block.
     /// </summary>
     /// <param name="codeBlock">
-    /// The inner style to be wrapped with code block HTML tags.
+    /// The styled code block to be wrapped with code block syntax.
     /// </param>
     /// <typeparam name="T">
-    /// The type of the inner style that implements <see cref="INode"/>.
+    /// The type of the style that implements <see cref="INode"/>.
     /// </typeparam>
     /// <returns>
-    /// A new instance of <see cref="CodeBlockNode{TInner}"/> wrapping the provided inner style.
+    /// A new instance of <see cref="CodeBlockNode{TInner}"/> wrapping the provided style.
     /// </returns>
     public static CodeBlockNode<T> Apply<T>(T codeBlock) where T : INode =>
         CodeBlockNode<T>.Apply(codeBlock);
 }
 
 /// <summary>
-/// Represents code block text in HTML format.
-/// Example: "<pre>code block</pre>"
+/// Represents code block text in MarkdownV2 format.
+/// Example: "```\ncode block\n```"
 /// </summary>
+/// <typeparam name="TInner">
+/// The type of the inner style that will be wrapped with code block syntax.
+/// </typeparam>
 public readonly struct CodeBlockNode<TInner> : INode
     where TInner : INode
 {
     /// <summary>
-    /// The opening code block tag.
+    /// The prefix for code block in MarkdownV2 format.
     /// </summary>
-    public const string Prefix = "<pre>";
+    public const string Prefix = "```\n";
+
     /// <summary>
-    /// The closing code block tag.
+    /// The suffix for code block in MarkdownV2 format.
     /// </summary>
-    public const string Suffix = "</pre>";
+    public const string Suffix = "\n```";
 
     private readonly TInner _innerCodeBlock;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CodeBlockNode{TInner}"/> struct.
     /// </summary>
-    /// <param name="innerCodeBlock">The inner style to be wrapped with code block HTML tags.</param>
+    /// <param name="innerCodeBlock">
+    /// The inner style to be wrapped with code block syntax.
+    /// </param>
     public CodeBlockNode(TInner innerCodeBlock)
     {
         _innerCodeBlock = innerCodeBlock;
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Returns the string representation of the code block style in MarkdownV2 format.
+    /// Note: This method allocates a new string in the most efficient way possible.
+    /// Use this method when you finished all styling operations and need the final string.
+    /// </summary>
+    /// <returns>The created string representation</returns>
     public override string ToString() => string.Create(TotalLength, this, static (span, style) => style.CopyTo(span));
 
     /// <summary>
-    /// Gets the length of the inner code block.
+    /// Gets the length of the inner code block content.
     /// </summary>
     public int InnerLength => _innerCodeBlock.TotalLength;
-    /// <summary>
-    /// Gets the total length of the HTML code block syntax.
-    /// </summary>
+
+    /// <inheritdoc />
     public int SyntaxLength => Prefix.Length + Suffix.Length;
-    /// <summary>
-    /// Gets the total length of the formatted text.
-    /// </summary>
+
+    /// <inheritdoc />
     public int TotalLength => SyntaxLength + InnerLength;
 
-    /// <summary>
-    /// Copies the formatted code block text to the provided span.
-    /// </summary>
-    /// <param name="destination">The span to copy the formatted text into.</param>
-    /// <returns>The total length of the formatted text.</returns>
-    /// <exception cref="ArgumentException">Thrown if the destination span is too small.</exception>
+    /// <inheritdoc />
     public int CopyTo(Span<char> destination)
     {
         var totalLength = TotalLength;
@@ -92,12 +96,16 @@ public readonly struct CodeBlockNode<TInner> : INode
         }
 
         var pos = 0;
+
+        // Copy prefix
         Prefix.AsSpan().CopyTo(destination.Slice(pos, Prefix.Length));
         pos += Prefix.Length;
 
+        // Copy inner code block
         _innerCodeBlock.CopyTo(destination.Slice(pos, InnerLength));
         pos += InnerLength;
 
+        // Copy suffix
         Suffix.AsSpan().CopyTo(destination.Slice(pos, Suffix.Length));
 
         return totalLength;
@@ -131,5 +139,14 @@ public readonly struct CodeBlockNode<TInner> : INode
         return true;
     }
 
+    /// <summary>
+    /// Applies the code block style to the given inner code block.
+    /// </summary>
+    /// <param name="innerCodeBlock">
+    /// The inner style to be wrapped with code block syntax.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="CodeBlockNode{TInner}"/> wrapping the provided inner style.
+    /// </returns>
     public static CodeBlockNode<TInner> Apply(TInner innerCodeBlock) => new(innerCodeBlock);
 }

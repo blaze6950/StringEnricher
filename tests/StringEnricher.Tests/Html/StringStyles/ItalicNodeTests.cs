@@ -1,4 +1,5 @@
 using StringEnricher.Nodes.Html;
+using StringEnricher.Nodes.Html.Formatting;
 
 namespace StringEnricher.Tests.Html.StringStyles;
 

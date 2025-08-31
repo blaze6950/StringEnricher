@@ -1,62 +1,53 @@
-namespace StringEnricher.Nodes.Html;
+﻿namespace StringEnricher.Nodes.Html.Formatting;
 
 /// <summary>
-/// Provides methods to apply blockquote styling in HTML format.
-/// Example: "<blockquote>quoted text</blockquote>"
+/// Provides methods to apply italic styling in HTML format.
+/// Example: "<i>italic text</i>"
 /// </summary>
-public static class BlockquoteHtml
+public static class ItalicHtml
 {
     /// <summary>
-    /// Applies blockquote style to the given text.
+    /// Applies italic style to the given text.
     /// </summary>
-    /// <param name="text">
-    /// The text to be wrapped with blockquote HTML tags.
-    /// </param>
-    /// <returns>
-    /// A new instance of <see cref="BlockquoteNode{TInner}"/> wrapping the provided text.
-    /// </returns>
-    public static BlockquoteNode<PlainTextNode> Apply(string text) =>
-        BlockquoteNode<PlainTextNode>.Apply(text);
+    /// <param name="text">The text to be wrapped with italic HTML tags.</param>
+    /// <returns>A new instance of <see cref="ItalicNode{TInner}"/> wrapping the provided text.</returns>
+    public static ItalicNode<PlainTextNode> Apply(string text) =>
+        ItalicNode<PlainTextNode>.Apply(text);
 
     /// <summary>
-    /// Applies blockquote style to the given style.
+    /// Applies italic style to the given style.
     /// </summary>
-    /// <param name="style">
-    /// The inner style to be wrapped with blockquote HTML tags.
-    /// </param>
-    /// <typeparam name="T">
-    /// The type of the inner style that implements <see cref="INode"/>.
-    /// </typeparam>
-    /// <returns>
-    /// A new instance of <see cref="BlockquoteNode{TInner}"/> wrapping the provided inner style.
-    /// </returns>
-    public static BlockquoteNode<T> Apply<T>(T style) where T : INode =>
-        BlockquoteNode<T>.Apply(style);
+    /// <param name="style">The inner style to be wrapped with italic HTML tags.</param>
+    /// <typeparam name="T">The type of the inner style that implements <see cref="INode"/>.</typeparam>
+    /// <returns>A new instance of <see cref="ItalicNode{TInner}"/> wrapping the provided inner style.</returns>
+    public static ItalicNode<T> Apply<T>(T style) where T : INode =>
+        ItalicNode<T>.Apply(style);
 }
 
 /// <summary>
-/// Represents blockquote text in HTML format.
-/// Example: "<blockquote>quoted text</blockquote>"
+/// Represents italic text in HTML format.
+/// Example: "<i>italic text</i>"
 /// </summary>
-public readonly struct BlockquoteNode<TInner> : INode
+public readonly struct ItalicNode<TInner> : INode
     where TInner : INode
 {
     /// <summary>
-    /// The opening blockquote tag.
+    /// The opening italic tag.
     /// </summary>
-    public const string Prefix = "<blockquote>";
+    public const string Prefix = "<i>";
+
     /// <summary>
-    /// The closing blockquote tag.
+    /// The closing italic tag.
     /// </summary>
-    public const string Suffix = "</blockquote>";
+    public const string Suffix = "</i>";
 
     private readonly TInner _innerText;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="BlockquoteNode{TInner}"/> struct.
+    /// Initializes a new instance of the <see cref="ItalicNode{TInner}"/> struct.
     /// </summary>
-    /// <param name="inner">The inner style to be wrapped with blockquote HTML tags.</param>
-    public BlockquoteNode(TInner inner)
+    /// <param name="inner">The inner style to be wrapped with italic HTML tags.</param>
+    public ItalicNode(TInner inner)
     {
         _innerText = inner;
     }
@@ -68,17 +59,19 @@ public readonly struct BlockquoteNode<TInner> : INode
     /// Gets the length of the inner text.
     /// </summary>
     public int InnerLength => _innerText.TotalLength;
+
     /// <summary>
-    /// Gets the total length of the HTML blockquote syntax.
+    /// Gets the total length of the HTML italic syntax.
     /// </summary>
     public int SyntaxLength => Prefix.Length + Suffix.Length;
+
     /// <summary>
     /// Gets the total length of the formatted text.
     /// </summary>
     public int TotalLength => SyntaxLength + InnerLength;
 
     /// <summary>
-    /// Copies the formatted blockquote text to the provided span.
+    /// Copies the formatted italic text to the provided span.
     /// </summary>
     /// <param name="destination">The span to copy the formatted text into.</param>
     /// <returns>The total length of the formatted text.</returns>
@@ -118,18 +111,14 @@ public readonly struct BlockquoteNode<TInner> : INode
             return true;
         }
 
-        index -= Prefix.Length;
-
-        if (index < InnerLength)
+        if (index < Prefix.Length + InnerLength)
         {
-            return _innerText.TryGetChar(index, out character);
+            return _innerText.TryGetChar(index - Prefix.Length, out character);
         }
 
-        index -= InnerLength;
-
-        character = Suffix[index];
+        character = Suffix[index - Prefix.Length - InnerLength];
         return true;
     }
 
-    public static BlockquoteNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
+    public static ItalicNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
 }

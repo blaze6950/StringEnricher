@@ -1,74 +1,72 @@
-namespace StringEnricher.Nodes.MarkdownV2;
+namespace StringEnricher.Nodes.MarkdownV2.Formatting;
 
 /// <summary>
-/// Provides methods to create inline code styles in MarkdownV2 format.
-/// Example: "`inline code`"
+/// Provides methods to apply bold styling in MarkdownV2 format.
+/// Example: "*bold text*"
 /// </summary>
-public static class InlineCodeMarkdownV2
+public static class BoldMarkdownV2
 {
     /// <summary>
-    /// Applies inline code style to the given text
+    /// Applies bold style to the given text.
     /// </summary>
     /// <param name="text">
-    /// The text to be styled as inline code.
+    /// The text to be wrapped with bold syntax.
     /// </param>
     /// <returns>
-    /// An instance of <see cref="InlineCodeNode{TInner}"/> containing the provided text styled as inline code.
+    /// A new instance of <see cref="BoldNode{TInner}"/> wrapping the provided text.
     /// </returns>
-    public static InlineCodeNode<PlainTextNode> Apply(string text) =>
-        InlineCodeNode<PlainTextNode>.Apply(text);
+    public static BoldNode<PlainTextNode> Apply(string text) =>
+        BoldNode<PlainTextNode>.Apply(text);
 
     /// <summary>
-    /// Applies inline code style to the given style
+    /// Applies bold style to the given style.
     /// </summary>
     /// <param name="style">
-    /// The style to be styled as inline code.
+    /// The inner style to be wrapped with bold syntax.
     /// </param>
     /// <typeparam name="T">
-    /// The type of the style that implements <see cref="INode"/>.
+    /// The type of the inner style that implements <see cref="INode"/>.
     /// </typeparam>
     /// <returns>
-    /// An instance of <see cref="InlineCodeNode{TInner}"/> containing the provided style wrapped with inline code syntax.
+    /// A new instance of <see cref="BoldNode{TInner}"/> wrapping the provided inner style.
     /// </returns>
-    public static InlineCodeNode<T> Apply<T>(T style) where T : INode =>
-        InlineCodeNode<T>.Apply(style);
+    public static BoldNode<T> Apply<T>(T style) where T : INode =>
+        BoldNode<T>.Apply(style);
 }
 
 /// <summary>
-/// Represents inline code text in MarkdownV2 format.
-/// Example: "`inline code`"
+/// Represents bold text in MarkdownV2 format.
+/// Example: "*bold text*"
 /// </summary>
 /// <typeparam name="TInner">
-/// The type of the inner style that will be wrapped with inline code syntax.
+/// The type of the inner style that will be wrapped with bold syntax.
 /// </typeparam>
-public readonly struct InlineCodeNode<TInner> : INode
+public readonly struct BoldNode<TInner> : INode
     where TInner : INode
 {
     /// <summary>
-    /// The prefix used to denote the start of inline code in MarkdownV2.
+    /// The prefix and suffix used for bold styling in MarkdownV2.
     /// </summary>
-    public const string Prefix = "`";
+    public const string Prefix = "*";
 
     /// <summary>
-    /// The suffix used to denote the end of inline code in MarkdownV2.
+    /// The suffix used for bold styling in MarkdownV2.
     /// </summary>
-    public const string Suffix = "`";
+    public const string Suffix = "*";
 
     private readonly TInner _innerText;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="InlineCodeNode{TInner}"/> struct.
+    /// Initializes a new instance of the <see cref="BoldNode{TInner}"/> struct.
     /// </summary>
-    /// <param name="inner">
-    /// The inner style to be wrapped with inline code syntax.
-    /// </param>
-    public InlineCodeNode(TInner inner)
+    /// <param name="inner">The inner style that will be wrapped with bold syntax</param>
+    public BoldNode(TInner inner)
     {
         _innerText = inner;
     }
 
     /// <summary>
-    /// Returns the string representation of the inline code style in MarkdownV2 format.
+    /// Returns the string representation of the bold style in MarkdownV2 format.
     /// Note: This method allocates a new string in the most efficient way possible.
     /// Use this method when you finished all styling operations and need the final string.
     /// </summary>
@@ -76,7 +74,7 @@ public readonly struct InlineCodeNode<TInner> : INode
     public override string ToString() => string.Create(TotalLength, this, static (span, style) => style.CopyTo(span));
 
     /// <summary>
-    /// Gets the length of the inner text (excluding syntax).
+    /// Gets the length of the inner text.
     /// </summary>
     public int InnerLength => _innerText.TotalLength;
 
@@ -126,24 +124,26 @@ public readonly struct InlineCodeNode<TInner> : INode
             return true;
         }
 
-        if (index < Prefix.Length + InnerLength)
+        var innerIndex = index - Prefix.Length;
+        if (innerIndex < InnerLength)
         {
-            return _innerText.TryGetChar(index - Prefix.Length, out character);
+            return _innerText.TryGetChar(innerIndex, out character);
         }
 
-        // Suffix part
-        character = Suffix[index - Prefix.Length - InnerLength];
+        var suffixIndex = innerIndex - InnerLength;
+        character = Suffix[suffixIndex];
+
         return true;
     }
 
     /// <summary>
-    /// Creates a new instance of <see cref="InlineCodeNode{TInner}"/> with the specified inner style.
+    /// Applies bold style to the given inner style.
     /// </summary>
     /// <param name="innerStyle">
-    /// The inner style to be wrapped with inline code syntax.
+    /// The inner style to be wrapped with bold syntax.
     /// </param>
     /// <returns>
-    /// A new instance of <see cref="InlineCodeNode{TInner}"/> containing the provided inner style.
+    /// A new instance of <see cref="BoldNode{TInner}"/> wrapping the provided inner style.
     /// </returns>
-    public static InlineCodeNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
+    public static BoldNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
 }

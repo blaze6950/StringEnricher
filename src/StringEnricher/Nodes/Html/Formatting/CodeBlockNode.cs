@@ -1,75 +1,75 @@
-namespace StringEnricher.Nodes.Html;
+namespace StringEnricher.Nodes.Html.Formatting;
 
 /// <summary>
-/// Provides methods to apply bold styling in HTML format.
-/// Example: "<b>bold text</b>"
+/// Provides methods to apply code block styling in HTML format.
+/// Example: "<pre>code block</pre>"
 /// </summary>
-public static class BoldHtml
+public static class CodeBlockHtml
 {
     /// <summary>
-    /// Applies bold style to the given text.
+    /// Applies code block style to the given text.
     /// </summary>
-    /// <param name="text">
-    /// The text to be wrapped with bold HTML tags.
+    /// <param name="codeBlock">
+    /// The text to be wrapped with code block HTML tags.
     /// </param>
     /// <returns>
-    /// A new instance of <see cref="BoldNode{TInner}"/> wrapping the provided text.
+    /// A new instance of <see cref="CodeBlockNode{TInner}"/> wrapping the provided text.
     /// </returns>
-    public static BoldNode<PlainTextNode> Apply(string text) =>
-        BoldNode<PlainTextNode>.Apply(text);
+    public static CodeBlockNode<PlainTextNode> Apply(string codeBlock) =>
+        CodeBlockNode<PlainTextNode>.Apply(codeBlock);
 
     /// <summary>
-    /// Applies bold style to the given style.
+    /// Applies code block style to the given style.
     /// </summary>
-    /// <param name="style">
-    /// The inner style to be wrapped with bold HTML tags.
+    /// <param name="codeBlock">
+    /// The inner style to be wrapped with code block HTML tags.
     /// </param>
     /// <typeparam name="T">
     /// The type of the inner style that implements <see cref="INode"/>.
     /// </typeparam>
     /// <returns>
-    /// A new instance of <see cref="BoldNode{TInner}"/> wrapping the provided inner style.
+    /// A new instance of <see cref="CodeBlockNode{TInner}"/> wrapping the provided inner style.
     /// </returns>
-    public static BoldNode<T> Apply<T>(T style) where T : INode =>
-        BoldNode<T>.Apply(style);
+    public static CodeBlockNode<T> Apply<T>(T codeBlock) where T : INode =>
+        CodeBlockNode<T>.Apply(codeBlock);
 }
 
 /// <summary>
-/// Represents bold text in HTML format.
-/// Example: "<b>bold text</b>"
+/// Represents code block text in HTML format.
+/// Example: "<pre>code block</pre>"
 /// </summary>
-public readonly struct BoldNode<TInner> : INode
+public readonly struct CodeBlockNode<TInner> : INode
     where TInner : INode
 {
     /// <summary>
-    /// The opening bold tag.
+    /// The opening code block tag.
     /// </summary>
-    public const string Prefix = "<b>";
+    public const string Prefix = "<pre>";
     /// <summary>
-    /// The closing bold tag.
+    /// The closing code block tag.
     /// </summary>
-    public const string Suffix = "</b>";
+    public const string Suffix = "</pre>";
 
-    private readonly TInner _innerText;
+    private readonly TInner _innerCodeBlock;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="BoldNode{TInner}"/> struct.
+    /// Initializes a new instance of the <see cref="CodeBlockNode{TInner}"/> struct.
     /// </summary>
-    /// <param name="inner">The inner style to be wrapped with bold HTML tags.</param>
-    public BoldNode(TInner inner)
+    /// <param name="innerCodeBlock">The inner style to be wrapped with code block HTML tags.</param>
+    public CodeBlockNode(TInner innerCodeBlock)
     {
-        _innerText = inner;
+        _innerCodeBlock = innerCodeBlock;
     }
 
     /// <inheritdoc/>
     public override string ToString() => string.Create(TotalLength, this, static (span, style) => style.CopyTo(span));
 
     /// <summary>
-    /// Gets the length of the inner text.
+    /// Gets the length of the inner code block.
     /// </summary>
-    public int InnerLength => _innerText.TotalLength;
+    public int InnerLength => _innerCodeBlock.TotalLength;
     /// <summary>
-    /// Gets the total length of the HTML bold syntax.
+    /// Gets the total length of the HTML code block syntax.
     /// </summary>
     public int SyntaxLength => Prefix.Length + Suffix.Length;
     /// <summary>
@@ -78,7 +78,7 @@ public readonly struct BoldNode<TInner> : INode
     public int TotalLength => SyntaxLength + InnerLength;
 
     /// <summary>
-    /// Copies the formatted bold text to the provided span.
+    /// Copies the formatted code block text to the provided span.
     /// </summary>
     /// <param name="destination">The span to copy the formatted text into.</param>
     /// <returns>The total length of the formatted text.</returns>
@@ -95,7 +95,7 @@ public readonly struct BoldNode<TInner> : INode
         Prefix.AsSpan().CopyTo(destination.Slice(pos, Prefix.Length));
         pos += Prefix.Length;
 
-        _innerText.CopyTo(destination.Slice(pos, InnerLength));
+        _innerCodeBlock.CopyTo(destination.Slice(pos, InnerLength));
         pos += InnerLength;
 
         Suffix.AsSpan().CopyTo(destination.Slice(pos, Suffix.Length));
@@ -106,8 +106,7 @@ public readonly struct BoldNode<TInner> : INode
     /// <inheritdoc />
     public bool TryGetChar(int index, out char character)
     {
-        var totalLength = TotalLength;
-        if (index < 0 || index >= totalLength)
+        if (index < 0 || index >= TotalLength)
         {
             character = '\0';
             return false;
@@ -123,7 +122,7 @@ public readonly struct BoldNode<TInner> : INode
 
         if (index < InnerLength)
         {
-            return _innerText.TryGetChar(index, out character);
+            return _innerCodeBlock.TryGetChar(index, out character);
         }
 
         index -= InnerLength;
@@ -132,5 +131,5 @@ public readonly struct BoldNode<TInner> : INode
         return true;
     }
 
-    public static BoldNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
+    public static CodeBlockNode<TInner> Apply(TInner innerCodeBlock) => new(innerCodeBlock);
 }

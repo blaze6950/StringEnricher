@@ -1,53 +1,62 @@
-﻿namespace StringEnricher.Nodes.Html;
+namespace StringEnricher.Nodes.Html.Formatting;
 
 /// <summary>
-/// Provides methods to apply strikethrough styling in HTML format.
-/// Example: "<s>strikethrough text</s>"
+/// Provides methods to apply inline code styling in HTML format.
+/// Example: "<code>inline code</code>"
 /// </summary>
-public static class StrikethroughHtml
+public static class InlineCodeHtml
 {
     /// <summary>
-    /// Applies strikethrough style to the given text.
+    /// Applies inline code style to the given text.
     /// </summary>
-    /// <param name="text">The text to be wrapped with strikethrough HTML tags.</param>
-    /// <returns>A new instance of <see cref="StrikethroughNode{TInner}"/> wrapping the provided text.</returns>
-    public static StrikethroughNode<PlainTextNode> Apply(string text) =>
-        StrikethroughNode<PlainTextNode>.Apply(text);
+    /// <param name="text">
+    /// The text to be wrapped with inline code HTML tags.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="InlineCodeNode{TInner}"/> wrapping the provided text.
+    /// </returns>
+    public static InlineCodeNode<PlainTextNode> Apply(string text) =>
+        InlineCodeNode<PlainTextNode>.Apply(text);
 
     /// <summary>
-    /// Applies strikethrough style to the given style.
+    /// Applies inline code style to the given style.
     /// </summary>
-    /// <param name="style">The inner style to be wrapped with strikethrough HTML tags.</param>
-    /// <typeparam name="T">The type of the inner style that implements <see cref="INode"/>.</typeparam>
-    /// <returns>A new instance of <see cref="StrikethroughNode{TInner}"/> wrapping the provided inner style.</returns>
-    public static StrikethroughNode<T> Apply<T>(T style) where T : INode =>
-        StrikethroughNode<T>.Apply(style);
+    /// <param name="style">
+    /// The inner style to be wrapped with inline code HTML tags.
+    /// </param>
+    /// <typeparam name="T">
+    /// The type of the inner style that implements <see cref="INode"/>.
+    /// </typeparam>
+    /// <returns>
+    /// A new instance of <see cref="InlineCodeNode{TInner}"/> wrapping the provided inner style.
+    /// </returns>
+    public static InlineCodeNode<T> Apply<T>(T style) where T : INode =>
+        InlineCodeNode<T>.Apply(style);
 }
 
 /// <summary>
-/// Represents strikethrough text in HTML format.
-/// Example: "<s>strikethrough text</s>"
+/// Represents inline code text in HTML format.
+/// Example: "<code>inline code</code>"
 /// </summary>
-public readonly struct StrikethroughNode<TInner> : INode
+public readonly struct InlineCodeNode<TInner> : INode
     where TInner : INode
 {
     /// <summary>
-    /// The opening strikethrough tag.
+    /// The opening inline code tag.
     /// </summary>
-    public const string Prefix = "<s>";
-
+    public const string Prefix = "<code>";
     /// <summary>
-    /// The closing strikethrough tag.
+    /// The closing inline code tag.
     /// </summary>
-    public const string Suffix = "</s>";
+    public const string Suffix = "</code>";
 
     private readonly TInner _innerText;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="StrikethroughNode{TInner}"/> struct.
+    /// Initializes a new instance of the <see cref="InlineCodeNode{TInner}"/> struct.
     /// </summary>
-    /// <param name="inner">The inner style to be wrapped with strikethrough HTML tags.</param>
-    public StrikethroughNode(TInner inner)
+    /// <param name="inner">The inner style to be wrapped with inline code HTML tags.</param>
+    public InlineCodeNode(TInner inner)
     {
         _innerText = inner;
     }
@@ -59,19 +68,17 @@ public readonly struct StrikethroughNode<TInner> : INode
     /// Gets the length of the inner text.
     /// </summary>
     public int InnerLength => _innerText.TotalLength;
-
     /// <summary>
-    /// Gets the total length of the HTML strikethrough syntax.
+    /// Gets the total length of the HTML inline code syntax.
     /// </summary>
     public int SyntaxLength => Prefix.Length + Suffix.Length;
-
     /// <summary>
     /// Gets the total length of the formatted text.
     /// </summary>
     public int TotalLength => SyntaxLength + InnerLength;
 
     /// <summary>
-    /// Copies the formatted strikethrough text to the provided span.
+    /// Copies the formatted inline code text to the provided span.
     /// </summary>
     /// <param name="destination">The span to copy the formatted text into.</param>
     /// <returns>The total length of the formatted text.</returns>
@@ -124,14 +131,5 @@ public readonly struct StrikethroughNode<TInner> : INode
         return true;
     }
 
-    /// <summary>
-    /// Applies strikethrough style to the given inner style.
-    /// </summary>
-    /// <param name="innerStyle">
-    /// The inner style to be wrapped with strikethrough HTML tags.
-    /// </param>
-    /// <returns>
-    /// A new instance of <see cref="StrikethroughNode{TInner}"/> wrapping the provided inner style.
-    /// </returns>
-    public static StrikethroughNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
+    public static InlineCodeNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
 }

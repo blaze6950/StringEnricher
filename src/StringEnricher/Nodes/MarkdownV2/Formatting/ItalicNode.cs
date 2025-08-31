@@ -1,74 +1,74 @@
-﻿namespace StringEnricher.Nodes.MarkdownV2;
+﻿namespace StringEnricher.Nodes.MarkdownV2.Formatting;
 
 /// <summary>
-/// Provides methods to apply underline style to text in MarkdownV2 format.
-/// Example: "__underline text__"
+/// Provides methods to apply italic style to text in MarkdownV2 format.
+/// Example: "_italic text_"
 /// </summary>
-public static class UnderlineMarkdownV2
+public static class ItalicMarkdownV2
 {
     /// <summary>
-    /// Applies the underline style to the given text.
+    /// Applies italic style to the given text.
     /// </summary>
     /// <param name="text">
-    /// The text to be styled with underline syntax.
+    /// The text to be styled in italic.
     /// </param>
     /// <returns>
-    /// A new instance of <see cref="UnderlineNode{TInner}"/> that wraps the provided text.
+    /// A new instance of <see cref="ItalicNode{TInner}"/> wrapping the provided text.
     /// </returns>
-    public static UnderlineNode<PlainTextNode> Apply(string text) =>
-        UnderlineNode<PlainTextNode>.Apply(text);
+    public static ItalicNode<PlainTextNode> Apply(string text) =>
+        ItalicNode<PlainTextNode>.Apply(text);
 
     /// <summary>
-    /// Applies the underline style to the given style.
+    /// Applies italic style to the given style.
     /// </summary>
     /// <param name="style">
-    /// The style to be wrapped with underline syntax.
+    /// The style to be wrapped with italic syntax.
     /// </param>
     /// <typeparam name="T">
     /// The type of the style that implements <see cref="INode"/>.
     /// </typeparam>
     /// <returns>
-    /// A new instance of <see cref="UnderlineNode{TInner}"/> that wraps the provided style.
+    /// A new instance of <see cref="ItalicNode{TInner}"/> wrapping the provided style.
     /// </returns>
-    public static UnderlineNode<T> Apply<T>(T style) where T : INode =>
-        UnderlineNode<T>.Apply(style);
+    public static ItalicNode<T> Apply<T>(T style) where T : INode =>
+        ItalicNode<T>.Apply(style);
 }
 
 /// <summary>
-/// Represents underline text in MarkdownV2 format.
-/// Example: "__underline text__"
+/// Represents italic text in MarkdownV2 format.
+/// Example: "_italic text_"
 /// </summary>
 /// <typeparam name="TInner">
-/// The type of the inner style that will be wrapped with underline syntax.
+/// The type of the inner style that will be wrapped with italic syntax.
 /// </typeparam>
-public readonly struct UnderlineNode<TInner> : INode
+public readonly struct ItalicNode<TInner> : INode
     where TInner : INode
 {
     /// <summary>
-    /// The prefix and suffix used for underline style in MarkdownV2 format.
+    /// The prefix and suffix used to denote italic text in MarkdownV2 format.
     /// </summary>
-    public const string Prefix = "__";
+    public const string Prefix = "_";
 
     /// <summary>
-    /// The prefix and suffix used for underline style in MarkdownV2 format.
+    /// The suffix used to denote italic text in MarkdownV2 format.
     /// </summary>
-    public const string Suffix = "__";
+    public const string Suffix = "_";
 
     private readonly TInner _innerText;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="UnderlineNode{TInner}"/> struct.
+    /// Initializes a new instance of the <see cref="ItalicNode{TInner}"/> struct.
     /// </summary>
     /// <param name="inner">
-    /// The inner style that will be wrapped with underline syntax.
+    /// The inner style to be wrapped with italic syntax.
     /// </param>
-    public UnderlineNode(TInner inner)
+    public ItalicNode(TInner inner)
     {
         _innerText = inner;
     }
 
     /// <summary>
-    /// Returns the string representation of the underline style in MarkdownV2 format.
+    /// Returns the string representation of the italic style in MarkdownV2 format.
     /// Note: This method allocates a new string in the most efficient way possible.
     /// Use this method when you finished all styling operations and need the final string.
     /// </summary>
@@ -76,7 +76,7 @@ public readonly struct UnderlineNode<TInner> : INode
     public override string ToString() => string.Create(TotalLength, this, static (span, style) => style.CopyTo(span));
 
     /// <summary>
-    /// Gets the length of the inner text excluding the underline syntax.
+    /// Gets the length of the inner text excluding the italic syntax.
     /// </summary>
     public int InnerLength => _innerText.TotalLength;
 
@@ -126,25 +126,27 @@ public readonly struct UnderlineNode<TInner> : INode
             return true;
         }
 
-        var innerIndex = index - Prefix.Length;
-        if (innerIndex < InnerLength)
+        index -= Prefix.Length;
+
+        if (index < InnerLength)
         {
-            return _innerText.TryGetChar(innerIndex, out character);
+            return _innerText.TryGetChar(index, out character);
         }
 
-        var suffixIndex = innerIndex - InnerLength;
-        character = Suffix[suffixIndex];
+        index -= InnerLength;
+
+        character = Suffix[index];
         return true;
     }
 
     /// <summary>
-    /// Applies the underline style to the given inner style.
+    /// Applies italic style to the given inner style.
     /// </summary>
     /// <param name="innerStyle">
-    /// The inner style to be wrapped with underline syntax.
+    /// The inner style to be wrapped with italic syntax.
     /// </param>
     /// <returns>
-    /// A new instance of <see cref="UnderlineNode{TInner}"/> that wraps the provided inner style.
+    /// A new instance of <see cref="ItalicNode{TInner}"/> wrapping the provided inner style.
     /// </returns>
-    public static UnderlineNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
+    public static ItalicNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
 }

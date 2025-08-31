@@ -1,4 +1,4 @@
-namespace StringEnricher.Nodes.Html;
+namespace StringEnricher.Nodes.Html.Formatting;
 
 /// <summary>
 /// Provides methods to apply specific code block styling in HTML format with language class.

@@ -1,4 +1,4 @@
-﻿namespace StringEnricher.Nodes.MarkdownV2;
+﻿namespace StringEnricher.Nodes.MarkdownV2.Formatting;
 
 /// <summary>
 /// Provides methods to apply spoiler styling in MarkdownV2 format.

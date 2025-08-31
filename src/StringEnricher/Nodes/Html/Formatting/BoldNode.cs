@@ -1,53 +1,62 @@
-﻿namespace StringEnricher.Nodes.Html;
+namespace StringEnricher.Nodes.Html.Formatting;
 
 /// <summary>
-/// Provides methods to apply spoiler styling in HTML format.
-/// Example: "<tg-spoiler>spoiler text</tg-spoiler>"
+/// Provides methods to apply bold styling in HTML format.
+/// Example: "<b>bold text</b>"
 /// </summary>
-public static class SpoilerHtml
+public static class BoldHtml
 {
     /// <summary>
-    /// Applies spoiler style to the given text.
+    /// Applies bold style to the given text.
     /// </summary>
-    /// <param name="text">The text to be wrapped with spoiler HTML tags.</param>
-    /// <returns>A new instance of <see cref="SpoilerNode{TInner}"/> wrapping the provided text.</returns>
-    public static SpoilerNode<PlainTextNode> Apply(string text) =>
-        SpoilerNode<PlainTextNode>.Apply(text);
+    /// <param name="text">
+    /// The text to be wrapped with bold HTML tags.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="BoldNode{TInner}"/> wrapping the provided text.
+    /// </returns>
+    public static BoldNode<PlainTextNode> Apply(string text) =>
+        BoldNode<PlainTextNode>.Apply(text);
 
     /// <summary>
-    /// Applies spoiler style to the given style.
+    /// Applies bold style to the given style.
     /// </summary>
-    /// <param name="style">The inner style to be wrapped with spoiler HTML tags.</param>
-    /// <typeparam name="T">The type of the inner style that implements <see cref="INode"/>.</typeparam>
-    /// <returns>A new instance of <see cref="SpoilerNode{TInner}"/> wrapping the provided inner style.</returns>
-    public static SpoilerNode<T> Apply<T>(T style) where T : INode =>
-        SpoilerNode<T>.Apply(style);
+    /// <param name="style">
+    /// The inner style to be wrapped with bold HTML tags.
+    /// </param>
+    /// <typeparam name="T">
+    /// The type of the inner style that implements <see cref="INode"/>.
+    /// </typeparam>
+    /// <returns>
+    /// A new instance of <see cref="BoldNode{TInner}"/> wrapping the provided inner style.
+    /// </returns>
+    public static BoldNode<T> Apply<T>(T style) where T : INode =>
+        BoldNode<T>.Apply(style);
 }
 
 /// <summary>
-/// Represents spoiler text in HTML format.
-/// Example: "<tg-spoiler>spoiler text</tg-spoiler>"
+/// Represents bold text in HTML format.
+/// Example: "<b>bold text</b>"
 /// </summary>
-public readonly struct SpoilerNode<TInner> : INode
+public readonly struct BoldNode<TInner> : INode
     where TInner : INode
 {
     /// <summary>
-    /// The opening spoiler tag.
+    /// The opening bold tag.
     /// </summary>
-    public const string Prefix = "<tg-spoiler>";
-
+    public const string Prefix = "<b>";
     /// <summary>
-    /// The closing spoiler tag.
+    /// The closing bold tag.
     /// </summary>
-    public const string Suffix = "</tg-spoiler>";
+    public const string Suffix = "</b>";
 
     private readonly TInner _innerText;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="SpoilerNode{TInner}"/> struct.
+    /// Initializes a new instance of the <see cref="BoldNode{TInner}"/> struct.
     /// </summary>
-    /// <param name="inner">The inner style to be wrapped with spoiler HTML tags.</param>
-    public SpoilerNode(TInner inner)
+    /// <param name="inner">The inner style to be wrapped with bold HTML tags.</param>
+    public BoldNode(TInner inner)
     {
         _innerText = inner;
     }
@@ -59,19 +68,17 @@ public readonly struct SpoilerNode<TInner> : INode
     /// Gets the length of the inner text.
     /// </summary>
     public int InnerLength => _innerText.TotalLength;
-
     /// <summary>
-    /// Gets the total length of the HTML spoiler syntax.
+    /// Gets the total length of the HTML bold syntax.
     /// </summary>
     public int SyntaxLength => Prefix.Length + Suffix.Length;
-
     /// <summary>
     /// Gets the total length of the formatted text.
     /// </summary>
     public int TotalLength => SyntaxLength + InnerLength;
 
     /// <summary>
-    /// Copies the formatted spoiler text to the provided span.
+    /// Copies the formatted bold text to the provided span.
     /// </summary>
     /// <param name="destination">The span to copy the formatted text into.</param>
     /// <returns>The total length of the formatted text.</returns>
@@ -112,14 +119,18 @@ public readonly struct SpoilerNode<TInner> : INode
             return true;
         }
 
-        if (index >= Prefix.Length + InnerLength)
+        index -= Prefix.Length;
+
+        if (index < InnerLength)
         {
-            character = Suffix[index - Prefix.Length - InnerLength];
-            return true;
+            return _innerText.TryGetChar(index, out character);
         }
 
-        return _innerText.TryGetChar(index - Prefix.Length, out character);
+        index -= InnerLength;
+
+        character = Suffix[index];
+        return true;
     }
 
-    public static SpoilerNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
+    public static BoldNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
 }

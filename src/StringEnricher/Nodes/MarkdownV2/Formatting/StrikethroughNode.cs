@@ -1,74 +1,74 @@
-﻿namespace StringEnricher.Nodes.MarkdownV2;
+﻿namespace StringEnricher.Nodes.MarkdownV2.Formatting;
 
 /// <summary>
-/// Provides methods to apply italic style to text in MarkdownV2 format.
-/// Example: "_italic text_"
+/// Provides methods to apply strikethrough style to text in MarkdownV2 format.
+/// Example: "~strikethrough text~"
 /// </summary>
-public static class ItalicMarkdownV2
+public static class StrikethroughMarkdownV2
 {
     /// <summary>
-    /// Applies italic style to the given text.
+    /// Applies strikethrough style to the given text using plain text style as inner style.
     /// </summary>
     /// <param name="text">
-    /// The text to be styled in italic.
+    /// The text to be styled with strikethrough syntax.
     /// </param>
     /// <returns>
-    /// A new instance of <see cref="ItalicNode{TInner}"/> wrapping the provided text.
+    /// A new instance of <see cref="StrikethroughNode{TInner}"/> containing the specified text.
     /// </returns>
-    public static ItalicNode<PlainTextNode> Apply(string text) =>
-        ItalicNode<PlainTextNode>.Apply(text);
+    public static StrikethroughNode<PlainTextNode> Apply(string text) =>
+        StrikethroughNode<PlainTextNode>.Apply(text);
 
     /// <summary>
-    /// Applies italic style to the given style.
+    /// Applies strikethrough style to the given inner style.
     /// </summary>
     /// <param name="style">
-    /// The style to be wrapped with italic syntax.
+    /// The inner style to be wrapped with strikethrough syntax.
     /// </param>
     /// <typeparam name="T">
-    /// The type of the style that implements <see cref="INode"/>.
+    /// The type of the inner style that implements <see cref="INode"/>.
     /// </typeparam>
     /// <returns>
-    /// A new instance of <see cref="ItalicNode{TInner}"/> wrapping the provided style.
+    /// A new instance of <see cref="StrikethroughNode{TInner}"/> containing the specified inner style.
     /// </returns>
-    public static ItalicNode<T> Apply<T>(T style) where T : INode =>
-        ItalicNode<T>.Apply(style);
+    public static StrikethroughNode<T> Apply<T>(T style) where T : INode =>
+        StrikethroughNode<T>.Apply(style);
 }
 
 /// <summary>
-/// Represents italic text in MarkdownV2 format.
-/// Example: "_italic text_"
+/// Represents strikethrough text in MarkdownV2 format.
+/// Example: "~strikethrough text~"
 /// </summary>
 /// <typeparam name="TInner">
-/// The type of the inner style that will be wrapped with italic syntax.
+/// The type of the inner style that will be wrapped with strikethrough syntax.
 /// </typeparam>
-public readonly struct ItalicNode<TInner> : INode
+public readonly struct StrikethroughNode<TInner> : INode
     where TInner : INode
 {
     /// <summary>
-    /// The prefix and suffix used to denote italic text in MarkdownV2 format.
+    /// The prefix and suffix used to apply strikethrough style in MarkdownV2 format.
     /// </summary>
-    public const string Prefix = "_";
+    public const string Prefix = "~";
 
     /// <summary>
-    /// The suffix used to denote italic text in MarkdownV2 format.
+    /// The suffix used to apply strikethrough style in MarkdownV2 format.
     /// </summary>
-    public const string Suffix = "_";
+    public const string Suffix = "~";
 
     private readonly TInner _innerText;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ItalicNode{TInner}"/> struct.
+    /// Initializes a new instance of the <see cref="StrikethroughNode{TInner}"/> struct.
     /// </summary>
     /// <param name="inner">
-    /// The inner style to be wrapped with italic syntax.
+    /// The inner style to be wrapped with strikethrough syntax.
     /// </param>
-    public ItalicNode(TInner inner)
+    public StrikethroughNode(TInner inner)
     {
         _innerText = inner;
     }
 
     /// <summary>
-    /// Returns the string representation of the italic style in MarkdownV2 format.
+    /// Returns the string representation of the strikethrough style in MarkdownV2 format.
     /// Note: This method allocates a new string in the most efficient way possible.
     /// Use this method when you finished all styling operations and need the final string.
     /// </summary>
@@ -76,7 +76,7 @@ public readonly struct ItalicNode<TInner> : INode
     public override string ToString() => string.Create(TotalLength, this, static (span, style) => style.CopyTo(span));
 
     /// <summary>
-    /// Gets the length of the inner text excluding the italic syntax.
+    /// Gets the length of the inner text.
     /// </summary>
     public int InnerLength => _innerText.TotalLength;
 
@@ -135,18 +135,25 @@ public readonly struct ItalicNode<TInner> : INode
 
         index -= InnerLength;
 
-        character = Suffix[index];
-        return true;
+        if (index < Suffix.Length)
+        {
+            character = Suffix[index];
+            return true;
+        }
+
+        // This point should never be reached due to the initial bounds check.
+        character = '\0';
+        return false;
     }
 
     /// <summary>
-    /// Applies italic style to the given inner style.
+    /// Applies strikethrough style to the given inner style.
     /// </summary>
     /// <param name="innerStyle">
-    /// The inner style to be wrapped with italic syntax.
+    /// The inner style to be wrapped with strikethrough syntax.
     /// </param>
     /// <returns>
-    /// A new instance of <see cref="ItalicNode{TInner}"/> wrapping the provided inner style.
+    /// A new instance of <see cref="StrikethroughNode{TInner}"/> containing the specified inner style.
     /// </returns>
-    public static ItalicNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
+    public static StrikethroughNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
 }

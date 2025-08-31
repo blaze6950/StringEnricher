@@ -1,53 +1,53 @@
-﻿namespace StringEnricher.Nodes.Html;
+﻿namespace StringEnricher.Nodes.Html.Formatting;
 
 /// <summary>
-/// Provides methods to apply italic styling in HTML format.
-/// Example: "<i>italic text</i>"
+/// Provides methods to apply spoiler styling in HTML format.
+/// Example: "<tg-spoiler>spoiler text</tg-spoiler>"
 /// </summary>
-public static class ItalicHtml
+public static class SpoilerHtml
 {
     /// <summary>
-    /// Applies italic style to the given text.
+    /// Applies spoiler style to the given text.
     /// </summary>
-    /// <param name="text">The text to be wrapped with italic HTML tags.</param>
-    /// <returns>A new instance of <see cref="ItalicNode{TInner}"/> wrapping the provided text.</returns>
-    public static ItalicNode<PlainTextNode> Apply(string text) =>
-        ItalicNode<PlainTextNode>.Apply(text);
+    /// <param name="text">The text to be wrapped with spoiler HTML tags.</param>
+    /// <returns>A new instance of <see cref="SpoilerNode{TInner}"/> wrapping the provided text.</returns>
+    public static SpoilerNode<PlainTextNode> Apply(string text) =>
+        SpoilerNode<PlainTextNode>.Apply(text);
 
     /// <summary>
-    /// Applies italic style to the given style.
+    /// Applies spoiler style to the given style.
     /// </summary>
-    /// <param name="style">The inner style to be wrapped with italic HTML tags.</param>
+    /// <param name="style">The inner style to be wrapped with spoiler HTML tags.</param>
     /// <typeparam name="T">The type of the inner style that implements <see cref="INode"/>.</typeparam>
-    /// <returns>A new instance of <see cref="ItalicNode{TInner}"/> wrapping the provided inner style.</returns>
-    public static ItalicNode<T> Apply<T>(T style) where T : INode =>
-        ItalicNode<T>.Apply(style);
+    /// <returns>A new instance of <see cref="SpoilerNode{TInner}"/> wrapping the provided inner style.</returns>
+    public static SpoilerNode<T> Apply<T>(T style) where T : INode =>
+        SpoilerNode<T>.Apply(style);
 }
 
 /// <summary>
-/// Represents italic text in HTML format.
-/// Example: "<i>italic text</i>"
+/// Represents spoiler text in HTML format.
+/// Example: "<tg-spoiler>spoiler text</tg-spoiler>"
 /// </summary>
-public readonly struct ItalicNode<TInner> : INode
+public readonly struct SpoilerNode<TInner> : INode
     where TInner : INode
 {
     /// <summary>
-    /// The opening italic tag.
+    /// The opening spoiler tag.
     /// </summary>
-    public const string Prefix = "<i>";
+    public const string Prefix = "<tg-spoiler>";
 
     /// <summary>
-    /// The closing italic tag.
+    /// The closing spoiler tag.
     /// </summary>
-    public const string Suffix = "</i>";
+    public const string Suffix = "</tg-spoiler>";
 
     private readonly TInner _innerText;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ItalicNode{TInner}"/> struct.
+    /// Initializes a new instance of the <see cref="SpoilerNode{TInner}"/> struct.
     /// </summary>
-    /// <param name="inner">The inner style to be wrapped with italic HTML tags.</param>
-    public ItalicNode(TInner inner)
+    /// <param name="inner">The inner style to be wrapped with spoiler HTML tags.</param>
+    public SpoilerNode(TInner inner)
     {
         _innerText = inner;
     }
@@ -61,7 +61,7 @@ public readonly struct ItalicNode<TInner> : INode
     public int InnerLength => _innerText.TotalLength;
 
     /// <summary>
-    /// Gets the total length of the HTML italic syntax.
+    /// Gets the total length of the HTML spoiler syntax.
     /// </summary>
     public int SyntaxLength => Prefix.Length + Suffix.Length;
 
@@ -71,7 +71,7 @@ public readonly struct ItalicNode<TInner> : INode
     public int TotalLength => SyntaxLength + InnerLength;
 
     /// <summary>
-    /// Copies the formatted italic text to the provided span.
+    /// Copies the formatted spoiler text to the provided span.
     /// </summary>
     /// <param name="destination">The span to copy the formatted text into.</param>
     /// <returns>The total length of the formatted text.</returns>
@@ -99,7 +99,8 @@ public readonly struct ItalicNode<TInner> : INode
     /// <inheritdoc />
     public bool TryGetChar(int index, out char character)
     {
-        if (index < 0 || index >= TotalLength)
+        var totalLength = TotalLength;
+        if (index < 0 || index >= totalLength)
         {
             character = '\0';
             return false;
@@ -111,14 +112,14 @@ public readonly struct ItalicNode<TInner> : INode
             return true;
         }
 
-        if (index < Prefix.Length + InnerLength)
+        if (index >= Prefix.Length + InnerLength)
         {
-            return _innerText.TryGetChar(index - Prefix.Length, out character);
+            character = Suffix[index - Prefix.Length - InnerLength];
+            return true;
         }
 
-        character = Suffix[index - Prefix.Length - InnerLength];
-        return true;
+        return _innerText.TryGetChar(index - Prefix.Length, out character);
     }
 
-    public static ItalicNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
+    public static SpoilerNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
 }

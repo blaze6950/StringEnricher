@@ -1,53 +1,62 @@
-﻿namespace StringEnricher.Nodes.Html;
+namespace StringEnricher.Nodes.Html.Formatting;
 
 /// <summary>
-/// Provides methods to apply underline styling in HTML format.
-/// Example: "<u>underlined text</u>"
+/// Provides methods to apply blockquote styling in HTML format.
+/// Example: "<blockquote>quoted text</blockquote>"
 /// </summary>
-public static class UnderlineHtml
+public static class BlockquoteHtml
 {
     /// <summary>
-    /// Applies underline style to the given text.
+    /// Applies blockquote style to the given text.
     /// </summary>
-    /// <param name="text">The text to be wrapped with underline HTML tags.</param>
-    /// <returns>A new instance of <see cref="UnderlineNode{TInner}"/> wrapping the provided text.</returns>
-    public static UnderlineNode<PlainTextNode> Apply(string text) =>
-        UnderlineNode<PlainTextNode>.Apply(text);
+    /// <param name="text">
+    /// The text to be wrapped with blockquote HTML tags.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="BlockquoteNode{TInner}"/> wrapping the provided text.
+    /// </returns>
+    public static BlockquoteNode<PlainTextNode> Apply(string text) =>
+        BlockquoteNode<PlainTextNode>.Apply(text);
 
     /// <summary>
-    /// Applies underline style to the given style.
+    /// Applies blockquote style to the given style.
     /// </summary>
-    /// <param name="style">The inner style to be wrapped with underline HTML tags.</param>
-    /// <typeparam name="T">The type of the inner style that implements <see cref="INode"/>.</typeparam>
-    /// <returns>A new instance of <see cref="UnderlineNode{TInner}"/> wrapping the provided inner style.</returns>
-    public static UnderlineNode<T> Apply<T>(T style) where T : INode =>
-        UnderlineNode<T>.Apply(style);
+    /// <param name="style">
+    /// The inner style to be wrapped with blockquote HTML tags.
+    /// </param>
+    /// <typeparam name="T">
+    /// The type of the inner style that implements <see cref="INode"/>.
+    /// </typeparam>
+    /// <returns>
+    /// A new instance of <see cref="BlockquoteNode{TInner}"/> wrapping the provided inner style.
+    /// </returns>
+    public static BlockquoteNode<T> Apply<T>(T style) where T : INode =>
+        BlockquoteNode<T>.Apply(style);
 }
 
 /// <summary>
-/// Represents underlined text in HTML format.
-/// Example: "<u>underlined text</u>"
+/// Represents blockquote text in HTML format.
+/// Example: "<blockquote>quoted text</blockquote>"
 /// </summary>
-public readonly struct UnderlineNode<TInner> : INode
+public readonly struct BlockquoteNode<TInner> : INode
     where TInner : INode
 {
     /// <summary>
-    /// The opening underline tag.
+    /// The opening blockquote tag.
     /// </summary>
-    public const string Prefix = "<u>";
-
+    public const string Prefix = "<blockquote>";
     /// <summary>
-    /// The closing underline tag.
+    /// The closing blockquote tag.
     /// </summary>
-    public const string Suffix = "</u>";
+    public const string Suffix = "</blockquote>";
 
     private readonly TInner _innerText;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="UnderlineNode{TInner}"/> struct.
+    /// Initializes a new instance of the <see cref="BlockquoteNode{TInner}"/> struct.
     /// </summary>
-    /// <param name="inner">The inner style to be wrapped with underline HTML tags.</param>
-    public UnderlineNode(TInner inner)
+    /// <param name="inner">The inner style to be wrapped with blockquote HTML tags.</param>
+    public BlockquoteNode(TInner inner)
     {
         _innerText = inner;
     }
@@ -59,19 +68,17 @@ public readonly struct UnderlineNode<TInner> : INode
     /// Gets the length of the inner text.
     /// </summary>
     public int InnerLength => _innerText.TotalLength;
-
     /// <summary>
-    /// Gets the total length of the HTML underline syntax.
+    /// Gets the total length of the HTML blockquote syntax.
     /// </summary>
     public int SyntaxLength => Prefix.Length + Suffix.Length;
-
     /// <summary>
     /// Gets the total length of the formatted text.
     /// </summary>
     public int TotalLength => SyntaxLength + InnerLength;
 
     /// <summary>
-    /// Copies the formatted underlined text to the provided span.
+    /// Copies the formatted blockquote text to the provided span.
     /// </summary>
     /// <param name="destination">The span to copy the formatted text into.</param>
     /// <returns>The total length of the formatted text.</returns>
@@ -99,8 +106,7 @@ public readonly struct UnderlineNode<TInner> : INode
     /// <inheritdoc />
     public bool TryGetChar(int index, out char character)
     {
-        var totalLength = TotalLength;
-        if (index < 0 || index >= totalLength)
+        if (index < 0 || index >= TotalLength)
         {
             character = '\0';
             return false;
@@ -125,14 +131,5 @@ public readonly struct UnderlineNode<TInner> : INode
         return true;
     }
 
-    /// <summary>
-    /// Applies underline style to the given inner style.
-    /// </summary>
-    /// <param name="innerStyle">
-    /// The inner style to be wrapped with underline HTML tags.
-    /// </param>
-    /// <returns>
-    /// A new instance of <see cref="UnderlineNode{TInner}"/> wrapping the provided inner style.
-    /// </returns>
-    public static UnderlineNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
+    public static BlockquoteNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
 }

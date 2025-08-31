@@ -1,72 +1,74 @@
-namespace StringEnricher.Nodes.MarkdownV2;
+﻿namespace StringEnricher.Nodes.MarkdownV2.Formatting;
 
 /// <summary>
-/// Provides methods to apply bold styling in MarkdownV2 format.
-/// Example: "*bold text*"
+/// Provides methods to apply underline style to text in MarkdownV2 format.
+/// Example: "__underline text__"
 /// </summary>
-public static class BoldMarkdownV2
+public static class UnderlineMarkdownV2
 {
     /// <summary>
-    /// Applies bold style to the given text.
+    /// Applies the underline style to the given text.
     /// </summary>
     /// <param name="text">
-    /// The text to be wrapped with bold syntax.
+    /// The text to be styled with underline syntax.
     /// </param>
     /// <returns>
-    /// A new instance of <see cref="BoldNode{TInner}"/> wrapping the provided text.
+    /// A new instance of <see cref="UnderlineNode{TInner}"/> that wraps the provided text.
     /// </returns>
-    public static BoldNode<PlainTextNode> Apply(string text) =>
-        BoldNode<PlainTextNode>.Apply(text);
+    public static UnderlineNode<PlainTextNode> Apply(string text) =>
+        UnderlineNode<PlainTextNode>.Apply(text);
 
     /// <summary>
-    /// Applies bold style to the given style.
+    /// Applies the underline style to the given style.
     /// </summary>
     /// <param name="style">
-    /// The inner style to be wrapped with bold syntax.
+    /// The style to be wrapped with underline syntax.
     /// </param>
     /// <typeparam name="T">
-    /// The type of the inner style that implements <see cref="INode"/>.
+    /// The type of the style that implements <see cref="INode"/>.
     /// </typeparam>
     /// <returns>
-    /// A new instance of <see cref="BoldNode{TInner}"/> wrapping the provided inner style.
+    /// A new instance of <see cref="UnderlineNode{TInner}"/> that wraps the provided style.
     /// </returns>
-    public static BoldNode<T> Apply<T>(T style) where T : INode =>
-        BoldNode<T>.Apply(style);
+    public static UnderlineNode<T> Apply<T>(T style) where T : INode =>
+        UnderlineNode<T>.Apply(style);
 }
 
 /// <summary>
-/// Represents bold text in MarkdownV2 format.
-/// Example: "*bold text*"
+/// Represents underline text in MarkdownV2 format.
+/// Example: "__underline text__"
 /// </summary>
 /// <typeparam name="TInner">
-/// The type of the inner style that will be wrapped with bold syntax.
+/// The type of the inner style that will be wrapped with underline syntax.
 /// </typeparam>
-public readonly struct BoldNode<TInner> : INode
+public readonly struct UnderlineNode<TInner> : INode
     where TInner : INode
 {
     /// <summary>
-    /// The prefix and suffix used for bold styling in MarkdownV2.
+    /// The prefix and suffix used for underline style in MarkdownV2 format.
     /// </summary>
-    public const string Prefix = "*";
+    public const string Prefix = "__";
 
     /// <summary>
-    /// The suffix used for bold styling in MarkdownV2.
+    /// The prefix and suffix used for underline style in MarkdownV2 format.
     /// </summary>
-    public const string Suffix = "*";
+    public const string Suffix = "__";
 
     private readonly TInner _innerText;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="BoldNode{TInner}"/> struct.
+    /// Initializes a new instance of the <see cref="UnderlineNode{TInner}"/> struct.
     /// </summary>
-    /// <param name="inner">The inner style that will be wrapped with bold syntax</param>
-    public BoldNode(TInner inner)
+    /// <param name="inner">
+    /// The inner style that will be wrapped with underline syntax.
+    /// </param>
+    public UnderlineNode(TInner inner)
     {
         _innerText = inner;
     }
 
     /// <summary>
-    /// Returns the string representation of the bold style in MarkdownV2 format.
+    /// Returns the string representation of the underline style in MarkdownV2 format.
     /// Note: This method allocates a new string in the most efficient way possible.
     /// Use this method when you finished all styling operations and need the final string.
     /// </summary>
@@ -74,7 +76,7 @@ public readonly struct BoldNode<TInner> : INode
     public override string ToString() => string.Create(TotalLength, this, static (span, style) => style.CopyTo(span));
 
     /// <summary>
-    /// Gets the length of the inner text.
+    /// Gets the length of the inner text excluding the underline syntax.
     /// </summary>
     public int InnerLength => _innerText.TotalLength;
 
@@ -132,18 +134,17 @@ public readonly struct BoldNode<TInner> : INode
 
         var suffixIndex = innerIndex - InnerLength;
         character = Suffix[suffixIndex];
-
         return true;
     }
 
     /// <summary>
-    /// Applies bold style to the given inner style.
+    /// Applies the underline style to the given inner style.
     /// </summary>
     /// <param name="innerStyle">
-    /// The inner style to be wrapped with bold syntax.
+    /// The inner style to be wrapped with underline syntax.
     /// </param>
     /// <returns>
-    /// A new instance of <see cref="BoldNode{TInner}"/> wrapping the provided inner style.
+    /// A new instance of <see cref="UnderlineNode{TInner}"/> that wraps the provided inner style.
     /// </returns>
-    public static BoldNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
+    public static UnderlineNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
 }

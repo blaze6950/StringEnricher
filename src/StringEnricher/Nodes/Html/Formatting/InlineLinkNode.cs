@@ -1,4 +1,4 @@
-namespace StringEnricher.Nodes.Html;
+namespace StringEnricher.Nodes.Html.Formatting;
 
 /// <summary>
 /// Provides methods to apply inline link styling in HTML format.
