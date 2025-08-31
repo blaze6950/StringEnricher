@@ -1,6 +1,6 @@
 using StringEnricher.Nodes.Html;
 
-namespace StringEnricher.Tests.Html.StringStyles;
+namespace StringEnricher.Tests.Html.Nodes;
 
 public class EscapeNodeTests
 {

@@ -1,7 +1,6 @@
-﻿using StringEnricher.Nodes.MarkdownV2;
-using StringEnricher.Nodes.MarkdownV2.Formatting;
+﻿using StringEnricher.Nodes.MarkdownV2.Formatting;
 
-namespace StringEnricher.Tests.MarkdownV2.StringStyles;
+namespace StringEnricher.Tests.MarkdownV2.Nodes;
 
 public class BlockquoteNodeTests
 {

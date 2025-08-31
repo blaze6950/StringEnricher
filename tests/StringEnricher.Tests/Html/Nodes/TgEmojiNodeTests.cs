@@ -1,7 +1,6 @@
-using StringEnricher.Nodes.MarkdownV2;
-using StringEnricher.Nodes.MarkdownV2.Formatting;
+using StringEnricher.Nodes.Html.Formatting;
 
-namespace StringEnricher.Tests.MarkdownV2.StringStyles;
+namespace StringEnricher.Tests.Html.Nodes;
 
 public class TgEmojiNodeTests
 {
@@ -9,10 +8,10 @@ public class TgEmojiNodeTests
     public void Test()
     {
         // Arrange
-        const string expectedTgEmoji = "![👍](tg://emoji?id=5368324170671202286)";
+        const string expectedTgEmoji = "<tg-emoji emoji-id=\"5368324170671202286\">👍</tg-emoji>";
 
         // Act
-        var styledTgEmoji = TgEmojiMarkdownV2.Apply("👍", "5368324170671202286").ToString();
+        var styledTgEmoji = TgEmojiHtml.Apply("👍", "5368324170671202286").ToString();
 
         // Assert
         Assert.NotNull(styledTgEmoji);
@@ -24,8 +23,8 @@ public class TgEmojiNodeTests
     public void TryGetChar_ValidIndices_ReturnsTrueAndCorrectChar()
     {
         // Arrange
-        var tgEmoji = TgEmojiMarkdownV2.Apply("👍", "12345");
-        const string expected = "![👍](tg://emoji?id=12345)";
+        var tgEmoji = TgEmojiHtml.Apply("👍", "12345");
+        const string expected = "<tg-emoji emoji-id=\"12345\">👍</tg-emoji>";
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
@@ -38,11 +37,11 @@ public class TgEmojiNodeTests
 
     [Theory]
     [InlineData(-1)]
-    [InlineData(26)] // "[👍](tg://emoji?id=12345)" length is 24
+    [InlineData(42)] // "<tg-emoji emoji-id=\"12345\">👍</tg-emoji>" length is 41
     public void TryGetChar_OutOfRangeIndices_ReturnsFalseAndNullChar(int index)
     {
         // Arrange
-        var tgEmoji = TgEmojiMarkdownV2.Apply("👍", "12345");
+        var tgEmoji = TgEmojiHtml.Apply("👍", "12345");
 
         // Act
         var result = tgEmoji.TryGetChar(index, out var ch);

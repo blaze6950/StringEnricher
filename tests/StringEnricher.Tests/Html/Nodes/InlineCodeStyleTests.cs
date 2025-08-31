@@ -1,7 +1,6 @@
-using StringEnricher.Nodes.MarkdownV2;
-using StringEnricher.Nodes.MarkdownV2.Formatting;
+using StringEnricher.Nodes.Html.Formatting;
 
-namespace StringEnricher.Tests.MarkdownV2.StringStyles;
+namespace StringEnricher.Tests.Html.Nodes;
 
 public class InlineCodeMarkdownV2Tests
 {
@@ -9,10 +8,10 @@ public class InlineCodeMarkdownV2Tests
     public void Test()
     {
         // Arrange
-        const string expectedInlineCode = "`inline code`";
+        const string expectedInlineCode = "<code>inline code</code>";
 
         // Act
-        var styledInlineCode = InlineCodeMarkdownV2.Apply("inline code").ToString();
+        var styledInlineCode = InlineCodeHtml.Apply("inline code").ToString();
 
         // Assert
         Assert.NotNull(styledInlineCode);
@@ -24,8 +23,8 @@ public class InlineCodeMarkdownV2Tests
     public void TryGetChar_ValidIndices_ReturnsTrueAndCorrectChar()
     {
         // Arrange
-        var inlineCode = InlineCodeMarkdownV2.Apply("code");
-        const string expected = "`code`";
+        var inlineCode = InlineCodeHtml.Apply("test");
+        const string expected = "<code>test</code>";
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
@@ -38,11 +37,11 @@ public class InlineCodeMarkdownV2Tests
 
     [Theory]
     [InlineData(-1)]
-    [InlineData(6)] // "`code`" length is 6
+    [InlineData(17)] // "<code>test</code>" length is 17
     public void TryGetChar_OutOfRangeIndices_ReturnsFalseAndNullChar(int index)
     {
         // Arrange
-        var inlineCode = InlineCodeMarkdownV2.Apply("code");
+        var inlineCode = InlineCodeHtml.Apply("test");
 
         // Act
         var result = inlineCode.TryGetChar(index, out var ch);

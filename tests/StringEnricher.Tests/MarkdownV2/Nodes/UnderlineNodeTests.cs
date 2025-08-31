@@ -1,7 +1,6 @@
-using StringEnricher.Nodes.Html;
-using StringEnricher.Nodes.Html.Formatting;
+using StringEnricher.Nodes.MarkdownV2.Formatting;
 
-namespace StringEnricher.Tests.Html.StringStyles;
+namespace StringEnricher.Tests.MarkdownV2.Nodes;
 
 public class UnderlineNodeTests
 {
@@ -9,10 +8,10 @@ public class UnderlineNodeTests
     public void Test()
     {
         // Arrange
-        const string expectedUnderline = "<u>underline</u>";
+        const string expectedUnderline = "__underline__";
 
         // Act
-        var styledUnderline = UnderlineHtml.Apply("underline").ToString();
+        var styledUnderline = UnderlineMarkdownV2.Apply("underline").ToString();
 
         // Assert
         Assert.NotNull(styledUnderline);
@@ -24,8 +23,8 @@ public class UnderlineNodeTests
     public void TryGetChar_ValidIndices_ReturnsTrueAndCorrectChar()
     {
         // Arrange
-        var underline = UnderlineHtml.Apply("test");
-        const string expected = "<u>test</u>";
+        var underline = UnderlineMarkdownV2.Apply("test");
+        const string expected = "__test__";
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
@@ -38,11 +37,11 @@ public class UnderlineNodeTests
 
     [Theory]
     [InlineData(-1)]
-    [InlineData(11)] // "<u>test</u>" length is 11
+    [InlineData(8)] // "__test__" length is 8
     public void TryGetChar_OutOfRangeIndices_ReturnsFalseAndNullChar(int index)
     {
         // Arrange
-        var underline = UnderlineHtml.Apply("test");
+        var underline = UnderlineMarkdownV2.Apply("test");
 
         // Act
         var result = underline.TryGetChar(index, out var ch);

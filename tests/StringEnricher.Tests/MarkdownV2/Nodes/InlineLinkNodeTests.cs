@@ -1,7 +1,6 @@
-﻿using StringEnricher.Nodes.Html;
-using StringEnricher.Nodes.Html.Formatting;
+﻿using StringEnricher.Nodes.MarkdownV2.Formatting;
 
-namespace StringEnricher.Tests.Html.StringStyles;
+namespace StringEnricher.Tests.MarkdownV2.Nodes;
 
 public class InlineLinkNodeTests
 {
@@ -9,10 +8,10 @@ public class InlineLinkNodeTests
     public void Test()
     {
         // Arrange
-        const string expectedLink = "<a href=\"https://example.com\">test</a>";
+        const string expectedLink = "[test](https://example.com)";
 
         // Act
-        var styledLink = InlineLinkHtml.Apply("test", "https://example.com").ToString();
+        var styledLink = InlineLinkMarkdownV2.Apply("test", "https://example.com").ToString();
 
         // Assert
         Assert.NotNull(styledLink);
@@ -24,8 +23,8 @@ public class InlineLinkNodeTests
     public void TryGetChar_ValidIndices_ReturnsTrueAndCorrectChar()
     {
         // Arrange
-        var inlineLink = InlineLinkHtml.Apply("test", "https://example.com");
-        const string expected = "<a href=\"https://example.com\">test</a>";
+        var inlineLink = InlineLinkMarkdownV2.Apply("test", "https://example.com");
+        const string expected = "[test](https://example.com)";
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
@@ -38,11 +37,11 @@ public class InlineLinkNodeTests
 
     [Theory]
     [InlineData(-1)]
-    [InlineData(39)] // "<a href=\"https://example.com\">test</a>" length is 39
+    [InlineData(27)] // "[test](https://example.com)" length is 26
     public void TryGetChar_OutOfRangeIndices_ReturnsFalseAndNullChar(int index)
     {
         // Arrange
-        var inlineLink = InlineLinkHtml.Apply("test", "https://example.com");
+        var inlineLink = InlineLinkMarkdownV2.Apply("test", "https://example.com");
 
         // Act
         var result = inlineLink.TryGetChar(index, out var ch);

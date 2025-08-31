@@ -1,7 +1,6 @@
-using StringEnricher.Nodes.Html;
-using StringEnricher.Nodes.Html.Formatting;
+using StringEnricher.Nodes.MarkdownV2.Formatting;
 
-namespace StringEnricher.Tests.Html.StringStyles;
+namespace StringEnricher.Tests.MarkdownV2.Nodes;
 
 public class SpoilerNodeTests
 {
@@ -9,10 +8,10 @@ public class SpoilerNodeTests
     public void Test()
     {
         // Arrange
-        const string expectedSpoiler = "<tg-spoiler>spoiler text</tg-spoiler>";
+        const string expectedSpoiler = "||spoiler text||";
 
         // Act
-        var styledSpoiler = SpoilerHtml.Apply("spoiler text").ToString();
+        var styledSpoiler = SpoilerMarkdownV2.Apply("spoiler text").ToString();
 
         // Assert
         Assert.NotNull(styledSpoiler);
@@ -24,8 +23,8 @@ public class SpoilerNodeTests
     public void TryGetChar_ValidIndices_ReturnsTrueAndCorrectChar()
     {
         // Arrange
-        var spoiler = SpoilerHtml.Apply("test");
-        const string expected = "<tg-spoiler>test</tg-spoiler>";
+        var spoiler = SpoilerMarkdownV2.Apply("test");
+        const string expected = "||test||";
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
@@ -38,11 +37,11 @@ public class SpoilerNodeTests
 
     [Theory]
     [InlineData(-1)]
-    [InlineData(29)] // "<tg-spoiler>test</tg-spoiler>" length is 29
+    [InlineData(8)] // "||test||" length is 8
     public void TryGetChar_OutOfRangeIndices_ReturnsFalseAndNullChar(int index)
     {
         // Arrange
-        var spoiler = SpoilerHtml.Apply("test");
+        var spoiler = SpoilerMarkdownV2.Apply("test");
 
         // Act
         var result = spoiler.TryGetChar(index, out var ch);

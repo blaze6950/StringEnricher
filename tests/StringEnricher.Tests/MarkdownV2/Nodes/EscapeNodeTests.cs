@@ -1,6 +1,6 @@
 ﻿using StringEnricher.Nodes.MarkdownV2;
 
-namespace StringEnricher.Tests.MarkdownV2.StringStyles;
+namespace StringEnricher.Tests.MarkdownV2.Nodes;
 
 public class EscapeNodeTests
 {

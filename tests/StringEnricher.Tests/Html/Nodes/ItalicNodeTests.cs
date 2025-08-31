@@ -1,36 +1,35 @@
-using StringEnricher.Nodes.Html;
 using StringEnricher.Nodes.Html.Formatting;
 
-namespace StringEnricher.Tests.Html.StringStyles;
+namespace StringEnricher.Tests.Html.Nodes;
 
-public class BoldNodeTests
+public class ItalicNodeTests
 {
     [Fact]
     public void Test()
     {
         // Arrange
-        const string expectedBold = "<b>bold text</b>";
+        const string expectedItalic = "<i>italic text</i>";
 
         // Act
-        var styledBold = BoldHtml.Apply("bold text").ToString();
+        var styledItalic = ItalicHtml.Apply("italic text").ToString();
 
         // Assert
-        Assert.NotNull(styledBold);
-        Assert.NotEmpty(styledBold);
-        Assert.Equal(expectedBold, styledBold);
+        Assert.NotNull(styledItalic);
+        Assert.NotEmpty(styledItalic);
+        Assert.Equal(expectedItalic, styledItalic);
     }
 
     [Fact]
     public void TryGetChar_ValidIndices_ReturnsTrueAndCorrectChar()
     {
         // Arrange
-        var bold = BoldHtml.Apply("test");
-        const string expected = "<b>test</b>";
+        var italic = ItalicHtml.Apply("test");
+        const string expected = "<i>test</i>";
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
         {
-            var result = bold.TryGetChar(i, out var ch);
+            var result = italic.TryGetChar(i, out var ch);
             Assert.True(result);
             Assert.Equal(expected[i], ch);
         }
@@ -38,14 +37,14 @@ public class BoldNodeTests
 
     [Theory]
     [InlineData(-1)]
-    [InlineData(11)] // "<b>test</b>" length is 11
+    [InlineData(11)] // "<i>test</i>" length is 11
     public void TryGetChar_OutOfRangeIndices_ReturnsFalseAndNullChar(int index)
     {
         // Arrange
-        var bold = BoldHtml.Apply("test");
+        var italic = ItalicHtml.Apply("test");
 
         // Act
-        var result = bold.TryGetChar(index, out var ch);
+        var result = italic.TryGetChar(index, out var ch);
 
         // Assert
         Assert.False(result);
