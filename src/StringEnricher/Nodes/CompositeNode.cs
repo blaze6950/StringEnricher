@@ -28,6 +28,29 @@ public static class CompositeNodeExtensions
         where TLeft : INode
         where TRight : INode
         => new(left, right);
+
+    /// <summary>
+    /// Combines two nodes into a single composite node.
+    /// </summary>
+    /// <param name="left">
+    /// The left node.
+    /// </param>
+    /// <param name="right">
+    /// The right node.
+    /// </param>
+    /// <typeparam name="TLeft">
+    /// The type of the left node.
+    /// </typeparam>
+    /// <typeparam name="TRight">
+    /// The type of the right node.
+    /// </typeparam>
+    /// <returns>
+    /// A new composite node that combines the left and right nodes.
+    /// </returns>
+    public static CompositeNode<TLeft, PlainTextNode> CombineWith<TLeft>
+        (this TLeft left, string right)
+        where TLeft : INode
+        => new(left, right);
 }
 
 /// <summary>

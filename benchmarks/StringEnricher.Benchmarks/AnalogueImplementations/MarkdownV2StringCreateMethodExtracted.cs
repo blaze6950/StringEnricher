@@ -1,5 +1,3 @@
-using System;
-
 namespace StringEnricher.Benchmarks.AnalogueImplementations;
 
 /// <summary>
