@@ -1,5 +1,5 @@
 ﻿using BenchmarkDotNet.Running;
-using StringEnricher.Benchmarks.Nodes.CompositeNodeBenchmarks;
+using StringEnricher.Benchmarks.Nodes.CompleteStyledStringBuildingBenchmarks;
 
 namespace StringEnricher.Benchmarks;
 
@@ -17,6 +17,6 @@ public class Program
         //BenchmarkRunner.Run<HardcoreTenfoldBoldNodeBenchmarks>();
         //BenchmarkRunner.Run<MarkdownV2EscapeBenchmarks>();
         //BenchmarkRunner.Run<MethodExtractionBenchmarks>();
-        BenchmarkRunner.Run<CompositeNodeBenchmarks>();
+        BenchmarkRunner.Run<CompleteStyledStringBuildingBenchmarks>();
     }
 }

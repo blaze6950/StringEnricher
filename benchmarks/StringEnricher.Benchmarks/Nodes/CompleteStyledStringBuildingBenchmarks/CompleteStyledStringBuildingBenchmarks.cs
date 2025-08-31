@@ -1,8 +1,9 @@
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
+using StringEnricher.Nodes;
 using StringEnricher.Nodes.MarkdownV2.Formatting;
 
-namespace StringEnricher.Benchmarks.Nodes.CompositeNodeBenchmarks;
+namespace StringEnricher.Benchmarks.Nodes.CompleteStyledStringBuildingBenchmarks;
 
 [MemoryDiagnoser]
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
@@ -11,7 +12,7 @@ namespace StringEnricher.Benchmarks.Nodes.CompositeNodeBenchmarks;
 [MaxColumn]
 [MeanColumn]
 [MedianColumn]
-public class CompositeNodeBenchmarks
+public class CompleteStyledStringBuildingBenchmarks
 {
     public const string Input =
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit Sed do eiusmod tempor incididunt ut labore et" +
@@ -143,6 +144,39 @@ public class CompositeNodeBenchmarks
     }
 
     [Benchmark]
+    public string BuildStringWithNodesMessageBuilderBased()
+    {
+        // Pre-calculate total length
+        var totalLength = 0;
+        for (var i = 0; i < Strings.Length - 1; i++)
+        {
+            var node = BoldMarkdownV2.Apply(UnderlineMarkdownV2.Apply(Strings[i]));
+            totalLength += node.TotalLength + 1; // +1 for space
+        }
+
+        // Add last string without space
+        var lastNode = BoldMarkdownV2.Apply(UnderlineMarkdownV2.Apply(Strings[^1]));
+        totalLength += lastNode.TotalLength;
+        
+        var messageBuilder = new MessageBuilder(totalLength);
+
+        // Create string with exact capacity and write directly to span
+        return messageBuilder.Create(Strings, static (strings, context) =>
+        {
+            for (var i = 0; i < strings.Length - 1; i++)
+            {
+                var node = BoldMarkdownV2.Apply(UnderlineMarkdownV2.Apply(strings[i]));
+                context.Append(node);
+                context.Append(' ');
+            }
+
+            // Add last string without space
+            var lastNode = BoldMarkdownV2.Apply(UnderlineMarkdownV2.Apply(strings[^1]));
+            context.Append(lastNode);
+        });
+    }
+
+    [Benchmark]
     public string BuildStringWithNodesSpanBasedCustomLengthCalculation()
     {
         // Most allocation-free approach: calculate total length first
@@ -152,7 +186,7 @@ public class CompositeNodeBenchmarks
         {
             totalLength += 3 + Strings[i].Length + 3 + 1; // "*__" + text + "__*" + " " = 3 + text.Length + 3 + 1
         }
-        
+
         // Add last string without space
         totalLength += 3 + Strings[^1].Length + 3; // "*__" + text + "__*" = 3 + text.Length + 3
 
