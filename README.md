@@ -1,5 +1,14 @@
 # StringEnricher
 
+[![Build Status](https://github.com/blaze6950/StringEnricher/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/blaze6950/StringEnricher/actions)
+[![NuGet Version](https://img.shields.io/nuget/v/StringEnricher.svg)](https://www.nuget.org/packages/StringEnricher/)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/StringEnricher.svg)](https://www.nuget.org/packages/StringEnricher/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![.NET Version](https://img.shields.io/badge/.NET-9.0-purple.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
+[![GitHub Stars](https://img.shields.io/github/stars/blaze6950/StringEnricher.svg)](https://github.com/blaze6950/StringEnricher/stargazers)
+[![GitHub Issues](https://img.shields.io/github/issues/blaze6950/StringEnricher.svg)](https://github.com/blaze6950/StringEnricher/issues)
+[![GitHub Last Commit](https://img.shields.io/github/last-commit/blaze6950/StringEnricher.svg)](https://github.com/blaze6950/StringEnricher/commits)
+
 StringEnricher is a powerful and extensible C# library for building and enriching strings with rich text styles, supporting formats such as HTML and MarkdownV2. It is designed for scenarios where you need to dynamically compose styled messages, such as chatbots, messaging apps, or document generators.
 
 ## Features

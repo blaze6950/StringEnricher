@@ -3,8 +3,18 @@
 on:
   push:
     branches: [ master, main ]
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - '*.sln'
+      - '**/*.csproj'
   pull_request:
     branches: [ master, main ]
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - '*.sln'
+      - '**/*.csproj'
 
 env:
   DOTNET_VERSION: '9.x.x'
@@ -41,7 +51,7 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:

@@ -11,6 +11,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{7A3EBFED-6AE5-4435-88C1-68C3A80BDCFB}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
+		.github\workflows\ci-cd.yml = .github\workflows\ci-cd.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", "{2E5AD94F-C7E0-4DBB-89B5-204FF3A7D04F}"
