@@ -2,34 +2,34 @@ using StringEnricher.Nodes.Html;
 
 namespace StringEnricher.Tests.Html.StringStyles;
 
-public class InlineCodeMarkdownV2Tests
+public class BoldNodeTests
 {
     [Fact]
     public void Test()
     {
         // Arrange
-        const string expectedInlineCode = "<code>inline code</code>";
+        const string expectedBold = "<b>bold text</b>";
 
         // Act
-        var styledInlineCode = InlineCodeHtml.Apply("inline code").ToString();
+        var styledBold = BoldHtml.Apply("bold text").ToString();
 
         // Assert
-        Assert.NotNull(styledInlineCode);
-        Assert.NotEmpty(styledInlineCode);
-        Assert.Equal(expectedInlineCode, styledInlineCode);
+        Assert.NotNull(styledBold);
+        Assert.NotEmpty(styledBold);
+        Assert.Equal(expectedBold, styledBold);
     }
 
     [Fact]
     public void TryGetChar_ValidIndices_ReturnsTrueAndCorrectChar()
     {
         // Arrange
-        var inlineCode = InlineCodeHtml.Apply("test");
-        const string expected = "<code>test</code>";
+        var bold = BoldHtml.Apply("test");
+        const string expected = "<b>test</b>";
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
         {
-            var result = inlineCode.TryGetChar(i, out var ch);
+            var result = bold.TryGetChar(i, out var ch);
             Assert.True(result);
             Assert.Equal(expected[i], ch);
         }
@@ -37,14 +37,14 @@ public class InlineCodeMarkdownV2Tests
 
     [Theory]
     [InlineData(-1)]
-    [InlineData(17)] // "<code>test</code>" length is 17
+    [InlineData(11)] // "<b>test</b>" length is 11
     public void TryGetChar_OutOfRangeIndices_ReturnsFalseAndNullChar(int index)
     {
         // Arrange
-        var inlineCode = InlineCodeHtml.Apply("test");
+        var bold = BoldHtml.Apply("test");
 
         // Act
-        var result = inlineCode.TryGetChar(index, out var ch);
+        var result = bold.TryGetChar(index, out var ch);
 
         // Assert
         Assert.False(result);

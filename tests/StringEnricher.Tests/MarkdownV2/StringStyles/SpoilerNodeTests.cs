@@ -2,34 +2,34 @@ using StringEnricher.Nodes.MarkdownV2;
 
 namespace StringEnricher.Tests.MarkdownV2.StringStyles;
 
-public class InlineCodeMarkdownV2Tests
+public class SpoilerNodeTests
 {
     [Fact]
     public void Test()
     {
         // Arrange
-        const string expectedInlineCode = "`inline code`";
+        const string expectedSpoiler = "||spoiler text||";
 
         // Act
-        var styledInlineCode = InlineCodeMarkdownV2.Apply("inline code").ToString();
+        var styledSpoiler = SpoilerMarkdownV2.Apply("spoiler text").ToString();
 
         // Assert
-        Assert.NotNull(styledInlineCode);
-        Assert.NotEmpty(styledInlineCode);
-        Assert.Equal(expectedInlineCode, styledInlineCode);
+        Assert.NotNull(styledSpoiler);
+        Assert.NotEmpty(styledSpoiler);
+        Assert.Equal(expectedSpoiler, styledSpoiler);
     }
 
     [Fact]
     public void TryGetChar_ValidIndices_ReturnsTrueAndCorrectChar()
     {
         // Arrange
-        var inlineCode = InlineCodeMarkdownV2.Apply("code");
-        const string expected = "`code`";
+        var spoiler = SpoilerMarkdownV2.Apply("test");
+        const string expected = "||test||";
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
         {
-            var result = inlineCode.TryGetChar(i, out var ch);
+            var result = spoiler.TryGetChar(i, out var ch);
             Assert.True(result);
             Assert.Equal(expected[i], ch);
         }
@@ -37,14 +37,14 @@ public class InlineCodeMarkdownV2Tests
 
     [Theory]
     [InlineData(-1)]
-    [InlineData(6)] // "`code`" length is 6
+    [InlineData(8)] // "||test||" length is 8
     public void TryGetChar_OutOfRangeIndices_ReturnsFalseAndNullChar(int index)
     {
         // Arrange
-        var inlineCode = InlineCodeMarkdownV2.Apply("code");
+        var spoiler = SpoilerMarkdownV2.Apply("test");
 
         // Act
-        var result = inlineCode.TryGetChar(index, out var ch);
+        var result = spoiler.TryGetChar(index, out var ch);
 
         // Assert
         Assert.False(result);

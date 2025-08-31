@@ -2,34 +2,34 @@ using StringEnricher.Nodes.Html;
 
 namespace StringEnricher.Tests.Html.StringStyles;
 
-public class InlineCodeMarkdownV2Tests
+public class UnderlineNodeTests
 {
     [Fact]
     public void Test()
     {
         // Arrange
-        const string expectedInlineCode = "<code>inline code</code>";
+        const string expectedUnderline = "<u>underline</u>";
 
         // Act
-        var styledInlineCode = InlineCodeHtml.Apply("inline code").ToString();
+        var styledUnderline = UnderlineHtml.Apply("underline").ToString();
 
         // Assert
-        Assert.NotNull(styledInlineCode);
-        Assert.NotEmpty(styledInlineCode);
-        Assert.Equal(expectedInlineCode, styledInlineCode);
+        Assert.NotNull(styledUnderline);
+        Assert.NotEmpty(styledUnderline);
+        Assert.Equal(expectedUnderline, styledUnderline);
     }
 
     [Fact]
     public void TryGetChar_ValidIndices_ReturnsTrueAndCorrectChar()
     {
         // Arrange
-        var inlineCode = InlineCodeHtml.Apply("test");
-        const string expected = "<code>test</code>";
+        var underline = UnderlineHtml.Apply("test");
+        const string expected = "<u>test</u>";
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
         {
-            var result = inlineCode.TryGetChar(i, out var ch);
+            var result = underline.TryGetChar(i, out var ch);
             Assert.True(result);
             Assert.Equal(expected[i], ch);
         }
@@ -37,14 +37,14 @@ public class InlineCodeMarkdownV2Tests
 
     [Theory]
     [InlineData(-1)]
-    [InlineData(17)] // "<code>test</code>" length is 17
+    [InlineData(11)] // "<u>test</u>" length is 11
     public void TryGetChar_OutOfRangeIndices_ReturnsFalseAndNullChar(int index)
     {
         // Arrange
-        var inlineCode = InlineCodeHtml.Apply("test");
+        var underline = UnderlineHtml.Apply("test");
 
         // Act
-        var result = inlineCode.TryGetChar(index, out var ch);
+        var result = underline.TryGetChar(index, out var ch);
 
         // Assert
         Assert.False(result);

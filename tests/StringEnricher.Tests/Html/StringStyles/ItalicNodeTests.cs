@@ -2,34 +2,34 @@ using StringEnricher.Nodes.Html;
 
 namespace StringEnricher.Tests.Html.StringStyles;
 
-public class InlineCodeMarkdownV2Tests
+public class ItalicNodeTests
 {
     [Fact]
     public void Test()
     {
         // Arrange
-        const string expectedInlineCode = "<code>inline code</code>";
+        const string expectedItalic = "<i>italic text</i>";
 
         // Act
-        var styledInlineCode = InlineCodeHtml.Apply("inline code").ToString();
+        var styledItalic = ItalicHtml.Apply("italic text").ToString();
 
         // Assert
-        Assert.NotNull(styledInlineCode);
-        Assert.NotEmpty(styledInlineCode);
-        Assert.Equal(expectedInlineCode, styledInlineCode);
+        Assert.NotNull(styledItalic);
+        Assert.NotEmpty(styledItalic);
+        Assert.Equal(expectedItalic, styledItalic);
     }
 
     [Fact]
     public void TryGetChar_ValidIndices_ReturnsTrueAndCorrectChar()
     {
         // Arrange
-        var inlineCode = InlineCodeHtml.Apply("test");
-        const string expected = "<code>test</code>";
+        var italic = ItalicHtml.Apply("test");
+        const string expected = "<i>test</i>";
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
         {
-            var result = inlineCode.TryGetChar(i, out var ch);
+            var result = italic.TryGetChar(i, out var ch);
             Assert.True(result);
             Assert.Equal(expected[i], ch);
         }
@@ -37,14 +37,14 @@ public class InlineCodeMarkdownV2Tests
 
     [Theory]
     [InlineData(-1)]
-    [InlineData(17)] // "<code>test</code>" length is 17
+    [InlineData(11)] // "<i>test</i>" length is 11
     public void TryGetChar_OutOfRangeIndices_ReturnsFalseAndNullChar(int index)
     {
         // Arrange
-        var inlineCode = InlineCodeHtml.Apply("test");
+        var italic = ItalicHtml.Apply("test");
 
         // Act
-        var result = inlineCode.TryGetChar(index, out var ch);
+        var result = italic.TryGetChar(index, out var ch);
 
         // Assert
         Assert.False(result);

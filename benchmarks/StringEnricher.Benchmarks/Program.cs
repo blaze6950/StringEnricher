@@ -11,10 +11,10 @@ public class Program
         // Uncomment the needed one
         // Comment all others
 
-        //BenchmarkRunner.Run<BoldStyleBenchmarks>();
-        //BenchmarkRunner.Run<DoubleBoldStyleBenchmarks>();
-        //BenchmarkRunner.Run<TenfoldBoldStyleBenchmarks.TenfoldBoldStyleBenchmarks>();
-        //BenchmarkRunner.Run<HardcoreTenfoldBoldStyleBenchmarks>();
+        //BenchmarkRunner.Run<BoldNodeBenchmarks>();
+        //BenchmarkRunner.Run<DoubleBoldNodeBenchmarks>();
+        //BenchmarkRunner.Run<TenfoldBoldNodeBenchmarks.TenfoldBoldNodeBenchmarks>();
+        //BenchmarkRunner.Run<HardcoreTenfoldBoldNodeBenchmarks>();
         //BenchmarkRunner.Run<MarkdownV2EscapeBenchmarks>();
         BenchmarkRunner.Run<MethodExtractionBenchmarks>();
     }

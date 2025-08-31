@@ -21,16 +21,16 @@ Add the project to your solution or reference the compiled DLL in your applicati
 
 ### Basic Example (HTML Bold)
 ```csharp
-using StringEnricher.StringStyles.Html;
+using StringEnricher.Node.Html;
 
 var styledBold = BoldHtml.Apply("bold text"); // 0 heap allocations here
 var styledBoldString = styledBold.ToString(); // 1 final string heap allocation here
 // styledBold == "<b>bold text</b>"
 ```
 
-### Applying Multiple Styles
+### Applying Multiple Node
 ```csharp
-using StringEnricher.StringStyles.Html;
+using StringEnricher.Node.Html;
 
 var styled = BoldHtml.Apply(
     ItalicHtml.Apply("important text") // 0 heap allocations here
@@ -41,7 +41,7 @@ var styledString = styled.ToString(); // 1 final string heap allocation here
 
 ### MarkdownV2 Example
 ```csharp
-using StringEnricher.StringStyles.MarkdownV2;
+using StringEnricher.Node.MarkdownV2;
 
 var boldMd = BoldMarkdownV2.Apply("bold text"); // 0 heap allocations here
 var boldMdString = boldMd.ToString(); // 1 final string heap allocation here
@@ -50,7 +50,7 @@ var boldMdString = boldMd.ToString(); // 1 final string heap allocation here
 
 ### The `.CopyTo()` method for Zero Allocations
 ```csharp
-using StringEnricher.StringStyles.Html;
+using StringEnricher.Node.Html;
 
 var styled = BoldHtml.Apply("bold text");
 Span<char> buffer = stackalloc char[styled.GetMaxLength()];
@@ -68,7 +68,7 @@ Use it only when you finished building the entire styled string.
 ### `.TryGetChar()` method for Single Character Access
 The `TryGetChar(int index, out char value)` method allows you to access individual characters in the styled string without creating the entire string. It returns `true` if the character at the specified index exists, otherwise `false`.
 ```csharp
-using StringEnricher.StringStyles.Html;
+using StringEnricher.Node.Html;
 var styled = BoldHtml.Apply("bold text");
 if (styled.TryGetChar(0, out char character))
 {
@@ -87,7 +87,7 @@ else {
 }
 ```
 
-## Using Aliases for Styles via GlobalUsings.cs
+## Using Aliases for Node via GlobalUsings.cs
 
 To simplify switching between HTML and MarkdownV2 styles across your project, you can use C# `using` aliases in a `GlobalUsings.cs` file. This allows you to reference style helpers (like `Bold`, `Italic`, etc.) generically, and change the underlying format by updating just one file.
 
@@ -96,8 +96,8 @@ To simplify switching between HTML and MarkdownV2 styles across your project, yo
 // GlobalUsings.cs
 // Place this file in your project root or any folder included in compilation.
 
-global using Bold = StringEnricher.StringStyles.Html.BoldHtml;
-global using Italic = StringEnricher.StringStyles.Html.ItalicHtml;
+global using Bold = StringEnricher.Node.Html.BoldHtml;
+global using Italic = StringEnricher.Node.Html.ItalicHtml;
 // Add other aliases as needed
 ```
 
@@ -105,8 +105,8 @@ To switch to MarkdownV2, simply update the aliases:
 ```csharp
 // GlobalUsings.cs
 
-global using Bold = StringEnricher.StringStyles.MarkdownV2.BoldMarkdown;
-global using Italic = StringEnricher.StringStyles.MarkdownV2.ItalicMarkdown;
+global using Bold = StringEnricher.Node.MarkdownV2.BoldMarkdown;
+global using Italic = StringEnricher.Node.MarkdownV2.ItalicMarkdown;
 // ...
 ```
 
@@ -124,7 +124,7 @@ This approach centralizes format selection, making it easy to switch formats for
 
 ## Project Structure
 - `src/StringEnricher/`: Core library
-  - `StringStyles/`: Style definitions for HTML, MarkdownV2, PlainText, etc.
+  - `Nodes/`: Nodes definitions for HTML, MarkdownV2, PlainText, etc.
 - `tests/StringEnricher.Tests/`: Unit tests for all styles and formats
 
 ## Facts

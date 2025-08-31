@@ -2,34 +2,34 @@ using StringEnricher.Nodes.MarkdownV2;
 
 namespace StringEnricher.Tests.MarkdownV2.StringStyles;
 
-public class InlineCodeMarkdownV2Tests
+public class TgEmojiNodeTests
 {
     [Fact]
     public void Test()
     {
         // Arrange
-        const string expectedInlineCode = "`inline code`";
+        const string expectedTgEmoji = "![👍](tg://emoji?id=5368324170671202286)";
 
         // Act
-        var styledInlineCode = InlineCodeMarkdownV2.Apply("inline code").ToString();
+        var styledTgEmoji = TgEmojiMarkdownV2.Apply("👍", "5368324170671202286").ToString();
 
         // Assert
-        Assert.NotNull(styledInlineCode);
-        Assert.NotEmpty(styledInlineCode);
-        Assert.Equal(expectedInlineCode, styledInlineCode);
+        Assert.NotNull(styledTgEmoji);
+        Assert.NotEmpty(styledTgEmoji);
+        Assert.Equal(expectedTgEmoji, styledTgEmoji);
     }
 
     [Fact]
     public void TryGetChar_ValidIndices_ReturnsTrueAndCorrectChar()
     {
         // Arrange
-        var inlineCode = InlineCodeMarkdownV2.Apply("code");
-        const string expected = "`code`";
+        var tgEmoji = TgEmojiMarkdownV2.Apply("👍", "12345");
+        const string expected = "![👍](tg://emoji?id=12345)";
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
         {
-            var result = inlineCode.TryGetChar(i, out var ch);
+            var result = tgEmoji.TryGetChar(i, out var ch);
             Assert.True(result);
             Assert.Equal(expected[i], ch);
         }
@@ -37,14 +37,14 @@ public class InlineCodeMarkdownV2Tests
 
     [Theory]
     [InlineData(-1)]
-    [InlineData(6)] // "`code`" length is 6
+    [InlineData(26)] // "[👍](tg://emoji?id=12345)" length is 24
     public void TryGetChar_OutOfRangeIndices_ReturnsFalseAndNullChar(int index)
     {
         // Arrange
-        var inlineCode = InlineCodeMarkdownV2.Apply("code");
+        var tgEmoji = TgEmojiMarkdownV2.Apply("👍", "12345");
 
         // Act
-        var result = inlineCode.TryGetChar(index, out var ch);
+        var result = tgEmoji.TryGetChar(index, out var ch);
 
         // Assert
         Assert.False(result);
