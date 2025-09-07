@@ -1,4 +1,6 @@
-﻿namespace StringEnricher.Nodes;
+﻿using System.Text;
+
+namespace StringEnricher.Nodes;
 
 /// <summary>
 /// A helper for building messages with a known total length.
@@ -95,10 +97,11 @@ public readonly struct MessageBuilder
         /// <param name="text">
         /// The text to append to the message.
         /// </param>
-        public void Append(string text)
+        public MessageWriter Append(string text)
         {
             text.AsSpan().CopyTo(_destination[_position..]);
             _position += text.Length;
+            return this;
         }
 
         /// <summary>
@@ -108,9 +111,10 @@ public readonly struct MessageBuilder
         /// <param name="ch">
         /// The character to append to the message.
         /// </param>
-        public void Append(char ch)
+        public MessageWriter Append(char ch)
         {
             _destination[_position++] = ch;
+            return this;
         }
 
         /// <summary>
@@ -120,10 +124,11 @@ public readonly struct MessageBuilder
         /// <param name="span">
         /// The span of characters to append to the message.
         /// </param>
-        public void Append(ReadOnlySpan<char> span)
+        public MessageWriter Append(ReadOnlySpan<char> span)
         {
             span.CopyTo(_destination.Slice(_position, span.Length));
             _position += span.Length;
+            return this;
         }
 
         /// <summary>
@@ -136,9 +141,373 @@ public readonly struct MessageBuilder
         /// <typeparam name="TNode">
         /// The type of the node to append. Must implement <see cref="INode"/>.
         /// </typeparam>
-        public void Append<TNode>(TNode node) where TNode : INode
+        public MessageWriter Append<TNode>(TNode node) where TNode : struct, INode
         {
             _position += node.CopyTo(_destination[_position..]);
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the string representation of the specified integer to the message.
+        /// This method formats the integer and copies it to the end.
+        /// </summary>
+        /// <param name="number">
+        /// The integer to append to the message.
+        /// </param>
+        /// <param name="format">
+        /// An optional format string to customize the integer representation.
+        /// If not provided, the default format will be used.
+        /// </param>
+        /// <param name="provider">
+        /// An optional format provider to customize the integer representation.
+        /// If not provided, the current culture's format provider will be used.
+        /// </param>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the integer could not be formatted into the destination span.
+        /// </exception>
+        public MessageWriter Append(int number, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+        {
+            var written = number.TryFormat(_destination[_position..], out var charsWritten, format, provider);
+            if (!written)
+            {
+                throw new InvalidOperationException("Failed to format the number.");
+            }
+
+            _position += charsWritten;
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the string representation of the specified long integer to the message.
+        /// This method formats the long integer and copies it to the end.
+        /// </summary>
+        /// <param name="number">
+        /// The long integer to append to the message.
+        /// </param>
+        /// <param name="format">
+        /// An optional format string to customize the long integer representation.
+        /// If not provided, the default format will be used.
+        /// </param>
+        /// <param name="provider">
+        /// An optional format provider to customize the long integer representation.
+        /// If not provided, the current culture's format provider will be used.
+        /// </param>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the long integer could not be formatted into the destination span.
+        /// </exception>
+        public MessageWriter Append(long number, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+        {
+            var written = number.TryFormat(_destination[_position..], out var charsWritten, format, provider);
+            if (!written)
+            {
+                throw new InvalidOperationException("Failed to format the number.");
+            }
+
+            _position += charsWritten;
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the string representation of the specified double to the message.
+        /// This method formats the double and copies it to the end.
+        /// </summary>
+        /// <param name="number">
+        /// The double to append to the message.
+        /// </param>
+        /// <param name="format">
+        /// An optional format string to customize the double representation.
+        /// If not provided, the default format will be used.
+        /// </param>
+        /// <param name="provider">
+        /// An optional format provider to customize the double representation.
+        /// If not provided, the current culture's format provider will be used.
+        /// </param>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the double could not be formatted into the destination span.
+        /// </exception>
+        public MessageWriter Append(double number, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+        {
+            var written = number.TryFormat(_destination[_position..], out var charsWritten, format, provider);
+            if (!written)
+            {
+                throw new InvalidOperationException("Failed to format the number.");
+            }
+
+            _position += charsWritten;
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the string representation of the specified float to the message.
+        /// This method formats the float and copies it to the end.
+        /// </summary>
+        /// <param name="number">
+        /// The float to append to the message.
+        /// </param>
+        /// <param name="format">
+        /// An optional format string to customize the float representation.
+        /// If not provided, the default format will be used.
+        /// </param>
+        /// <param name="provider">
+        /// An optional format provider to customize the float representation.
+        /// If not provided, the current culture's format provider will be used.
+        /// </param>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the float could not be formatted into the destination span.
+        /// </exception>
+        public MessageWriter Append(float number, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+        {
+            var written = number.TryFormat(_destination[_position..], out var charsWritten, format, provider);
+            if (!written)
+            {
+                throw new InvalidOperationException("Failed to format the number.");
+            }
+
+            _position += charsWritten;
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the string representation of the specified decimal to the message.
+        /// This method formats the decimal and copies it to the end.
+        /// </summary>
+        /// <param name="number">
+        /// The decimal to append to the message.
+        /// </param>
+        /// <param name="format">
+        /// An optional format string to customize the decimal representation.
+        /// If not provided, the default format will be used.
+        /// </param>
+        /// <param name="provider">
+        /// An optional format provider to customize the decimal representation.
+        /// If not provided, the current culture's format provider will be used.
+        /// </param>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the decimal could not be formatted into the destination span.
+        /// </exception>
+        public MessageWriter Append(decimal number, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+        {
+            var written = number.TryFormat(_destination[_position..], out var charsWritten, format, provider);
+            if (!written)
+            {
+                throw new InvalidOperationException("Failed to format the number.");
+            }
+
+            _position += charsWritten;
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the string representation of the specified boolean to the message.
+        /// This method formats the boolean and copies it to the end.
+        /// </summary>
+        /// <param name="value">
+        /// The boolean value to append to the message.
+        /// </param>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the boolean could not be formatted into the destination span.
+        /// </exception>
+        public MessageWriter Append(bool value)
+        {
+            var written = value.TryFormat(_destination[_position..], out var charsWritten);
+            if (!written)
+            {
+                throw new InvalidOperationException("Failed to format the boolean value.");
+            }
+
+            _position += charsWritten;
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the string representation of the specified DateTime to the message.
+        /// This method formats the DateTime and copies it to the end.
+        /// </summary>
+        /// <param name="dateTime">
+        /// The DateTime to append to the message.
+        /// </param>
+        /// <param name="format">
+        /// An optional format string to customize the DateTime representation.
+        /// If not provided, the default format will be used.
+        /// </param>
+        /// <param name="provider">
+        /// An optional format provider to customize the DateTime representation.
+        /// If not provided, the current culture's format provider will be used.
+        /// </param>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the DateTime could not be formatted into the destination span.
+        /// </exception>
+        public MessageWriter Append(DateTime dateTime, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+        {
+            var written = dateTime.TryFormat(_destination[_position..], out var charsWritten, format, provider);
+            if (!written)
+            {
+                throw new InvalidOperationException("Failed to format the DateTime.");
+            }
+
+            _position += charsWritten;
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the string representation of the specified DateTimeOffset to the message.
+        /// This method formats the DateTimeOffset and copies it to the end.
+        /// </summary>
+        /// <param name="dateTimeOffset">
+        /// The DateTimeOffset to append to the message.
+        /// </param>
+        /// <param name="format">
+        /// An optional format string to customize the DateTimeOffset representation.
+        /// If not provided, the default format will be used.
+        /// </param>
+        /// <param name="provider">
+        /// An optional format provider to customize the DateTimeOffset representation.
+        /// If not provided, the current culture's format provider will be used.
+        /// </param>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the DateTimeOffset could not be formatted into the destination span.
+        /// </exception>
+        public MessageWriter Append(DateTimeOffset dateTimeOffset, ReadOnlySpan<char> format = default,
+            IFormatProvider? provider = null)
+        {
+            var written = dateTimeOffset.TryFormat(_destination[_position..], out var charsWritten, format, provider);
+            if (!written)
+            {
+                throw new InvalidOperationException("Failed to format the DateTimeOffset.");
+            }
+
+            _position += charsWritten;
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the string representation of the specified Guid to the message.
+        /// This method formats the Guid and copies it to the end.
+        /// </summary>
+        /// <param name="guid">
+        /// The Guid to append to the message.
+        /// </param>
+        /// <param name="format">
+        /// An optional format string to customize the Guid representation.
+        /// If not provided, the default format will be used.
+        /// </param>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the Guid could not be formatted into the destination span.
+        /// </exception>
+        public MessageWriter Append(Guid guid, ReadOnlySpan<char> format = default)
+        {
+            var written = guid.TryFormat(_destination[_position..], out var charsWritten, format);
+            if (!written)
+            {
+                throw new InvalidOperationException("Failed to format the Guid.");
+            }
+
+            _position += charsWritten;
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the string representation of the specified TimeSpan to the message.
+        /// This method formats the TimeSpan and copies it to the end.
+        /// </summary>
+        /// <param name="timeSpan">
+        /// The TimeSpan to append to the message.
+        /// </param>
+        /// <param name="format">
+        /// An optional format string to customize the TimeSpan representation.
+        /// If not provided, the default format will be used.
+        /// </param>
+        /// <param name="provider">
+        /// An optional format provider to customize the TimeSpan representation.
+        /// If not provided, the current culture's format provider will be used.
+        /// </param>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the TimeSpan could not be formatted into the destination span.
+        /// </exception>
+        public MessageWriter Append(TimeSpan timeSpan, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+        {
+            var written = timeSpan.TryFormat(_destination[_position..], out var charsWritten, format, provider);
+            if (!written)
+            {
+                throw new InvalidOperationException("Failed to format the TimeSpan.");
+            }
+
+            _position += charsWritten;
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the string representation of the specified DateOnly to the message.
+        /// This method formats the DateOnly and copies it to the end.
+        /// </summary>
+        /// <param name="dateOnly">
+        /// The DateOnly to append to the message.
+        /// </param>
+        /// <param name="format">
+        /// An optional format string to customize the DateOnly representation.
+        /// If not provided, the default format will be used.
+        /// </param>
+        /// <param name="provider">
+        /// An optional format provider to customize the DateOnly representation.
+        /// If not provided, the current culture's format provider will be used.
+        /// </param>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the DateOnly could not be formatted into the destination span.
+        /// </exception>
+        public MessageWriter Append(DateOnly dateOnly, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+        {
+            var written = dateOnly.TryFormat(_destination[_position..], out var charsWritten, format, provider);
+            if (!written)
+            {
+                throw new InvalidOperationException("Failed to format the DateOnly.");
+            }
+
+            _position += charsWritten;
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the string representation of the specified TimeOnly to the message.
+        /// This method formats the TimeOnly and copies it to the end.
+        /// </summary>
+        /// <param name="timeOnly">
+        /// The TimeOnly to append to the message.
+        /// </param>
+        /// <param name="format">
+        /// An optional format string to customize the TimeOnly representation.
+        /// If not provided, the default format will be used.
+        /// </param>
+        /// <param name="provider">
+        /// An optional format provider to customize the TimeOnly representation.
+        /// If not provided, the current culture's format provider will be used.
+        /// </param>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the TimeOnly could not be formatted into the destination span.
+        /// </exception>
+        public MessageWriter Append(TimeOnly timeOnly, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+        {
+            var written = timeOnly.TryFormat(_destination[_position..], out var charsWritten, format, provider);
+            if (!written)
+            {
+                throw new InvalidOperationException("Failed to format the TimeOnly.");
+            }
+
+            _position += charsWritten;
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the content of the specified StringBuilder to the message.
+        /// This method copies the content of the StringBuilder to the end.
+        /// </summary>
+        /// <param name="stringBuilder">
+        /// The StringBuilder whose content will be appended to the message.
+        /// </param>
+        public MessageWriter Append(StringBuilder stringBuilder)
+        {
+            stringBuilder.CopyTo(0, _destination.Slice(_position, stringBuilder.Length), stringBuilder.Length);
+            _position += stringBuilder.Length;
+            return this;
         }
     }
 }
