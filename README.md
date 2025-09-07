@@ -65,7 +65,7 @@ var boldMdString = boldMd.ToString(); // 1 final string heap allocation here
 using StringEnricher.Node.Html;
 
 var styled = BoldHtml.Apply("bold text");
-Span<char> buffer = stackalloc char[styled.GetMaxLength()];
+Span<char> buffer = stackalloc char[styled.TotalLength]; // allocate buffer on stack
 int written = styled.CopyTo(buffer); // 0 heap allocations here
 var result = new string(buffer.Slice(0, written)); // 1 final string heap
 // result == "<b>bold text</b>"
@@ -114,6 +114,7 @@ var combinedString = combined.ToString(); // 1 final string heap allocation here
 ```csharp
 using StringEnricher;
 using StringEnricher.Node.Html;
+// Pre-calculate total length to avoid over-allocation
 var messageBuilder = new MessageBuilder(totalLength);
 var state = ["Hello, ", "World! ", "Every ", "word ", "is ", "in ", "different ", "style&"];
 var string result = messageBuilder.Create(state, static (state, writer) => 
