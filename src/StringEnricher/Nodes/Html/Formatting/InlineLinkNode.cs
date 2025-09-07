@@ -19,10 +19,10 @@ public static class InlineLinkHtml
     /// Applies inline link style to the given styled title and URL.
     /// </summary>
     /// <param name="linkTitle">The styled link title to be wrapped with anchor HTML tags.</param>
-    /// <param name="linkUrl">The styled link URL to be used in the anchor tag.</param>
+    /// <param name="linkUrl">The link URL to be used in the anchor tag.</param>
     /// <typeparam name="T">The type of the inner style that implements <see cref="INode"/>.</typeparam>
     /// <returns>A new instance of <see cref="InlineLinkNode{TInner}"/> wrapping the provided styled title and URL.</returns>
-    public static InlineLinkNode<T> Apply<T>(T linkTitle, T linkUrl) where T : INode =>
+    public static InlineLinkNode<T> Apply<T>(T linkTitle, string linkUrl) where T : INode =>
         InlineLinkNode<T>.Apply(linkTitle, linkUrl);
 }
 
@@ -49,14 +49,14 @@ public readonly struct InlineLinkNode<TInner> : INode
     public const string Suffix = "</a>";
 
     private readonly TInner _linkTitle;
-    private readonly TInner _linkUrl;
+    private readonly string _linkUrl;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="InlineLinkNode{TInner}"/> struct.
     /// </summary>
     /// <param name="linkTitle">The styled link title.</param>
     /// <param name="linkUrl">The styled link URL.</param>
-    public InlineLinkNode(TInner linkTitle, TInner linkUrl)
+    public InlineLinkNode(TInner linkTitle, string linkUrl)
     {
         _linkTitle = linkTitle;
         _linkUrl = linkUrl;
@@ -68,7 +68,7 @@ public readonly struct InlineLinkNode<TInner> : INode
     /// <summary>
     /// Gets the length of the inner title and URL.
     /// </summary>
-    public int InnerLength => _linkTitle.TotalLength + _linkUrl.TotalLength;
+    public int InnerLength => _linkTitle.TotalLength + _linkUrl.Length;
 
     /// <summary>
     /// Gets the total length of the HTML anchor syntax.
@@ -98,8 +98,8 @@ public readonly struct InlineLinkNode<TInner> : INode
         Prefix.AsSpan().CopyTo(destination.Slice(pos, Prefix.Length));
         pos += Prefix.Length;
 
-        _linkUrl.CopyTo(destination.Slice(pos, _linkUrl.TotalLength));
-        pos += _linkUrl.TotalLength;
+        _linkUrl.CopyTo(destination.Slice(pos, _linkUrl.Length));
+        pos += _linkUrl.Length;
 
         LinkSeparator.AsSpan().CopyTo(destination.Slice(pos, LinkSeparator.Length));
         pos += LinkSeparator.Length;
@@ -129,12 +129,13 @@ public readonly struct InlineLinkNode<TInner> : INode
 
         index -= Prefix.Length;
 
-        if (index < _linkUrl.TotalLength)
+        if (index < _linkUrl.Length)
         {
-            return _linkUrl.TryGetChar(index, out character);
+            character = _linkUrl[index];
+            return true;
         }
 
-        index -= _linkUrl.TotalLength;
+        index -= _linkUrl.Length;
 
         if (index < LinkSeparator.Length)
         {
@@ -162,5 +163,5 @@ public readonly struct InlineLinkNode<TInner> : INode
     /// <param name="linkUrl">The link URL to be wrapped with inline link HTML tags.</param>
     /// <param name="linkTitle">The link title to be used as the link text.</param>
     /// <returns>A new instance of <see cref="InlineLinkNode{TInner}"/> wrapping the provided URL and title.</returns>
-    public static InlineLinkNode<TInner> Apply(TInner linkUrl, TInner linkTitle) => new(linkUrl, linkTitle);
+    public static InlineLinkNode<TInner> Apply(TInner linkTitle, string linkUrl) => new(linkTitle, linkUrl);
 }

@@ -22,7 +22,23 @@ public static class InlineLinkMarkdownV2
     public static InlineLinkNode<PlainTextNode> Apply(string linkTitle, string linkUrl) =>
         InlineLinkNode<PlainTextNode>.Apply(linkTitle, linkUrl);
 
-    public static InlineLinkNode<T> Apply<T>(T linkTitle, T linkUrl) where T : INode =>
+    /// <summary>
+    /// Applies the inline link style to the given link title and link URL using the specified inner style.
+    /// </summary>
+    /// <param name="linkTitle">
+    /// The inner style representing the link title.
+    /// </param>
+    /// <param name="linkUrl">
+    /// The inner style representing the link URL.
+    /// </param>
+    /// <typeparam name="T">
+    /// The type of the inner style that implements <see cref="INode"/>.
+    /// </typeparam>
+    /// <returns>
+    /// A new instance of the <see cref="InlineLinkNode{TInner}"/> struct
+    /// with the specified link title and link URL.
+    /// </returns>
+    public static InlineLinkNode<T> Apply<T>(T linkTitle, string linkUrl) where T : INode =>
         InlineLinkNode<T>.Apply(linkTitle, linkUrl);
 }
 
@@ -52,7 +68,7 @@ public readonly struct InlineLinkNode<TInner> : INode
     public const string Suffix = ")";
 
     private readonly TInner _linkTitle;
-    private readonly TInner _linkUrl;
+    private readonly string _linkUrl;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="InlineLinkNode{TInner}"/> struct.
@@ -63,7 +79,7 @@ public readonly struct InlineLinkNode<TInner> : INode
     /// <param name="linkUrl">
     /// The inner style representing the link URL.
     /// </param>
-    public InlineLinkNode(TInner linkTitle, TInner linkUrl)
+    public InlineLinkNode(TInner linkTitle, string linkUrl)
     {
         _linkTitle = linkTitle;
         _linkUrl = linkUrl;
@@ -80,7 +96,7 @@ public readonly struct InlineLinkNode<TInner> : INode
     /// <summary>
     /// Gets the length of the inner content (link title + link URL).
     /// </summary>
-    public int InnerLength => _linkTitle.TotalLength + _linkUrl.TotalLength;
+    public int InnerLength => _linkTitle.TotalLength + _linkUrl.Length;
 
     /// <inheritdoc />
     public int SyntaxLength => Prefix.Length + LinkSeparator.Length + Suffix.Length;
@@ -112,8 +128,8 @@ public readonly struct InlineLinkNode<TInner> : INode
         pos += LinkSeparator.Length;
 
         // Copy Link URL
-        _linkUrl.CopyTo(destination.Slice(pos, _linkUrl.TotalLength));
-        pos += _linkUrl.TotalLength;
+        _linkUrl.CopyTo(destination.Slice(pos, _linkUrl.Length));
+        pos += _linkUrl.Length;
 
         // Copy Suffix
         Suffix.AsSpan().CopyTo(destination.Slice(pos, Suffix.Length));
@@ -153,12 +169,13 @@ public readonly struct InlineLinkNode<TInner> : INode
 
         index -= LinkSeparator.Length;
 
-        if (index < _linkUrl.TotalLength)
+        if (index < _linkUrl.Length)
         {
-            return _linkUrl.TryGetChar(index, out character);
+            character = _linkUrl[index];
+            return true;
         }
 
-        index -= _linkUrl.TotalLength;
+        index -= _linkUrl.Length;
 
         // At this point, index must be within the Suffix
         character = Suffix[index];
@@ -172,11 +189,11 @@ public readonly struct InlineLinkNode<TInner> : INode
     /// The inner style representing the link title.
     /// </param>
     /// <param name="linkUrl">
-    /// The inner style representing the link URL.
+    /// The link URL.
     /// </param>
     /// <returns>
     /// A new instance of the <see cref="InlineLinkNode{TInner}"/> struct.
     /// </returns>
-    public static InlineLinkNode<TInner> Apply(TInner linkTitle, TInner linkUrl) =>
+    public static InlineLinkNode<TInner> Apply(TInner linkTitle, string linkUrl) =>
         new(linkTitle, linkUrl);
 }
