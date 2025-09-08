@@ -2,7 +2,7 @@ namespace StringEnricher.Nodes.MarkdownV2.Formatting;
 
 /// <summary>
 /// Represents blockquote text in MarkdownV2 format.
-/// Example: ">blockquote text example\n>new blockquote line"
+/// Example: "&gt;blockquote text example\n&gt;new blockquote line"
 /// </summary>
 /// <typeparam name="TInner">
 /// The type of the inner style that will be wrapped with blockquote syntax.

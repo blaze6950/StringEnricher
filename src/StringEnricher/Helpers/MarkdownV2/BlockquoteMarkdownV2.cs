@@ -6,7 +6,7 @@ namespace StringEnricher.Helpers.MarkdownV2;
 
 /// <summary>
 /// Provides methods to apply blockquote style in MarkdownV2 format.
-/// Example: ">blockquote text example\n>new blockquote line"
+/// Example: "&gt;blockquote text example\n&gt;new blockquote line"
 /// </summary>
 public static class BlockquoteMarkdownV2
 {
