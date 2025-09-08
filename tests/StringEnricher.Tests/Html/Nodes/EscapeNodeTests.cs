@@ -1,3 +1,4 @@
+using StringEnricher.Helpers.Html;
 using StringEnricher.Nodes.Html;
 
 namespace StringEnricher.Tests.Html.Nodes;
