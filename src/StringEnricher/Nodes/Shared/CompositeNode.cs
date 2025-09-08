@@ -85,16 +85,10 @@ public readonly struct CompositeNode<TLeft, TRight> : INode
     }
 
     /// <inheritdoc />
-    public int SyntaxLength
-    {
-        get { return _left.SyntaxLength + _right.SyntaxLength; }
-    }
+    public int SyntaxLength => _left.SyntaxLength + _right.SyntaxLength;
 
     /// <inheritdoc />
-    public int TotalLength
-    {
-        get { return _left.TotalLength + _right.TotalLength; }
-    }
+    public int TotalLength => _left.TotalLength + _right.TotalLength;
 
     /// <inheritdoc />
     public override string ToString()

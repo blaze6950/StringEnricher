@@ -1,5 +1,4 @@
 using StringEnricher.Helpers.MarkdownV2;
-using StringEnricher.Nodes.MarkdownV2.Formatting;
 
 namespace StringEnricher.Tests.MarkdownV2.Nodes;
 
@@ -12,7 +11,7 @@ public class TgEmojiNodeTests
         const string expectedTgEmoji = "![👍](tg://emoji?id=5368324170671202286)";
 
         // Act
-        var styledTgEmoji = TgEmojiMarkdownV2.Apply("👍", "5368324170671202286").ToString();
+        var styledTgEmoji = TgEmojiMarkdownV2.Apply("👍", 5368324170671202286).ToString();
 
         // Assert
         Assert.NotNull(styledTgEmoji);
@@ -24,7 +23,7 @@ public class TgEmojiNodeTests
     public void TryGetChar_ValidIndices_ReturnsTrueAndCorrectChar()
     {
         // Arrange
-        var tgEmoji = TgEmojiMarkdownV2.Apply("👍", "12345");
+        var tgEmoji = TgEmojiMarkdownV2.Apply("👍", 12345);
         const string expected = "![👍](tg://emoji?id=12345)";
 
         // Act & Assert
@@ -42,7 +41,7 @@ public class TgEmojiNodeTests
     public void TryGetChar_OutOfRangeIndices_ReturnsFalseAndNullChar(int index)
     {
         // Arrange
-        var tgEmoji = TgEmojiMarkdownV2.Apply("👍", "12345");
+        var tgEmoji = TgEmojiMarkdownV2.Apply("👍", 12345);
 
         // Act
         var result = tgEmoji.TryGetChar(index, out var ch);

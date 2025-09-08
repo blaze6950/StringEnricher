@@ -3,7 +3,6 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
 using StringEnricher.Benchmarks.AnalogueImplementations;
 using StringEnricher.Helpers.MarkdownV2;
-using StringEnricher.Nodes.MarkdownV2.Formatting;
 
 namespace StringEnricher.Benchmarks.Nodes.SingleBoldNodeBenchmarks;
 

@@ -1,5 +1,4 @@
-﻿using StringEnricher.Nodes;
-using StringEnricher.Nodes.MarkdownV2.Formatting;
+﻿using StringEnricher.Nodes.MarkdownV2.Formatting;
 using StringEnricher.Nodes.Shared;
 
 namespace StringEnricher.Helpers.MarkdownV2;
@@ -11,7 +10,7 @@ namespace StringEnricher.Helpers.MarkdownV2;
 public static class TgEmojiMarkdownV2
 {
     /// <summary>
-    /// Creates a new instance of the <see cref="TgEmojiNode{TInner}"/> struct.
+    /// Creates a new instance of the <see cref="TgEmojiNode"/> struct.
     /// </summary>
     /// <param name="defaultEmoji">
     /// The default emoji to display if the custom emoji is not available.
@@ -20,13 +19,13 @@ public static class TgEmojiMarkdownV2
     /// The unique identifier of the custom emoji.
     /// </param>
     /// <returns>
-    /// The created instance of the <see cref="TgEmojiNode{TInner}"/> struct.
+    /// The created instance of the <see cref="TgEmojiNode"/> struct.
     /// </returns>
-    public static TgEmojiNode<PlainTextNode> Apply(string defaultEmoji, string customEmojiId) =>
-        TgEmojiNode<PlainTextNode>.Apply(defaultEmoji, customEmojiId);
+    public static TgEmojiNode Apply(PlainTextNode defaultEmoji, LongNode customEmojiId) =>
+        TgEmojiNode.Apply(defaultEmoji, customEmojiId);
 
     /// <summary>
-    /// Creates a new instance of the <see cref="TgEmojiNode{TInner}"/> struct.
+    /// Creates a new instance of the <see cref="TgEmojiNode"/> struct.
     /// </summary>
     /// <param name="defaultEmoji">
     /// The default emoji to display if the custom emoji is not available.
@@ -34,27 +33,39 @@ public static class TgEmojiMarkdownV2
     /// <param name="customEmojiId">
     /// The unique identifier of the custom emoji.
     /// </param>
-    /// <typeparam name="T">
-    /// The type of the inner style that will be wrapped with TG emoji syntax.
-    /// </typeparam>
     /// <returns>
-    /// The created instance of the <see cref="TgEmojiNode{TInner}"/> struct.
+    /// The created instance of the <see cref="TgEmojiNode"/> struct.
     /// </returns>
-    public static TgEmojiNode<T> Apply<T>(T defaultEmoji, T customEmojiId) where T : INode =>
-        TgEmojiNode<T>.Apply(defaultEmoji, customEmojiId);
+    public static TgEmojiNode Apply(string defaultEmoji, long customEmojiId) =>
+        TgEmojiNode.Apply(defaultEmoji, customEmojiId);
 
     /// <summary>
-    /// Creates a new instance of the <see cref="TgEmojiNode{TInner}"/> struct with integer emoji ID.
+    /// Creates a new instance of the <see cref="TgEmojiNode"/> struct.
     /// </summary>
     /// <param name="defaultEmoji">
     /// The default emoji to display if the custom emoji is not available.
     /// </param>
     /// <param name="customEmojiId">
-    /// The unique identifier of the custom emoji as integer.
+    /// The unique identifier of the custom emoji.
     /// </param>
     /// <returns>
-    /// The created instance of the <see cref="TgEmojiNode{TInner}"/> struct.
+    /// The created instance of the <see cref="TgEmojiNode"/> struct.
     /// </returns>
-    public static TgEmojiNode<PlainTextNode> Apply(string defaultEmoji, int customEmojiId) =>
-        TgEmojiNode<PlainTextNode>.Apply(defaultEmoji, customEmojiId.ToString());
+    public static TgEmojiNode Apply(PlainTextNode defaultEmoji, long customEmojiId) =>
+        TgEmojiNode.Apply(defaultEmoji, customEmojiId);
+
+    /// <summary>
+    /// Creates a new instance of the <see cref="TgEmojiNode"/> struct.
+    /// </summary>
+    /// <param name="defaultEmoji">
+    /// The default emoji to display if the custom emoji is not available.
+    /// </param>
+    /// <param name="customEmojiId">
+    /// The unique identifier of the custom emoji.
+    /// </param>
+    /// <returns>
+    /// The created instance of the <see cref="TgEmojiNode"/> struct.
+    /// </returns>
+    public static TgEmojiNode Apply(string defaultEmoji, LongNode customEmojiId) =>
+        TgEmojiNode.Apply(defaultEmoji, customEmojiId);
 }

@@ -1,14 +1,12 @@
+using StringEnricher.Nodes.Shared;
+
 namespace StringEnricher.Nodes.MarkdownV2.Formatting;
 
 /// <summary>
 /// Represents TG emoji text in MarkdownV2 format.
 /// Example: "![👍](tg://emoji?id=123456)"
 /// </summary>
-/// <typeparam name="TInner">
-/// The type of the inner style that will be wrapped with TG emoji syntax.
-/// </typeparam>
-public readonly struct TgEmojiNode<TInner> : INode
-    where TInner : INode
+public readonly struct TgEmojiNode : INode
 {
     /// <summary>
     /// The prefix of the TG emoji style in MarkdownV2 format.
@@ -25,11 +23,11 @@ public readonly struct TgEmojiNode<TInner> : INode
     /// </summary>
     public const string Suffix = ")";
 
-    private readonly TInner _defaultEmoji;
-    private readonly TInner _customEmojiId;
+    private readonly PlainTextNode _defaultEmoji;
+    private readonly LongNode _customEmojiId;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TgEmojiNode{TInner}"/> struct.
+    /// Initializes a new instance of the <see cref="TgEmojiNode"/> struct.
     /// </summary>
     /// <param name="defaultEmoji">
     /// The default emoji to display if the custom emoji is not available.
@@ -37,7 +35,7 @@ public readonly struct TgEmojiNode<TInner> : INode
     /// <param name="customEmojiId">
     /// The unique identifier of the custom emoji.
     /// </param>
-    public TgEmojiNode(TInner defaultEmoji, TInner customEmojiId)
+    public TgEmojiNode(PlainTextNode defaultEmoji, LongNode customEmojiId)
     {
         _defaultEmoji = defaultEmoji;
         _customEmojiId = customEmojiId;
@@ -57,22 +55,13 @@ public readonly struct TgEmojiNode<TInner> : INode
     /// <summary>
     /// Gets the length of the inner styled text.
     /// </summary>
-    public int InnerLength
-    {
-        get { return _defaultEmoji.TotalLength + _customEmojiId.TotalLength; }
-    }
+    public int InnerLength => _defaultEmoji.TotalLength + _customEmojiId.TotalLength;
 
     /// <inheritdoc />
-    public int SyntaxLength
-    {
-        get { return Prefix.Length + Separator.Length + Suffix.Length; }
-    }
+    public int SyntaxLength => Prefix.Length + Separator.Length + Suffix.Length;
 
     /// <inheritdoc />
-    public int TotalLength
-    {
-        get { return SyntaxLength + InnerLength; }
-    }
+    public int TotalLength => SyntaxLength + InnerLength;
 
     /// <inheritdoc />
     public int CopyTo(Span<char> destination)
@@ -152,7 +141,7 @@ public readonly struct TgEmojiNode<TInner> : INode
     }
 
     /// <summary>
-    /// Creates a new instance of the <see cref="TgEmojiNode{TInner}"/> struct.
+    /// Creates a new instance of the <see cref="TgEmojiNode"/> struct.
     /// </summary>
     /// <param name="defaultEmoji">
     /// The default emoji to display if the custom emoji is not available.
@@ -161,10 +150,8 @@ public readonly struct TgEmojiNode<TInner> : INode
     /// The unique identifier of the custom emoji.
     /// </param>
     /// <returns>
-    /// The created instance of the <see cref="TgEmojiNode{TInner}"/> struct.
+    /// The created instance of the <see cref="TgEmojiNode"/> struct.
     /// </returns>
-    public static TgEmojiNode<TInner> Apply(TInner defaultEmoji, TInner customEmojiId)
-    {
-        return new TgEmojiNode<TInner>(defaultEmoji, customEmojiId);
-    }
+    public static TgEmojiNode Apply(PlainTextNode defaultEmoji, LongNode customEmojiId) =>
+        new TgEmojiNode(defaultEmoji, customEmojiId);
 }
