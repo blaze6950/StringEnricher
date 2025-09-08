@@ -9,7 +9,7 @@ public class BoolNodeTests
     {
         // Arrange
         const bool value = true;
-        const int expectedTotalLength = 4; // "true" has 4 characters
+        const int expectedTotalLength = 4; // "True" has 4 characters
         const int expectedSyntaxLength = 0; // BoolNode has no syntax characters
 
         // Act
@@ -25,7 +25,7 @@ public class BoolNodeTests
     {
         // Arrange
         const bool value = false;
-        const int expectedTotalLength = 5; // "false" has 5 characters
+        const int expectedTotalLength = 5; // "False" has 5 characters
         const int expectedSyntaxLength = 0; // BoolNode has no syntax characters
 
         // Act
@@ -55,8 +55,8 @@ public class BoolNodeTests
         const bool value = true;
         var node = new BoolNode(value);
         Span<char> destination = stackalloc char[10];
-        const int expectedBytesWritten = 4; // "true" has 4 characters
-        const string expectedString = "true";
+        const int expectedBytesWritten = 4; // "True" has 4 characters
+        const string expectedString = "True";
 
         // Act
         var bytesWritten = node.CopyTo(destination);
@@ -73,8 +73,8 @@ public class BoolNodeTests
         const bool value = false;
         var node = new BoolNode(value);
         Span<char> destination = stackalloc char[10];
-        const int expectedBytesWritten = 5; // "false" has 5 characters
-        const string expectedString = "false";
+        const int expectedBytesWritten = 5; // "False" has 5 characters
+        const string expectedString = "False";
 
         // Act
         var bytesWritten = node.CopyTo(destination);
@@ -94,7 +94,7 @@ public class BoolNodeTests
         // Act
         var exception = Record.Exception(() =>
         {
-            Span<char> destination = stackalloc char[3]; // Too small for "false"
+            Span<char> destination = stackalloc char[3]; // Too small for "False"
             return node.CopyTo(destination);
         });
 
@@ -110,9 +110,9 @@ public class BoolNodeTests
         // Arrange
         const bool value = true;
         var node = new BoolNode(value);
-        Span<char> destination = stackalloc char[4]; // Exact size for "true"
+        Span<char> destination = stackalloc char[4]; // Exact size for "True"
         const int expectedBytesWritten = 4;
-        const string expectedString = "true";
+        const string expectedString = "True";
 
         // Act
         var bytesWritten = node.CopyTo(destination);
@@ -128,7 +128,7 @@ public class BoolNodeTests
         // Arrange
         const bool value = true;
         var node = new BoolNode(value);
-        const string expected = "true";
+        const string expected = "True";
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
@@ -145,7 +145,7 @@ public class BoolNodeTests
         // Arrange
         const bool value = false;
         var node = new BoolNode(value);
-        const string expected = "false";
+        const string expected = "False";
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
@@ -158,7 +158,7 @@ public class BoolNodeTests
 
     [Theory]
     [InlineData(-1)]
-    [InlineData(4)] // "true" has indices 0, 1, 2, 3
+    [InlineData(4)] // "True" has indices 0, 1, 2, 3
     [InlineData(10)]
     public void TryGetChar_OutOfRangeIndicesForTrue_ReturnsFalseAndNullChar(int index)
     {
@@ -175,7 +175,7 @@ public class BoolNodeTests
 
     [Theory]
     [InlineData(-1)]
-    [InlineData(5)] // "false" has indices 0, 1, 2, 3, 4
+    [InlineData(5)] // "False" has indices 0, 1, 2, 3, 4
     [InlineData(10)]
     public void TryGetChar_OutOfRangeIndicesForFalse_ReturnsFalseAndNullChar(int index)
     {
@@ -191,7 +191,7 @@ public class BoolNodeTests
     }
 
     [Theory]
-    [InlineData(0, 't')]
+    [InlineData(0, 'T')]
     [InlineData(1, 'r')]
     [InlineData(2, 'u')]
     [InlineData(3, 'e')]
@@ -209,7 +209,7 @@ public class BoolNodeTests
     }
 
     [Theory]
-    [InlineData(0, 'f')]
+    [InlineData(0, 'F')]
     [InlineData(1, 'a')]
     [InlineData(2, 'l')]
     [InlineData(3, 's')]
@@ -232,7 +232,7 @@ public class BoolNodeTests
     {
         // Arrange
         const bool value = true;
-        const int expectedTotalLength = 4; // "true" has 4 characters
+        const int expectedTotalLength = 4; // "True" has 4 characters
         const int expectedSyntaxLength = 0; // BoolNode has no syntax characters
 
         // Act
@@ -248,7 +248,7 @@ public class BoolNodeTests
     {
         // Arrange
         const bool value = false;
-        const int expectedTotalLength = 5; // "false" has 5 characters
+        const int expectedTotalLength = 5; // "False" has 5 characters
         const int expectedSyntaxLength = 0; // BoolNode has no syntax characters
 
         // Act
@@ -269,7 +269,7 @@ public class BoolNodeTests
         var result = node.ToString();
 
         // Assert
-        Assert.Equal("true", result);
+        Assert.Equal("True", result);
     }
 
     [Fact]
@@ -282,7 +282,7 @@ public class BoolNodeTests
         var result = node.ToString();
 
         // Assert
-        Assert.Equal("false", result);
+        Assert.Equal("False", result);
     }
 
     [Fact]

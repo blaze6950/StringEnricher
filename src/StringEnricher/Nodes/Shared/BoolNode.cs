@@ -49,7 +49,7 @@ public readonly struct BoolNode : INode
             return false;
         }
 
-        character = _bool ? "true"[index] : "false"[index];
+        character = _bool ? "True"[index] : "False"[index];
         return true;
     }
 
