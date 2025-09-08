@@ -1,6 +1,7 @@
 ﻿using System.Text;
+using StringEnricher.Nodes;
 
-namespace StringEnricher.Nodes;
+namespace StringEnricher;
 
 /// <summary>
 /// A helper for building messages with a known total length.

@@ -1,4 +1,5 @@
 ﻿using StringEnricher.Helpers.MarkdownV2;
+using StringEnricher.Helpers.Shared;
 using StringEnricher.Nodes.Shared;
 
 namespace StringEnricher.Tests;
