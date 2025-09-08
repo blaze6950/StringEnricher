@@ -6,15 +6,27 @@ namespace StringEnricher.Nodes.Shared;
 public readonly struct LongNode : INode
 {
     private readonly long _long;
+    private readonly string? _format;
+    private readonly IFormatProvider? _provider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LongNode"/> struct.
     /// </summary>
-    /// <param name="long"></param>
-    public LongNode(long @long)
+    /// <param name="long">
+    /// The long value to represent.
+    /// </param>
+    /// <param name="format">
+    /// The format string to use when converting the long to a string.
+    /// </param>
+    /// <param name="provider">
+    /// The format provider to use when converting the long to a string.
+    /// </param>
+    public LongNode(long @long, string? format = null, IFormatProvider? provider = null)
     {
         _long = @long;
-        TotalLength = GetLongLength(@long);
+        _format = format;
+        _provider = provider;
+        TotalLength = GetLongLength(@long, _format, _provider);
     }
 
     /// <inheritdoc />
@@ -35,7 +47,7 @@ public readonly struct LongNode : INode
             throw new ArgumentException("Destination span too small.");
         }
 
-        _long.TryFormat(destination, out _, "D");
+        _long.TryFormat(destination, out _, _format, _provider);
 
         return textLength;
     }
@@ -50,7 +62,7 @@ public readonly struct LongNode : INode
         }
 
         Span<char> buffer = stackalloc char[TotalLength];
-        _long.TryFormat(buffer, out _, "D");
+        _long.TryFormat(buffer, out _, _format, _provider);
         character = buffer[index];
         return true;
     }
@@ -65,28 +77,69 @@ public readonly struct LongNode : INode
     /// <summary>
     /// Calculates the length of the long when represented as a string.
     /// </summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    private static int GetLongLength(long value)
+    /// <param name="value">
+    /// The long value to calculate the length for.
+    /// </param>
+    /// <param name="format">
+    /// The format string to use when converting the long to a string.
+    /// </param>
+    /// <param name="provider">
+    /// The format provider to use when converting the long to a string.
+    /// </param>
+    /// <returns>
+    /// The length of the long when represented as a string.
+    /// </returns>
+    private static int GetLongLength(long value, string? format = null, IFormatProvider? provider = null)
     {
-        if (value == 0)
+        var bufferSize = 32;
+        while (true)
         {
-            return 1;
+            if (TryGetFormattedLength(value, format, provider, bufferSize, out var dateOnlyLength))
+            {
+                return dateOnlyLength;
+            }
+
+            bufferSize *= 2;
+            if (bufferSize > 128)
+            {
+                throw new InvalidOperationException("long format string is too long.");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Tries to get the length of the formatted string representation of a long.
+    /// </summary>
+    /// <param name="value">
+    /// The long value.
+    /// </param>
+    /// <param name="format">
+    /// The format to use when converting the long to a string.
+    /// </param>
+    /// <param name="provider">
+    /// The format provider to use when converting the long to a string.
+    /// </param>
+    /// <param name="bufferSize">
+    /// The size of the buffer to use when formatting the long.
+    /// </param>
+    /// <param name="length">
+    /// The length of the formatted string representation of the long.
+    /// </param>
+    /// <returns>
+    /// True if the length was successfully obtained; otherwise, false.
+    /// </returns>
+    private static bool TryGetFormattedLength(long value, string? format, IFormatProvider? provider, int bufferSize,
+        out int length)
+    {
+        length = 0;
+        Span<char> buffer = stackalloc char[bufferSize];
+
+        if (!value.TryFormat(buffer, out var charsWritten, format, provider))
+        {
+            return false;
         }
 
-        var length = 0;
-        if (value < 0)
-        {
-            length++; // for the minus sign '-'
-            value = -value;
-        }
-
-        while (value != 0)
-        {
-            length++;
-            value /= 10;
-        }
-
-        return length;
+        length = charsWritten;
+        return true;
     }
 }

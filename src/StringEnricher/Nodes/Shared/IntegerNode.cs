@@ -6,15 +6,27 @@ namespace StringEnricher.Nodes.Shared;
 public readonly struct IntegerNode : INode
 {
     private readonly int _integer;
+    private readonly string? _format;
+    private readonly IFormatProvider? _provider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="IntegerNode"/> struct.
     /// </summary>
-    /// <param name="integer"></param>
-    public IntegerNode(int integer)
+    /// <param name="integer">
+    /// The integer value to be represented by this node.
+    /// </param>
+    /// <param name="format">
+    /// An optional format string that defines how the integer should be formatted.
+    /// </param>
+    /// <param name="provider">
+    /// An optional format provider that supplies culture-specific formatting information.
+    /// </param>
+    public IntegerNode(int integer, string? format = null, IFormatProvider? provider = null)
     {
         _integer = integer;
-        TotalLength = GetIntLength(integer);
+        _format = format;
+        _provider = provider;
+        TotalLength = GetIntLength(integer, _format, _provider);
     }
 
     /// <inheritdoc />
@@ -35,7 +47,7 @@ public readonly struct IntegerNode : INode
             throw new ArgumentException("Destination span too small.");
         }
 
-        _integer.TryFormat(destination, out _, "D");
+        _integer.TryFormat(destination, out _, _format, _provider);
 
         return textLength;
     }
@@ -50,7 +62,7 @@ public readonly struct IntegerNode : INode
         }
 
         Span<char> buffer = stackalloc char[TotalLength];
-        _integer.TryFormat(buffer, out _, "D");
+        _integer.TryFormat(buffer, out _, _format, _provider);
         character = buffer[index];
         return true;
     }
@@ -65,28 +77,69 @@ public readonly struct IntegerNode : INode
     /// <summary>
     /// Calculates the length of the integer when represented as a string.
     /// </summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    private static int GetIntLength(int value)
+    /// <param name="value">
+    /// The integer value whose length is to be calculated.
+    /// </param>
+    /// <param name="format">
+    /// An optional format string that defines how the integer should be formatted.
+    /// </param>
+    /// <param name="provider">
+    /// An optional format provider that supplies culture-specific formatting information.
+    /// </param>
+    /// <returns>
+    /// The length of the integer when formatted as a string.
+    /// </returns>
+    private static int GetIntLength(int value, string? format, IFormatProvider? provider)
     {
-        if (value == 0)
+        var bufferSize = 16;
+        while (true)
         {
-            return 1;
+            if (TryGetFormattedLength(value, format, provider, bufferSize, out var dateOnlyLength))
+            {
+                return dateOnlyLength;
+            }
+
+            bufferSize *= 2;
+            if (bufferSize > 64)
+            {
+                throw new InvalidOperationException("int format string is too long.");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Tries to get the length of the formatted string representation of a int.
+    /// </summary>
+    /// <param name="value">
+    /// The int value.
+    /// </param>
+    /// <param name="format">
+    /// The format to use when converting the int to a string.
+    /// </param>
+    /// <param name="provider">
+    /// The format provider to use when converting the int to a string.
+    /// </param>
+    /// <param name="bufferSize">
+    /// The size of the buffer to use when formatting the int.
+    /// </param>
+    /// <param name="length">
+    /// The length of the formatted string representation of the int.
+    /// </param>
+    /// <returns>
+    /// True if the length was successfully obtained; otherwise, false.
+    /// </returns>
+    private static bool TryGetFormattedLength(int value, string? format, IFormatProvider? provider, int bufferSize,
+        out int length)
+    {
+        length = 0;
+        Span<char> buffer = stackalloc char[bufferSize];
+
+        if (!value.TryFormat(buffer, out var charsWritten, format, provider))
+        {
+            return false;
         }
 
-        var length = 0;
-        if (value < 0)
-        {
-            length++; // for the minus sign '-'
-            value = -value;
-        }
-
-        while (value != 0)
-        {
-            length++;
-            value /= 10;
-        }
-
-        return length;
+        length = charsWritten;
+        return true;
     }
 }

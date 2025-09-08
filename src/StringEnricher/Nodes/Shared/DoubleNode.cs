@@ -6,15 +6,27 @@ namespace StringEnricher.Nodes.Shared;
 public readonly struct DoubleNode : INode
 {
     private readonly double _double;
+    private readonly string? _format;
+    private readonly IFormatProvider? _provider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DoubleNode"/> struct.
     /// </summary>
-    /// <param name="double"></param>
-    public DoubleNode(double @double)
+    /// <param name="double">
+    /// The double value to represent.
+    /// </param>
+    /// <param name="format">
+    /// The format string (optional).
+    /// </param>
+    /// <param name="provider">
+    /// The format provider (optional).
+    /// </param>
+    public DoubleNode(double @double, string? format = null, IFormatProvider? provider = null)
     {
         _double = @double;
-        TotalLength = GetDoubleLength(@double);
+        _format = format;
+        _provider = provider;
+        TotalLength = GetDoubleLength(@double, _format, _provider);
     }
 
     /// <inheritdoc />
@@ -35,7 +47,7 @@ public readonly struct DoubleNode : INode
             throw new ArgumentException("Destination span too small.");
         }
 
-        _double.TryFormat(destination, out _, "G");
+        _double.TryFormat(destination, out _, _format, _provider);
 
         return textLength;
     }
@@ -50,7 +62,7 @@ public readonly struct DoubleNode : INode
         }
 
         Span<char> buffer = stackalloc char[TotalLength];
-        _double.TryFormat(buffer, out _, "G");
+        _double.TryFormat(buffer, out _, _format, _provider);
         character = buffer[index];
         return true;
     }
@@ -66,12 +78,60 @@ public readonly struct DoubleNode : INode
     /// Calculates the length of the double when represented as a string.
     /// </summary>
     /// <param name="value"></param>
+    /// <param name="format"></param>
+    /// <param name="provider"></param>
     /// <returns></returns>
-    private static int GetDoubleLength(double value)
+    private static int GetDoubleLength(double value, string? format = null, IFormatProvider? provider = null)
     {
-        Span<char> buffer = stackalloc char[32]; // 32 chars is enough for any double
-        return value.TryFormat(buffer, out var charsWritten, "G", System.Globalization.CultureInfo.InvariantCulture)
-            ? charsWritten
-            : throw new FormatException("Failed to format double.");
+        var bufferSize = 32;
+        while (true)
+        {
+            if (TryGetFormattedLength(value, format, provider, bufferSize, out var dateOnlyLength))
+            {
+                return dateOnlyLength;
+            }
+
+            bufferSize *= 2;
+            if (bufferSize > 128)
+            {
+                throw new InvalidOperationException("double format string is too long.");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Tries to get the length of the formatted string representation of a double.
+    /// </summary>
+    /// <param name="value">
+    /// The double value.
+    /// </param>
+    /// <param name="format">
+    /// The format to use when converting the double to a string.
+    /// </param>
+    /// <param name="provider">
+    /// The format provider to use when converting the double to a string.
+    /// </param>
+    /// <param name="bufferSize">
+    /// The size of the buffer to use when formatting the double.
+    /// </param>
+    /// <param name="length">
+    /// The length of the formatted string representation of the double.
+    /// </param>
+    /// <returns>
+    /// True if the length was successfully obtained; otherwise, false.
+    /// </returns>
+    private static bool TryGetFormattedLength(double value, string? format, IFormatProvider? provider, int bufferSize,
+        out int length)
+    {
+        length = 0;
+        Span<char> buffer = stackalloc char[bufferSize];
+
+        if (!value.TryFormat(buffer, out var charsWritten, format, provider))
+        {
+            return false;
+        }
+
+        length = charsWritten;
+        return true;
     }
 }

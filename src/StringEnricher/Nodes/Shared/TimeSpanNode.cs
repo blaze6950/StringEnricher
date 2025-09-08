@@ -6,15 +6,27 @@ namespace StringEnricher.Nodes.Shared;
 public readonly struct TimeSpanNode : INode
 {
     private readonly TimeSpan _timeSpan;
+    private readonly string? _format;
+    private readonly IFormatProvider? _provider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TimeSpanNode"/> struct.
     /// </summary>
-    /// <param name="timeSpan"></param>
-    public TimeSpanNode(TimeSpan timeSpan)
+    /// <param name="timeSpan">
+    /// The timeSpan value.
+    /// </param>
+    /// <param name="format">
+    /// The format to use. If null, the default format is used.
+    /// </param>
+    /// <param name="provider">
+    /// The format provider to use. If null, the current culture is used.
+    /// </param>
+    public TimeSpanNode(TimeSpan timeSpan, string? format = null, IFormatProvider? provider = null)
     {
         _timeSpan = timeSpan;
-        TotalLength = GetTimeSpanLength(_timeSpan);
+        _format = format;
+        _provider = provider;
+        TotalLength = GetTimeSpanLength(_timeSpan, _format, _provider);
     }
 
     /// <inheritdoc />
@@ -35,7 +47,7 @@ public readonly struct TimeSpanNode : INode
             throw new ArgumentException("Destination span too small.");
         }
 
-        _timeSpan.TryFormat(destination, out _);
+        _timeSpan.TryFormat(destination, out _, _format, _provider);
 
         return textLength;
     }
@@ -50,7 +62,7 @@ public readonly struct TimeSpanNode : INode
         }
 
         Span<char> buffer = stackalloc char[TotalLength];
-        _timeSpan.TryFormat(buffer, out _);
+        _timeSpan.TryFormat(buffer, out _, _format, _provider);
         character = buffer[index];
         return true;
     }
@@ -68,13 +80,66 @@ public readonly struct TimeSpanNode : INode
     /// <param name="value">
     /// The timeSpan value.
     /// </param>
+    /// <param name="format">
+    /// The format to use. If null, the default format is used.
+    /// </param>
+    /// <param name="provider">
+    /// The format provider to use. If null, the current culture is used.
+    /// </param>
     /// <returns>
     /// The length of the string representation of the timeSpan.
     /// </returns>
-    private static int GetTimeSpanLength(TimeSpan value)
+    private static int GetTimeSpanLength(TimeSpan value, string? format = null, IFormatProvider? provider = null)
     {
-        Span<char> buffer = stackalloc char[32]; // 32 is enough for most TimeSpan formats
-        value.TryFormat(buffer, out var charsWritten);
-        return charsWritten;
+        var bufferSize = 32;
+        while (true)
+        {
+            if (TryGetFormattedLength(value, format, provider, bufferSize, out var dateOnlyLength))
+            {
+                return dateOnlyLength;
+            }
+
+            bufferSize *= 2;
+            if (bufferSize > 128)
+            {
+                throw new InvalidOperationException("TimeSpan format string is too long.");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Tries to get the length of the formatted string representation of a TimeSpan.
+    /// </summary>
+    /// <param name="value">
+    /// The TimeSpan value.
+    /// </param>
+    /// <param name="format">
+    /// The format to use when converting the TimeSpan to a string.
+    /// </param>
+    /// <param name="provider">
+    /// The format provider to use when converting the TimeSpan to a string.
+    /// </param>
+    /// <param name="bufferSize">
+    /// The size of the buffer to use when formatting the TimeSpan.
+    /// </param>
+    /// <param name="length">
+    /// The length of the formatted string representation of the TimeSpan.
+    /// </param>
+    /// <returns>
+    /// True if the length was successfully obtained; otherwise, false.
+    /// </returns>
+    private static bool TryGetFormattedLength(TimeSpan value, string? format, IFormatProvider? provider,
+        int bufferSize, out int length)
+    {
+        length = 0;
+        Span<char> buffer = stackalloc char[bufferSize];
+
+        if (!value.TryFormat(buffer, out var charsWritten, format, provider))
+        {
+            return false;
+        }
+
+        length = charsWritten;
+        return true;
     }
 }

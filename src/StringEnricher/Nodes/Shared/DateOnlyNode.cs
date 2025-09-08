@@ -6,15 +6,27 @@ namespace StringEnricher.Nodes.Shared;
 public readonly struct DateOnlyNode : INode
 {
     private readonly DateOnly _dateOnly;
+    private readonly string? _format;
+    private readonly IFormatProvider? _provider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DateOnlyNode"/> struct.
     /// </summary>
-    /// <param name="dateOnly"></param>
-    public DateOnlyNode(DateOnly dateOnly)
+    /// <param name="dateOnly">
+    /// The dateOnly value.
+    /// </param>
+    /// <param name="format">
+    /// The format to use when converting the dateOnly to a string.
+    /// </param>
+    /// <param name="provider">
+    /// The format provider to use when converting the dateOnly to a string.
+    /// </param>
+    public DateOnlyNode(DateOnly dateOnly, string? format = null, IFormatProvider? provider = null)
     {
         _dateOnly = dateOnly;
-        TotalLength = GetDateOnlyLength(_dateOnly);
+        _format = format;
+        _provider = provider;
+        TotalLength = GetDateOnlyLength(_dateOnly, _format, _provider);
     }
 
     /// <inheritdoc />
@@ -35,7 +47,7 @@ public readonly struct DateOnlyNode : INode
             throw new ArgumentException("Destination span too small.");
         }
 
-        _dateOnly.TryFormat(destination, out _);
+        _dateOnly.TryFormat(destination, out _, _format, _provider);
 
         return textLength;
     }
@@ -50,7 +62,7 @@ public readonly struct DateOnlyNode : INode
         }
 
         Span<char> buffer = stackalloc char[TotalLength];
-        _dateOnly.TryFormat(buffer, out _);
+        _dateOnly.TryFormat(buffer, out _, _format, _provider);
         character = buffer[index];
         return true;
     }
@@ -68,13 +80,66 @@ public readonly struct DateOnlyNode : INode
     /// <param name="value">
     /// The dateOnly value.
     /// </param>
+    /// <param name="format">
+    /// The format to use when converting the dateOnly to a string.
+    /// </param>
+    /// <param name="provider">
+    /// The format provider to use when converting the dateOnly to a string.
+    /// </param>
     /// <returns>
     /// The length of the string representation of the dateOnly.
     /// </returns>
-    private static int GetDateOnlyLength(DateOnly value)
+    private static int GetDateOnlyLength(DateOnly value, string? format, IFormatProvider? provider)
     {
-        Span<char> buffer = stackalloc char[16]; // 10 is enough for "yyyy-MM-dd"
-        value.TryFormat(buffer, out var charsWritten);
-        return charsWritten;
+        var bufferSize = 16;
+        while (true)
+        {
+            if (TryGetFormattedLength(value, format, provider, bufferSize, out var dateOnlyLength))
+            {
+                return dateOnlyLength;
+            }
+
+            bufferSize *= 2;
+            if (bufferSize > 256)
+            {
+                throw new InvalidOperationException("DateOnly format string is too long.");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Tries to get the length of the formatted string representation of a dateOnly.
+    /// </summary>
+    /// <param name="value">
+    /// The dateOnly value.
+    /// </param>
+    /// <param name="format">
+    /// The format to use when converting the dateOnly to a string.
+    /// </param>
+    /// <param name="provider">
+    /// The format provider to use when converting the dateOnly to a string.
+    /// </param>
+    /// <param name="bufferSize">
+    /// The size of the buffer to use when formatting the dateOnly.
+    /// </param>
+    /// <param name="length">
+    /// The length of the formatted string representation of the dateOnly.
+    /// </param>
+    /// <returns>
+    /// True if the length was successfully obtained; otherwise, false.
+    /// </returns>
+    private static bool TryGetFormattedLength(DateOnly value, string? format, IFormatProvider? provider, int bufferSize,
+        out int length)
+    {
+        length = 0;
+        Span<char> buffer = stackalloc char[bufferSize];
+
+        if (!value.TryFormat(buffer, out var charsWritten, format, provider))
+        {
+            return false;
+        }
+
+        length = charsWritten;
+        return true;
     }
 }
