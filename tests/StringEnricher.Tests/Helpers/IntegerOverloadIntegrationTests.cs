@@ -1,7 +1,7 @@
 ﻿using StringEnricher.Helpers.Html;
 using StringEnricher.Helpers.MarkdownV2;
 
-namespace StringEnricher.Tests.Nodes.Shared;
+namespace StringEnricher.Tests.Helpers;
 
 public class IntegerOverloadIntegrationTests
 {
