@@ -27,7 +27,9 @@ public static class CompositeNodeExtensions
         (this TLeft left, TRight right)
         where TLeft : INode
         where TRight : INode
-        => new(left, right);
+    {
+        return new CompositeNode<TLeft, TRight>(left, right);
+    }
 
     /// <summary>
     /// Combines two nodes into a single composite node.
@@ -50,7 +52,9 @@ public static class CompositeNodeExtensions
     public static CompositeNode<TLeft, PlainTextNode> CombineWith<TLeft>
         (this TLeft left, string right)
         where TLeft : INode
-        => new(left, right);
+    {
+        return new CompositeNode<TLeft, PlainTextNode>(left, right);
+    }
 }
 
 /// <summary>
@@ -81,13 +85,22 @@ public readonly struct CompositeNode<TLeft, TRight> : INode
     }
 
     /// <inheritdoc />
-    public int SyntaxLength => _left.SyntaxLength + _right.SyntaxLength;
+    public int SyntaxLength
+    {
+        get { return _left.SyntaxLength + _right.SyntaxLength; }
+    }
 
     /// <inheritdoc />
-    public int TotalLength => _left.TotalLength + _right.TotalLength;
+    public int TotalLength
+    {
+        get { return _left.TotalLength + _right.TotalLength; }
+    }
 
     /// <inheritdoc />
-    public override string ToString() => string.Create(TotalLength, this, static (span, node) => node.CopyTo(span));
+    public override string ToString()
+    {
+        return string.Create(TotalLength, this, static (span, node) => node.CopyTo(span));
+    }
 
     /// <inheritdoc />
     public int CopyTo(Span<char> destination)

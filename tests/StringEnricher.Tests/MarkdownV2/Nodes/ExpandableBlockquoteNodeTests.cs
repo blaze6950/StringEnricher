@@ -1,3 +1,4 @@
+using StringEnricher.Helpers.MarkdownV2;
 using StringEnricher.Nodes.MarkdownV2.Formatting;
 using StringEnricher.Nodes.Shared;
 

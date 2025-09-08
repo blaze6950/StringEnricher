@@ -1,61 +1,4 @@
-using StringEnricher.Nodes.Shared;
-
 namespace StringEnricher.Nodes.MarkdownV2.Formatting;
-
-/// <summary>
-/// Provides methods to create TG emoji styles in MarkdownV2 format.
-/// Example: "![👍](tg://emoji?id=123456)"
-/// </summary>
-public static class TgEmojiMarkdownV2
-{
-    /// <summary>
-    /// Creates a new instance of the <see cref="TgEmojiNode{TInner}"/> struct.
-    /// </summary>
-    /// <param name="defaultEmoji">
-    /// The default emoji to display if the custom emoji is not available.
-    /// </param>
-    /// <param name="customEmojiId">
-    /// The unique identifier of the custom emoji.
-    /// </param>
-    /// <returns>
-    /// The created instance of the <see cref="TgEmojiNode{TInner}"/> struct.
-    /// </returns>
-    public static TgEmojiNode<PlainTextNode> Apply(string defaultEmoji, string customEmojiId) =>
-        TgEmojiNode<PlainTextNode>.Apply(defaultEmoji, customEmojiId);
-
-    /// <summary>
-    /// Creates a new instance of the <see cref="TgEmojiNode{TInner}"/> struct.
-    /// </summary>
-    /// <param name="defaultEmoji">
-    /// The default emoji to display if the custom emoji is not available.
-    /// </param>
-    /// <param name="customEmojiId">
-    /// The unique identifier of the custom emoji.
-    /// </param>
-    /// <typeparam name="T">
-    /// The type of the inner style that will be wrapped with TG emoji syntax.
-    /// </typeparam>
-    /// <returns>
-    /// The created instance of the <see cref="TgEmojiNode{TInner}"/> struct.
-    /// </returns>
-    public static TgEmojiNode<T> Apply<T>(T defaultEmoji, T customEmojiId) where T : INode =>
-        TgEmojiNode<T>.Apply(defaultEmoji, customEmojiId);
-
-    /// <summary>
-    /// Creates a new instance of the <see cref="TgEmojiNode{TInner}"/> struct with integer emoji ID.
-    /// </summary>
-    /// <param name="defaultEmoji">
-    /// The default emoji to display if the custom emoji is not available.
-    /// </param>
-    /// <param name="customEmojiId">
-    /// The unique identifier of the custom emoji as integer.
-    /// </param>
-    /// <returns>
-    /// The created instance of the <see cref="TgEmojiNode{TInner}"/> struct.
-    /// </returns>
-    public static TgEmojiNode<PlainTextNode> Apply(string defaultEmoji, int customEmojiId) =>
-        TgEmojiNode<PlainTextNode>.Apply(defaultEmoji, customEmojiId.ToString());
-}
 
 /// <summary>
 /// Represents TG emoji text in MarkdownV2 format.
@@ -106,18 +49,30 @@ public readonly struct TgEmojiNode<TInner> : INode
     /// Use this method when you finished all styling operations and need the final string.
     /// </summary>
     /// <returns>The created string representation</returns>
-    public override string ToString() => string.Create(TotalLength, this, static (span, style) => style.CopyTo(span));
+    public override string ToString()
+    {
+        return string.Create(TotalLength, this, static (span, style) => style.CopyTo(span));
+    }
 
     /// <summary>
     /// Gets the length of the inner styled text.
     /// </summary>
-    public int InnerLength => _defaultEmoji.TotalLength + _customEmojiId.TotalLength;
+    public int InnerLength
+    {
+        get { return _defaultEmoji.TotalLength + _customEmojiId.TotalLength; }
+    }
 
     /// <inheritdoc />
-    public int SyntaxLength => Prefix.Length + Separator.Length + Suffix.Length;
+    public int SyntaxLength
+    {
+        get { return Prefix.Length + Separator.Length + Suffix.Length; }
+    }
 
     /// <inheritdoc />
-    public int TotalLength => SyntaxLength + InnerLength;
+    public int TotalLength
+    {
+        get { return SyntaxLength + InnerLength; }
+    }
 
     /// <inheritdoc />
     public int CopyTo(Span<char> destination)
@@ -208,6 +163,8 @@ public readonly struct TgEmojiNode<TInner> : INode
     /// <returns>
     /// The created instance of the <see cref="TgEmojiNode{TInner}"/> struct.
     /// </returns>
-    public static TgEmojiNode<TInner> Apply(TInner defaultEmoji, TInner customEmojiId) =>
-        new(defaultEmoji, customEmojiId);
+    public static TgEmojiNode<TInner> Apply(TInner defaultEmoji, TInner customEmojiId)
+    {
+        return new TgEmojiNode<TInner>(defaultEmoji, customEmojiId);
+    }
 }

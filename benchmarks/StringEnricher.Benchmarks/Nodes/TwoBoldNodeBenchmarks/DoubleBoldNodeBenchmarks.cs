@@ -2,6 +2,7 @@
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
 using StringEnricher.Benchmarks.AnalogueImplementations;
+using StringEnricher.Helpers.MarkdownV2;
 using StringEnricher.Nodes.MarkdownV2.Formatting;
 
 namespace StringEnricher.Benchmarks.Nodes.TwoBoldNodeBenchmarks;
@@ -24,19 +25,28 @@ public class DoubleBoldNodeBenchmarks
     }
 
     [Benchmark]
-    public string BoldMarkdownV2_Apply() => BoldMarkdownV2.Apply(
-        BoldMarkdownV2.Apply(textToBold)
-    ).ToString();
+    public string BoldMarkdownV2_Apply()
+    {
+        return BoldMarkdownV2.Apply(
+            BoldMarkdownV2.Apply(textToBold)
+        ).ToString();
+    }
 
     [Benchmark]
-    public string MessageTextStyleLambda_Bold() => MessageTextNodeLambda.Bold.Build(
-        MessageTextNodeLambda.Bold.Build(textToBold)
-    );
+    public string MessageTextStyleLambda_Bold()
+    {
+        return MessageTextNodeLambda.Bold.Build(
+            MessageTextNodeLambda.Bold.Build(textToBold)
+        );
+    }
 
     [Benchmark]
-    public string MessageTextStyleStringHandler_Bold() => MessageTextNodeStringHandler.Bold.Build(
-        MessageTextNodeLambda.Bold.Build(textToBold)
-    );
+    public string MessageTextStyleStringHandler_Bold()
+    {
+        return MessageTextNodeStringHandler.Bold.Build(
+            MessageTextNodeLambda.Bold.Build(textToBold)
+        );
+    }
 
     [Benchmark(Baseline = true)]
     public string InterpolatedString()

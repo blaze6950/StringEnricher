@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text;
+using StringEnricher.Helpers.MarkdownV2;
 using StringEnricher.Nodes;
 using StringEnricher.Nodes.MarkdownV2.Formatting;
 
