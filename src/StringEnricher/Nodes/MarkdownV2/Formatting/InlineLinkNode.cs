@@ -1,3 +1,5 @@
+using StringEnricher.Nodes.Shared;
+
 namespace StringEnricher.Nodes.MarkdownV2.Formatting;
 
 /// <summary>
@@ -40,6 +42,22 @@ public static class InlineLinkMarkdownV2
     /// </returns>
     public static InlineLinkNode<T> Apply<T>(T linkTitle, string linkUrl) where T : INode =>
         InlineLinkNode<T>.Apply(linkTitle, linkUrl);
+
+    /// <summary>
+    /// Applies the inline link style to the given integer link title and URL.
+    /// </summary>
+    /// <param name="linkTitle">
+    /// The integer to be used as link title.
+    /// </param>
+    /// <param name="linkUrl">
+    /// The link URL as a string.
+    /// </param>
+    /// <returns>
+    /// A new instance of the <see cref="InlineLinkNode{TInner}"/> struct
+    /// with the specified integer link title and link URL.
+    /// </returns>
+    public static InlineLinkNode<IntegerNode> Apply(int linkTitle, string linkUrl) =>
+        InlineLinkNode<IntegerNode>.Apply(linkTitle, linkUrl);
 }
 
 /// <summary>

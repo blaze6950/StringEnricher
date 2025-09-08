@@ -1,3 +1,5 @@
+using StringEnricher.Nodes.Shared;
+
 namespace StringEnricher.Nodes.MarkdownV2.Formatting;
 
 /// <summary>
@@ -32,6 +34,18 @@ public static class CodeBlockMarkdownV2
     /// </returns>
     public static CodeBlockNode<T> Apply<T>(T codeBlock) where T : INode =>
         CodeBlockNode<T>.Apply(codeBlock);
+
+    /// <summary>
+    /// Applies code block style to the given integer.
+    /// </summary>
+    /// <param name="integer">
+    /// The integer to be styled as a code block.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="CodeBlockNode{TInner}"/> containing the styled integer.
+    /// </returns>
+    public static CodeBlockNode<IntegerNode> Apply(int integer) =>
+        CodeBlockNode<IntegerNode>.Apply(integer);
 }
 
 /// <summary>

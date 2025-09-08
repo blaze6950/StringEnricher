@@ -1,3 +1,5 @@
+using StringEnricher.Nodes.Shared;
+
 namespace StringEnricher.Nodes.MarkdownV2.Formatting;
 
 /// <summary>
@@ -32,6 +34,18 @@ public static class InlineCodeMarkdownV2
     /// </returns>
     public static InlineCodeNode<T> Apply<T>(T style) where T : INode =>
         InlineCodeNode<T>.Apply(style);
+
+    /// <summary>
+    /// Applies inline code style to the given integer.
+    /// </summary>
+    /// <param name="integer">
+    /// The integer to be styled as inline code.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="InlineCodeNode{TInner}"/> containing the styled integer.
+    /// </returns>
+    public static InlineCodeNode<IntegerNode> Apply(int integer) =>
+        InlineCodeNode<IntegerNode>.Apply(integer);
 }
 
 /// <summary>

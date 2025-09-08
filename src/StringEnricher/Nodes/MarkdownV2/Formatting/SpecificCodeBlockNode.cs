@@ -1,3 +1,5 @@
+using StringEnricher.Nodes.Shared;
+
 namespace StringEnricher.Nodes.MarkdownV2.Formatting;
 
 /// <summary>
@@ -28,7 +30,7 @@ public static class SpecificCodeBlockMarkdownV2
     /// The inner style representing the code block content.
     /// </param>
     /// <param name="language">
-    /// The inner style representing the programming language of the code block.
+    /// The programming language of the code block.
     /// </param>
     /// <typeparam name="T">
     /// The type of the inner style that will be wrapped with specific code block syntax.
@@ -36,8 +38,23 @@ public static class SpecificCodeBlockMarkdownV2
     /// <returns>
     /// The created instance of the <see cref="SpecificCodeBlockNode{TInner}"/> struct.
     /// </returns>
-    public static SpecificCodeBlockNode<T> Apply<T>(T codeBlock, T language) where T : INode =>
+    public static SpecificCodeBlockNode<T> Apply<T>(T codeBlock, string language) where T : INode =>
         SpecificCodeBlockNode<T>.Apply(codeBlock, language);
+
+    /// <summary>
+    /// Applies specific code block style to the given integer code block and language.
+    /// </summary>
+    /// <param name="codeBlock">
+    /// The integer to be styled as a code block.
+    /// </param>
+    /// <param name="language">
+    /// The programming language of the code block.
+    /// </param>
+    /// <returns>
+    /// The created instance of the <see cref="SpecificCodeBlockNode{TInner}"/> struct.
+    /// </returns>
+    public static SpecificCodeBlockNode<IntegerNode> Apply(int codeBlock, string language) =>
+        SpecificCodeBlockNode<IntegerNode>.Apply(codeBlock, language);
 }
 
 /// <summary>
@@ -66,7 +83,7 @@ public readonly struct SpecificCodeBlockNode<TInner> : INode
     public const string Suffix = "\n```";
 
     private readonly TInner _innerCodeBlock;
-    private readonly TInner _language;
+    private readonly string _language;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SpecificCodeBlockNode{TInner}"/> struct.
@@ -77,7 +94,7 @@ public readonly struct SpecificCodeBlockNode<TInner> : INode
     /// <param name="language">
     /// The inner style representing the programming language of the code block.
     /// </param>
-    public SpecificCodeBlockNode(TInner codeBlock, TInner language)
+    public SpecificCodeBlockNode(TInner codeBlock, string language)
     {
         _innerCodeBlock = codeBlock;
         _language = language;
@@ -94,7 +111,7 @@ public readonly struct SpecificCodeBlockNode<TInner> : INode
     /// <summary>
     /// Gets the length of the inner content (language + code block).
     /// </summary>
-    public int InnerLength => _innerCodeBlock.TotalLength + _language.TotalLength;
+    public int InnerLength => _innerCodeBlock.TotalLength + _language.Length;
 
     /// <inheritdoc />
     public int SyntaxLength => Prefix.Length + Separator.Length + Suffix.Length;
@@ -118,8 +135,8 @@ public readonly struct SpecificCodeBlockNode<TInner> : INode
         pos += Prefix.Length;
 
         // Copy language
-        _language.CopyTo(destination.Slice(pos, _language.TotalLength));
-        pos += _language.TotalLength;
+        _language.CopyTo(destination.Slice(pos, _language.Length));
+        pos += _language.Length;
 
         // Copy separator
         Separator.AsSpan().CopyTo(destination.Slice(pos, Separator.Length));
@@ -152,12 +169,13 @@ public readonly struct SpecificCodeBlockNode<TInner> : INode
 
         index -= Prefix.Length;
 
-        if (index < _language.TotalLength)
+        if (index < _language.Length)
         {
-            return _language.TryGetChar(index, out character);
+            character = _language[index];
+            return true;
         }
 
-        index -= _language.TotalLength;
+        index -= _language.Length;
 
         if (index < Separator.Length)
         {
@@ -186,11 +204,11 @@ public readonly struct SpecificCodeBlockNode<TInner> : INode
     /// The inner style representing the code block content.
     /// </param>
     /// <param name="language">
-    /// The inner style representing the programming language of the code block.
+    /// The programming language of the code block.
     /// </param>
     /// <returns>
     /// A new instance of the <see cref="SpecificCodeBlockNode{TInner}"/> struct.
     /// </returns>
-    public static SpecificCodeBlockNode<TInner> Apply(TInner codeBlock, TInner language) =>
+    public static SpecificCodeBlockNode<TInner> Apply(TInner codeBlock, string language) =>
         new(codeBlock, language);
 }

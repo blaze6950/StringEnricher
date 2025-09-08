@@ -1,4 +1,6 @@
-﻿namespace StringEnricher.Nodes.MarkdownV2.Formatting;
+﻿using StringEnricher.Nodes.Shared;
+
+namespace StringEnricher.Nodes.MarkdownV2.Formatting;
 
 /// <summary>
 /// Provides methods to apply underline style to text in MarkdownV2 format.
@@ -32,6 +34,18 @@ public static class UnderlineMarkdownV2
     /// </returns>
     public static UnderlineNode<T> Apply<T>(T style) where T : INode =>
         UnderlineNode<T>.Apply(style);
+
+    /// <summary>
+    /// Applies underline style to the given integer.
+    /// </summary>
+    /// <param name="integer">
+    /// The integer to be styled with underline.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="UnderlineNode{TInner}"/> containing the styled integer.
+    /// </returns>
+    public static UnderlineNode<IntegerNode> Apply(int integer) =>
+        UnderlineNode<IntegerNode>.Apply(integer);
 }
 
 /// <summary>

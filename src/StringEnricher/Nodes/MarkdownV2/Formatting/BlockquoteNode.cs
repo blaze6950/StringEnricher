@@ -1,3 +1,5 @@
+using StringEnricher.Nodes.Shared;
+
 namespace StringEnricher.Nodes.MarkdownV2.Formatting;
 
 /// <summary>
@@ -6,18 +8,6 @@ namespace StringEnricher.Nodes.MarkdownV2.Formatting;
 /// </summary>
 public static class BlockquoteMarkdownV2
 {
-    /// <summary>
-    /// Applies blockquote style to the given text.
-    /// </summary>
-    /// <param name="text">
-    /// The text to be styled as a blockquote.
-    /// </param>
-    /// <returns>
-    /// A new instance of <see cref="BlockquoteNode{TInner}"/> containing the styled text.
-    /// </returns>
-    public static BlockquoteNode<PlainTextNode> Apply(string text) =>
-        BlockquoteNode<PlainTextNode>.Apply(text);
-
     /// <summary>
     /// Applies blockquote style to the given style.
     /// </summary>
@@ -32,6 +22,30 @@ public static class BlockquoteMarkdownV2
     /// </returns>
     public static BlockquoteNode<T> Apply<T>(T style) where T : INode =>
         BlockquoteNode<T>.Apply(style);
+
+    /// <summary>
+    /// Applies blockquote style to the given text.
+    /// </summary>
+    /// <param name="text">
+    /// The text to be styled as a blockquote.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="BlockquoteNode{TInner}"/> containing the styled text.
+    /// </returns>
+    public static BlockquoteNode<PlainTextNode> Apply(string text) =>
+        BlockquoteNode<PlainTextNode>.Apply(text);
+
+    /// <summary>
+    /// Applies blockquote style to the given integer.
+    /// </summary>
+    /// <param name="integer">
+    /// The integer to be styled as a blockquote.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="BlockquoteNode{TInner}"/> containing the styled integer.
+    /// </returns>
+    public static BlockquoteNode<IntegerNode> Apply(int integer) =>
+        BlockquoteNode<IntegerNode>.Apply(integer);
 }
 
 /// <summary>

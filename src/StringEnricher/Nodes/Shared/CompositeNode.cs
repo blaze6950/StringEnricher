@@ -1,4 +1,4 @@
-﻿namespace StringEnricher.Nodes;
+﻿namespace StringEnricher.Nodes.Shared;
 
 /// <summary>
 /// Extension methods for combining nodes.

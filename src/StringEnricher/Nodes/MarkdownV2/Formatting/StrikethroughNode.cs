@@ -1,4 +1,6 @@
-﻿namespace StringEnricher.Nodes.MarkdownV2.Formatting;
+﻿using StringEnricher.Nodes.Shared;
+
+namespace StringEnricher.Nodes.MarkdownV2.Formatting;
 
 /// <summary>
 /// Provides methods to apply strikethrough style to text in MarkdownV2 format.
@@ -32,6 +34,18 @@ public static class StrikethroughMarkdownV2
     /// </returns>
     public static StrikethroughNode<T> Apply<T>(T style) where T : INode =>
         StrikethroughNode<T>.Apply(style);
+
+    /// <summary>
+    /// Applies strikethrough style to the given integer.
+    /// </summary>
+    /// <param name="integer">
+    /// The integer to be styled with strikethrough.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="StrikethroughNode{TInner}"/> containing the styled integer.
+    /// </returns>
+    public static StrikethroughNode<IntegerNode> Apply(int integer) =>
+        StrikethroughNode<IntegerNode>.Apply(integer);
 }
 
 /// <summary>

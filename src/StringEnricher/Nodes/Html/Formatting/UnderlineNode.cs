@@ -1,4 +1,6 @@
-﻿namespace StringEnricher.Nodes.Html.Formatting;
+﻿using StringEnricher.Nodes.Shared;
+
+namespace StringEnricher.Nodes.Html.Formatting;
 
 /// <summary>
 /// Provides methods to apply underline styling in HTML format.
@@ -22,6 +24,18 @@ public static class UnderlineHtml
     /// <returns>A new instance of <see cref="UnderlineNode{TInner}"/> wrapping the provided inner style.</returns>
     public static UnderlineNode<T> Apply<T>(T style) where T : INode =>
         UnderlineNode<T>.Apply(style);
+
+    /// <summary>
+    /// Applies underline style to the given integer.
+    /// </summary>
+    /// <param name="integer">
+    /// The integer to be styled as underlined.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="UnderlineNode{TInner}"/> containing the styled integer.
+    /// </returns>
+    public static UnderlineNode<IntegerNode> Apply(int integer) =>
+        UnderlineNode<IntegerNode>.Apply(integer);
 }
 
 /// <summary>

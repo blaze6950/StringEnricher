@@ -1,3 +1,5 @@
+using StringEnricher.Nodes.Shared;
+
 namespace StringEnricher.Nodes.MarkdownV2.Formatting;
 
 /// <summary>
@@ -32,6 +34,18 @@ public static class ExpandableBlockquoteMarkdownV2
     /// </returns>
     public static ExpandableBlockquoteNode<T> Apply<T>(T style) where T : INode =>
         ExpandableBlockquoteNode<T>.Apply(style);
+
+    /// <summary>
+    /// Applies expandable blockquote style to the given integer.
+    /// </summary>
+    /// <param name="integer">
+    /// The integer to be styled as expandable blockquote.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="ExpandableBlockquoteNode{TInner}"/> containing the styled integer.
+    /// </returns>
+    public static ExpandableBlockquoteNode<IntegerNode> Apply(int integer) =>
+        ExpandableBlockquoteNode<IntegerNode>.Apply(integer);
 }
 
 /// <summary>

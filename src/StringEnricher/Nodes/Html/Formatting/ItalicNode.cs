@@ -1,4 +1,6 @@
-﻿namespace StringEnricher.Nodes.Html.Formatting;
+﻿using StringEnricher.Nodes.Shared;
+
+namespace StringEnricher.Nodes.Html.Formatting;
 
 /// <summary>
 /// Provides methods to apply italic styling in HTML format.
@@ -22,6 +24,18 @@ public static class ItalicHtml
     /// <returns>A new instance of <see cref="ItalicNode{TInner}"/> wrapping the provided inner style.</returns>
     public static ItalicNode<T> Apply<T>(T style) where T : INode =>
         ItalicNode<T>.Apply(style);
+
+    /// <summary>
+    /// Applies italic style to the given integer.
+    /// </summary>
+    /// <param name="integer">
+    /// The integer to be styled as italic.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="ItalicNode{TInner}"/> containing the styled integer.
+    /// </returns>
+    public static ItalicNode<IntegerNode> Apply(int integer) =>
+        ItalicNode<IntegerNode>.Apply(integer);
 }
 
 /// <summary>

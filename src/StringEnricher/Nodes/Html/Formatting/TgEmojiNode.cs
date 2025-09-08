@@ -1,3 +1,5 @@
+using StringEnricher.Nodes.Shared;
+
 namespace StringEnricher.Nodes.Html.Formatting;
 
 /// <summary>
@@ -24,6 +26,15 @@ public static class TgEmojiHtml
     /// <returns>A new instance of <see cref="TgEmojiNode{TInner}"/> wrapping the provided styled emoji and ID.</returns>
     public static TgEmojiNode<T> Apply<T>(T defaultEmoji, T customEmoji) where T : INode =>
         TgEmojiNode<T>.Apply(defaultEmoji, customEmoji);
+
+    /// <summary>
+    /// Applies Telegram emoji style to the given integer emoji ID.
+    /// </summary>
+    /// <param name="defaultEmoji">The default emoji text.</param>
+    /// <param name="customEmojiId">The custom emoji ID as integer.</param>
+    /// <returns>A new instance of <see cref="TgEmojiNode{TInner}"/> wrapping the provided emoji and integer ID.</returns>
+    public static TgEmojiNode<PlainTextNode> Apply(string defaultEmoji, int customEmojiId) =>
+        TgEmojiNode<PlainTextNode>.Apply(defaultEmoji, customEmojiId.ToString());
 }
 
 /// <summary>

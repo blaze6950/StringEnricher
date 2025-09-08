@@ -1,4 +1,6 @@
-﻿namespace StringEnricher.Nodes.Html.Formatting;
+﻿using StringEnricher.Nodes.Shared;
+
+namespace StringEnricher.Nodes.Html.Formatting;
 
 /// <summary>
 /// Provides methods to apply strikethrough styling in HTML format.
@@ -22,6 +24,18 @@ public static class StrikethroughHtml
     /// <returns>A new instance of <see cref="StrikethroughNode{TInner}"/> wrapping the provided inner style.</returns>
     public static StrikethroughNode<T> Apply<T>(T style) where T : INode =>
         StrikethroughNode<T>.Apply(style);
+
+    /// <summary>
+    /// Applies strikethrough style to the given integer.
+    /// </summary>
+    /// <param name="integer">
+    /// The integer to be styled with strikethrough.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="StrikethroughNode{TInner}"/> containing the styled integer.
+    /// </returns>
+    public static StrikethroughNode<IntegerNode> Apply(int integer) =>
+        StrikethroughNode<IntegerNode>.Apply(integer);
 }
 
 /// <summary>

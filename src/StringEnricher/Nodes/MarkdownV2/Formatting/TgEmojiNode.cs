@@ -1,3 +1,5 @@
+using StringEnricher.Nodes.Shared;
+
 namespace StringEnricher.Nodes.MarkdownV2.Formatting;
 
 /// <summary>
@@ -38,6 +40,21 @@ public static class TgEmojiMarkdownV2
     /// </returns>
     public static TgEmojiNode<T> Apply<T>(T defaultEmoji, T customEmojiId) where T : INode =>
         TgEmojiNode<T>.Apply(defaultEmoji, customEmojiId);
+
+    /// <summary>
+    /// Creates a new instance of the <see cref="TgEmojiNode{TInner}"/> struct with integer emoji ID.
+    /// </summary>
+    /// <param name="defaultEmoji">
+    /// The default emoji to display if the custom emoji is not available.
+    /// </param>
+    /// <param name="customEmojiId">
+    /// The unique identifier of the custom emoji as integer.
+    /// </param>
+    /// <returns>
+    /// The created instance of the <see cref="TgEmojiNode{TInner}"/> struct.
+    /// </returns>
+    public static TgEmojiNode<PlainTextNode> Apply(string defaultEmoji, int customEmojiId) =>
+        TgEmojiNode<PlainTextNode>.Apply(defaultEmoji, customEmojiId.ToString());
 }
 
 /// <summary>

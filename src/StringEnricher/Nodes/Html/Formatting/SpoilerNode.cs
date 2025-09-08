@@ -1,4 +1,6 @@
-﻿namespace StringEnricher.Nodes.Html.Formatting;
+﻿using StringEnricher.Nodes.Shared;
+
+namespace StringEnricher.Nodes.Html.Formatting;
 
 /// <summary>
 /// Provides methods to apply spoiler styling in HTML format.
@@ -22,6 +24,18 @@ public static class SpoilerHtml
     /// <returns>A new instance of <see cref="SpoilerNode{TInner}"/> wrapping the provided inner style.</returns>
     public static SpoilerNode<T> Apply<T>(T style) where T : INode =>
         SpoilerNode<T>.Apply(style);
+
+    /// <summary>
+    /// Applies spoiler style to the given integer.
+    /// </summary>
+    /// <param name="integer">
+    /// The integer to be styled as spoiler.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="SpoilerNode{TInner}"/> containing the styled integer.
+    /// </returns>
+    public static SpoilerNode<IntegerNode> Apply(int integer) =>
+        SpoilerNode<IntegerNode>.Apply(integer);
 }
 
 /// <summary>

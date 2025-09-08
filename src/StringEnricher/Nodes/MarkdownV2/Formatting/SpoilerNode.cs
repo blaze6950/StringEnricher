@@ -1,4 +1,6 @@
-﻿namespace StringEnricher.Nodes.MarkdownV2.Formatting;
+﻿using StringEnricher.Nodes.Shared;
+
+namespace StringEnricher.Nodes.MarkdownV2.Formatting;
 
 /// <summary>
 /// Provides methods to apply spoiler styling in MarkdownV2 format.
@@ -32,6 +34,18 @@ public static class SpoilerMarkdownV2
     /// </returns>
     public static SpoilerNode<T> Apply<T>(T style) where T : INode =>
         SpoilerNode<T>.Apply(style);
+
+    /// <summary>
+    /// Applies spoiler styling to the given integer.
+    /// </summary>
+    /// <param name="integer">
+    /// The integer to be styled as spoiler.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="SpoilerNode{TInner}"/> containing the styled integer.
+    /// </returns>
+    public static SpoilerNode<IntegerNode> Apply(int integer) =>
+        SpoilerNode<IntegerNode>.Apply(integer);
 }
 
 /// <summary>

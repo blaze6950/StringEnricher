@@ -1,5 +1,5 @@
-using StringEnricher.Nodes;
 using StringEnricher.Nodes.Html.Formatting;
+using StringEnricher.Nodes.Shared;
 
 namespace StringEnricher.Tests.Html.Nodes;
 

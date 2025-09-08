@@ -1,3 +1,5 @@
+using StringEnricher.Nodes.Shared;
+
 namespace StringEnricher.Nodes.Html.Formatting;
 
 /// <summary>
@@ -32,6 +34,18 @@ public static class BoldHtml
     /// </returns>
     public static BoldNode<T> Apply<T>(T style) where T : INode =>
         BoldNode<T>.Apply(style);
+
+    /// <summary>
+    /// Applies bold style to the given integer.
+    /// </summary>
+    /// <param name="integer">
+    /// The integer to be styled as bold.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="BoldNode{TInner}"/> containing the styled integer.
+    /// </returns>
+    public static BoldNode<IntegerNode> Apply(int integer) =>
+        BoldNode<IntegerNode>.Apply(integer);
 }
 
 /// <summary>

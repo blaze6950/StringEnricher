@@ -1,4 +1,4 @@
-namespace StringEnricher.Nodes;
+namespace StringEnricher.Nodes.Shared;
 
 /// <summary>
 /// A style that represents plain text without any special formatting.
