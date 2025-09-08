@@ -41,5 +41,17 @@ public static class ItalicHtml
     public static ItalicNode<IntegerNode> Apply(int integer) =>
         ItalicNode<IntegerNode>.Apply(integer);
 
+    /// <summary>
+    /// Applies italic style to the given long integer.
+    /// </summary>
+    /// <param name="long">
+    /// The long integer to be styled as italic.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="ItalicNode{TInner}"/> containing the styled long integer.
+    /// </returns>
+    public static ItalicNode<LongNode> Apply(long @long) =>
+        ItalicNode<LongNode>.Apply(@long);
+
     #endregion
 }

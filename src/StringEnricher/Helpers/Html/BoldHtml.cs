@@ -51,5 +51,17 @@ public static class BoldHtml
     public static BoldNode<IntegerNode> Apply(int integer) =>
         BoldNode<IntegerNode>.Apply(integer);
 
+    /// <summary>
+    /// Applies bold style to the given long integer.
+    /// </summary>
+    /// <param name="long">
+    /// The long integer to be styled as bold.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="BoldNode{TInner}"/> containing the styled long integer.
+    /// </returns>
+    public static BoldNode<LongNode> Apply(long @long) =>
+        BoldNode<LongNode>.Apply(@long);
+
     #endregion
 }

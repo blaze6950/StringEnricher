@@ -11,18 +11,6 @@ namespace StringEnricher.Helpers.MarkdownV2;
 public static class InlineCodeMarkdownV2
 {
     /// <summary>
-    /// Applies inline code style to the given text
-    /// </summary>
-    /// <param name="text">
-    /// The text to be styled as inline code.
-    /// </param>
-    /// <returns>
-    /// An instance of <see cref="InlineCodeNode{TInner}"/> containing the provided text styled as inline code.
-    /// </returns>
-    public static InlineCodeNode<PlainTextNode> Apply(string text) =>
-        InlineCodeNode<PlainTextNode>.Apply(text);
-
-    /// <summary>
     /// Applies inline code style to the given style
     /// </summary>
     /// <param name="style">
@@ -37,6 +25,20 @@ public static class InlineCodeMarkdownV2
     public static InlineCodeNode<T> Apply<T>(T style) where T : INode =>
         InlineCodeNode<T>.Apply(style);
 
+    #region Overloads for Common Types
+
+    /// <summary>
+    /// Applies inline code style to the given text
+    /// </summary>
+    /// <param name="text">
+    /// The text to be styled as inline code.
+    /// </param>
+    /// <returns>
+    /// An instance of <see cref="InlineCodeNode{TInner}"/> containing the provided text styled as inline code.
+    /// </returns>
+    public static InlineCodeNode<PlainTextNode> Apply(string text) =>
+        InlineCodeNode<PlainTextNode>.Apply(text);
+
     /// <summary>
     /// Applies inline code style to the given integer.
     /// </summary>
@@ -48,4 +50,18 @@ public static class InlineCodeMarkdownV2
     /// </returns>
     public static InlineCodeNode<IntegerNode> Apply(int integer) =>
         InlineCodeNode<IntegerNode>.Apply(integer);
+
+    /// <summary>
+    /// Applies inline code style to the given long integer.
+    /// </summary>
+    /// <param name="long">
+    /// The long integer to be styled as inline code.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="InlineCodeNode{TInner}"/> containing the styled long integer.
+    /// </returns>
+    public static InlineCodeNode<LongNode> Apply(long @long) =>
+        InlineCodeNode<LongNode>.Apply(@long);
+
+    #endregion
 }

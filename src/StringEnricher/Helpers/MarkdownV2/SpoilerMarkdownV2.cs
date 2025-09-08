@@ -11,18 +11,6 @@ namespace StringEnricher.Helpers.MarkdownV2;
 public static class SpoilerMarkdownV2
 {
     /// <summary>
-    /// Applies spoiler styling to the given text using plain text style as the inner style.
-    /// </summary>
-    /// <param name="text">
-    /// The text to be styled as a spoiler.
-    /// </param>
-    /// <returns>
-    /// A new instance of <see cref="SpoilerNode{TInner}"/> containing the styled text.
-    /// </returns>
-    public static SpoilerNode<PlainTextNode> Apply(string text) =>
-        SpoilerNode<PlainTextNode>.Apply(text);
-
-    /// <summary>
     /// Applies spoiler styling to the given style.
     /// </summary>
     /// <param name="style">
@@ -37,6 +25,20 @@ public static class SpoilerMarkdownV2
     public static SpoilerNode<T> Apply<T>(T style) where T : INode =>
         SpoilerNode<T>.Apply(style);
 
+    #region Overloads for Common Types
+
+    /// <summary>
+    /// Applies spoiler styling to the given text using plain text style as the inner style.
+    /// </summary>
+    /// <param name="text">
+    /// The text to be styled as a spoiler.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="SpoilerNode{TInner}"/> containing the styled text.
+    /// </returns>
+    public static SpoilerNode<PlainTextNode> Apply(string text) =>
+        SpoilerNode<PlainTextNode>.Apply(text);
+
     /// <summary>
     /// Applies spoiler styling to the given integer.
     /// </summary>
@@ -48,4 +50,18 @@ public static class SpoilerMarkdownV2
     /// </returns>
     public static SpoilerNode<IntegerNode> Apply(int integer) =>
         SpoilerNode<IntegerNode>.Apply(integer);
+
+    /// <summary>
+    /// Applies spoiler styling to the given long integer.
+    /// </summary>
+    /// <param name="long">
+    /// The long integer to be styled as spoiler.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="SpoilerNode{TInner}"/> containing the styled long integer.
+    /// </returns>
+    public static SpoilerNode<LongNode> Apply(long @long) =>
+        SpoilerNode<LongNode>.Apply(@long);
+
+    #endregion
 }

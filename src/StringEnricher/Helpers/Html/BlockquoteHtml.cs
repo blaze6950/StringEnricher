@@ -51,5 +51,17 @@ public static class BlockquoteHtml
     public static BlockquoteNode<IntegerNode> Apply(int integer) =>
         BlockquoteNode<IntegerNode>.Apply(integer);
 
+    /// <summary>
+    /// Applies blockquote style to the given long integer.
+    /// </summary>
+    /// <param name="long">
+    /// The long integer to be styled as blockquote.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="BlockquoteNode{TInner}"/> containing the styled long integer.
+    /// </returns>
+    public static BlockquoteNode<LongNode> Apply(long @long) =>
+        BlockquoteNode<LongNode>.Apply(@long);
+
     #endregion
 }

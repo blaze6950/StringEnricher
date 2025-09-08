@@ -51,5 +51,17 @@ public static class InlineCodeHtml
     public static InlineCodeNode<IntegerNode> Apply(int integer) =>
         InlineCodeNode<IntegerNode>.Apply(integer);
 
+    /// <summary>
+    /// Applies inline code style to the given long integer.
+    /// </summary>
+    /// <param name="long">
+    /// The long integer to be styled as inline code.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="InlineCodeNode{TInner}"/> containing the styled long integer.
+    /// </returns>
+    public static InlineCodeNode<LongNode> Apply(long @long) =>
+        InlineCodeNode<LongNode>.Apply(@long);
+
     #endregion
 }

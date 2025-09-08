@@ -41,5 +41,17 @@ public static class StrikethroughHtml
     public static StrikethroughNode<IntegerNode> Apply(int integer) =>
         StrikethroughNode<IntegerNode>.Apply(integer);
 
+    /// <summary>
+    /// Applies strikethrough style to the given long integer.
+    /// </summary>
+    /// <param name="long">
+    /// The long integer to be styled with strikethrough.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="StrikethroughNode{TInner}"/> containing the styled long integer.
+    /// </returns>
+    public static StrikethroughNode<LongNode> Apply(long @long) =>
+        StrikethroughNode<LongNode>.Apply(@long);
+
     #endregion
 }

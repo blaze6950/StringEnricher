@@ -11,18 +11,6 @@ namespace StringEnricher.Helpers.MarkdownV2;
 public static class UnderlineMarkdownV2
 {
     /// <summary>
-    /// Applies the underline style to the given text.
-    /// </summary>
-    /// <param name="text">
-    /// The text to be styled with underline syntax.
-    /// </param>
-    /// <returns>
-    /// A new instance of <see cref="UnderlineNode{TInner}"/> that wraps the provided text.
-    /// </returns>
-    public static UnderlineNode<PlainTextNode> Apply(string text) =>
-        UnderlineNode<PlainTextNode>.Apply(text);
-
-    /// <summary>
     /// Applies the underline style to the given style.
     /// </summary>
     /// <param name="style">
@@ -37,6 +25,20 @@ public static class UnderlineMarkdownV2
     public static UnderlineNode<T> Apply<T>(T style) where T : INode =>
         UnderlineNode<T>.Apply(style);
 
+    #region Overloads for Common Types
+
+    /// <summary>
+    /// Applies the underline style to the given text.
+    /// </summary>
+    /// <param name="text">
+    /// The text to be styled with underline syntax.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="UnderlineNode{TInner}"/> that wraps the provided text.
+    /// </returns>
+    public static UnderlineNode<PlainTextNode> Apply(string text) =>
+        UnderlineNode<PlainTextNode>.Apply(text);
+
     /// <summary>
     /// Applies underline style to the given integer.
     /// </summary>
@@ -48,4 +50,18 @@ public static class UnderlineMarkdownV2
     /// </returns>
     public static UnderlineNode<IntegerNode> Apply(int integer) =>
         UnderlineNode<IntegerNode>.Apply(integer);
+
+    /// <summary>
+    /// Applies underline style to the given long integer.
+    /// </summary>
+    /// <param name="long">
+    /// The long integer to be styled with underline.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="UnderlineNode{TInner}"/> containing the styled long integer.
+    /// </returns>
+    public static UnderlineNode<LongNode> Apply(long @long) =>
+        UnderlineNode<LongNode>.Apply(@long);
+
+    #endregion
 }

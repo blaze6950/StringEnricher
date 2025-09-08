@@ -11,18 +11,6 @@ namespace StringEnricher.Helpers.MarkdownV2;
 public static class ExpandableBlockquoteMarkdownV2
 {
     /// <summary>
-    /// Applies expandable blockquote style to the given text.
-    /// </summary>
-    /// <param name="text">
-    /// The text to be styled as an expandable blockquote.
-    /// </param>
-    /// <returns>
-    /// A new instance of <see cref="ExpandableBlockquoteNode{TInner}"/> containing the styled text.
-    /// </returns>
-    public static ExpandableBlockquoteNode<PlainTextNode> Apply(string text) =>
-        ExpandableBlockquoteNode<PlainTextNode>.Apply(text);
-
-    /// <summary>
     /// Applies expandable blockquote style to the given style.
     /// </summary>
     /// <param name="style">
@@ -37,6 +25,20 @@ public static class ExpandableBlockquoteMarkdownV2
     public static ExpandableBlockquoteNode<T> Apply<T>(T style) where T : INode =>
         ExpandableBlockquoteNode<T>.Apply(style);
 
+    #region Overloads for Common Types
+
+    /// <summary>
+    /// Applies expandable blockquote style to the given text.
+    /// </summary>
+    /// <param name="text">
+    /// The text to be styled as an expandable blockquote.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="ExpandableBlockquoteNode{TInner}"/> containing the styled text.
+    /// </returns>
+    public static ExpandableBlockquoteNode<PlainTextNode> Apply(string text) =>
+        ExpandableBlockquoteNode<PlainTextNode>.Apply(text);
+
     /// <summary>
     /// Applies expandable blockquote style to the given integer.
     /// </summary>
@@ -48,4 +50,18 @@ public static class ExpandableBlockquoteMarkdownV2
     /// </returns>
     public static ExpandableBlockquoteNode<IntegerNode> Apply(int integer) =>
         ExpandableBlockquoteNode<IntegerNode>.Apply(integer);
+
+    /// <summary>
+    /// Applies expandable blockquote style to the given long integer.
+    /// </summary>
+    /// <param name="long">
+    /// The long integer to be styled as expandable blockquote.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="ExpandableBlockquoteNode{TInner}"/> containing the styled long integer.
+    /// </returns>
+    public static ExpandableBlockquoteNode<LongNode> Apply(long @long) =>
+        ExpandableBlockquoteNode<LongNode>.Apply(@long);
+
+    #endregion
 }

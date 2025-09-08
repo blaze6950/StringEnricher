@@ -40,5 +40,14 @@ public static class InlineLinkHtml
     public static InlineLinkNode<IntegerNode> Apply(int linkTitle, string linkUrl) =>
         InlineLinkNode<IntegerNode>.Apply(linkTitle, linkUrl);
 
+    /// <summary>
+    /// Applies inline link style to the given long integer title and URL.
+    /// </summary>
+    /// <param name="linkTitle">The long integer to be used as link title.</param>
+    /// <param name="linkUrl">The link URL to be used in the anchor tag.</param>
+    /// <returns>A new instance of <see cref="InlineLinkNode{TInner}"/> containing the long integer title and URL.</returns>
+    public static InlineLinkNode<LongNode> Apply(long linkTitle, string linkUrl) =>
+        InlineLinkNode<LongNode>.Apply(linkTitle, linkUrl);
+
     #endregion
 }

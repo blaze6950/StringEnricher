@@ -51,5 +51,17 @@ public static class ExpandableBlockquoteHtml
     public static ExpandableBlockquoteNode<IntegerNode> Apply(int integer) =>
         ExpandableBlockquoteNode<IntegerNode>.Apply(integer);
 
+    /// <summary>
+    /// Applies expandable blockquote style to the given long integer.
+    /// </summary>
+    /// <param name="long">
+    /// The long integer to be styled as expandable blockquote.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="ExpandableBlockquoteNode{TInner}"/> containing the styled long integer.
+    /// </returns>
+    public static ExpandableBlockquoteNode<LongNode> Apply(long @long) =>
+        ExpandableBlockquoteNode<LongNode>.Apply(@long);
+
     #endregion
 }

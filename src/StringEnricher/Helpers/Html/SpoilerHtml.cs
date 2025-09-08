@@ -41,5 +41,17 @@ public static class SpoilerHtml
     public static SpoilerNode<IntegerNode> Apply(int integer) =>
         SpoilerNode<IntegerNode>.Apply(integer);
 
+    /// <summary>
+    /// Applies spoiler style to the given long integer.
+    /// </summary>
+    /// <param name="long">
+    /// The long integer to be styled as spoiler.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="SpoilerNode{TInner}"/> containing the styled long integer.
+    /// </returns>
+    public static SpoilerNode<LongNode> Apply(long @long) =>
+        SpoilerNode<LongNode>.Apply(@long);
+
     #endregion
 }

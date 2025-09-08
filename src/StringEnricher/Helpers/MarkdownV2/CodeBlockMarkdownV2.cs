@@ -11,18 +11,6 @@ namespace StringEnricher.Helpers.MarkdownV2;
 public static class CodeBlockMarkdownV2
 {
     /// <summary>
-    /// Applies the code block style to the given plain text code block.
-    /// </summary>
-    /// <param name="codeBlock">
-    /// The plain text code block to be wrapped with code block syntax.
-    /// </param>
-    /// <returns>
-    /// A new instance of <see cref="CodeBlockNode{TInner}"/> wrapping the provided plain text.
-    /// </returns>
-    public static CodeBlockNode<PlainTextNode> Apply(string codeBlock) =>
-        CodeBlockNode<PlainTextNode>.Apply(codeBlock);
-
-    /// <summary>
     /// Applies the code block style to the given styled code block.
     /// </summary>
     /// <param name="codeBlock">
@@ -37,6 +25,20 @@ public static class CodeBlockMarkdownV2
     public static CodeBlockNode<T> Apply<T>(T codeBlock) where T : INode =>
         CodeBlockNode<T>.Apply(codeBlock);
 
+    #region Overloads for Common Types
+
+    /// <summary>
+    /// Applies the code block style to the given plain text code block.
+    /// </summary>
+    /// <param name="codeBlock">
+    /// The plain text code block to be wrapped with code block syntax.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="CodeBlockNode{TInner}"/> wrapping the provided plain text.
+    /// </returns>
+    public static CodeBlockNode<PlainTextNode> Apply(string codeBlock) =>
+        CodeBlockNode<PlainTextNode>.Apply(codeBlock);
+
     /// <summary>
     /// Applies code block style to the given integer.
     /// </summary>
@@ -48,4 +50,18 @@ public static class CodeBlockMarkdownV2
     /// </returns>
     public static CodeBlockNode<IntegerNode> Apply(int integer) =>
         CodeBlockNode<IntegerNode>.Apply(integer);
+
+    /// <summary>
+    /// Applies code block style to the given long integer.
+    /// </summary>
+    /// <param name="long">
+    /// The long integer to be styled as a code block.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="CodeBlockNode{TInner}"/> containing the styled long integer.
+    /// </returns>
+    public static CodeBlockNode<LongNode> Apply(long @long) =>
+        CodeBlockNode<LongNode>.Apply(@long);
+
+    #endregion
 }

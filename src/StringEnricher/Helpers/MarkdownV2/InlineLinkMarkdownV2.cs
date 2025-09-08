@@ -11,22 +11,6 @@ namespace StringEnricher.Helpers.MarkdownV2;
 public static class InlineLinkMarkdownV2
 {
     /// <summary>
-    /// Applies the inline link style to the given link title and link URL using plain text style.
-    /// </summary>
-    /// <param name="linkTitle">
-    /// The link title as a plain text string.
-    /// </param>
-    /// <param name="linkUrl">
-    /// The link URL as a plain text string.
-    /// </param>
-    /// <returns>
-    /// A new instance of the <see cref="InlineLinkNode{TInner}"/> struct
-    /// with the specified link title and link URL.
-    /// </returns>
-    public static InlineLinkNode<PlainTextNode> Apply(string linkTitle, string linkUrl) =>
-        InlineLinkNode<PlainTextNode>.Apply(linkTitle, linkUrl);
-
-    /// <summary>
     /// Applies the inline link style to the given link title and link URL using the specified inner style.
     /// </summary>
     /// <param name="linkTitle">
@@ -45,6 +29,24 @@ public static class InlineLinkMarkdownV2
     public static InlineLinkNode<T> Apply<T>(T linkTitle, string linkUrl) where T : INode =>
         InlineLinkNode<T>.Apply(linkTitle, linkUrl);
 
+    #region Overloads for Common Types
+
+    /// <summary>
+    /// Applies the inline link style to the given link title and link URL using plain text style.
+    /// </summary>
+    /// <param name="linkTitle">
+    /// The link title as a plain text string.
+    /// </param>
+    /// <param name="linkUrl">
+    /// The link URL as a plain text string.
+    /// </param>
+    /// <returns>
+    /// A new instance of the <see cref="InlineLinkNode{TInner}"/> struct
+    /// with the specified link title and link URL.
+    /// </returns>
+    public static InlineLinkNode<PlainTextNode> Apply(string linkTitle, string linkUrl) =>
+        InlineLinkNode<PlainTextNode>.Apply(linkTitle, linkUrl);
+
     /// <summary>
     /// Applies the inline link style to the given integer link title and URL.
     /// </summary>
@@ -60,4 +62,22 @@ public static class InlineLinkMarkdownV2
     /// </returns>
     public static InlineLinkNode<IntegerNode> Apply(int linkTitle, string linkUrl) =>
         InlineLinkNode<IntegerNode>.Apply(linkTitle, linkUrl);
+
+    /// <summary>
+    /// Applies the inline link style to the given long integer link title and URL.
+    /// </summary>
+    /// <param name="linkTitle">
+    /// The long integer to be used as link title.
+    /// </param>
+    /// <param name="linkUrl">
+    /// The link URL as a string.
+    /// </param>
+    /// <returns>
+    /// A new instance of the <see cref="InlineLinkNode{TInner}"/> struct
+    /// with the specified long integer link title and link URL.
+    /// </returns>
+    public static InlineLinkNode<LongNode> Apply(long linkTitle, string linkUrl) =>
+        InlineLinkNode<LongNode>.Apply(linkTitle, linkUrl);
+
+    #endregion
 }

@@ -25,6 +25,8 @@ public static class BlockquoteMarkdownV2
     public static BlockquoteNode<T> Apply<T>(T style) where T : INode =>
         BlockquoteNode<T>.Apply(style);
 
+    #region Overloads for Common Types
+
     /// <summary>
     /// Applies blockquote style to the given text.
     /// </summary>
@@ -48,4 +50,18 @@ public static class BlockquoteMarkdownV2
     /// </returns>
     public static BlockquoteNode<IntegerNode> Apply(int integer) =>
         BlockquoteNode<IntegerNode>.Apply(integer);
+
+    /// <summary>
+    /// Applies blockquote style to the given long integer.
+    /// </summary>
+    /// <param name="long">
+    /// The long integer to be styled as a blockquote.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="BlockquoteNode{TInner}"/> containing the styled long integer.
+    /// </returns>
+    public static BlockquoteNode<LongNode> Apply(long @long) =>
+        BlockquoteNode<LongNode>.Apply(@long);
+
+    #endregion
 }

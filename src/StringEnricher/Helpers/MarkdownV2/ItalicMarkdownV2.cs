@@ -11,18 +11,6 @@ namespace StringEnricher.Helpers.MarkdownV2;
 public static class ItalicMarkdownV2
 {
     /// <summary>
-    /// Applies italic style to the given text.
-    /// </summary>
-    /// <param name="text">
-    /// The text to be styled in italic.
-    /// </param>
-    /// <returns>
-    /// A new instance of <see cref="ItalicNode{TInner}"/> wrapping the provided text.
-    /// </returns>
-    public static ItalicNode<PlainTextNode> Apply(string text) =>
-        ItalicNode<PlainTextNode>.Apply(text);
-
-    /// <summary>
     /// Applies italic style to the given style.
     /// </summary>
     /// <param name="style">
@@ -37,6 +25,20 @@ public static class ItalicMarkdownV2
     public static ItalicNode<T> Apply<T>(T style) where T : INode =>
         ItalicNode<T>.Apply(style);
 
+    #region Overloads for Common Types
+
+    /// <summary>
+    /// Applies italic style to the given text.
+    /// </summary>
+    /// <param name="text">
+    /// The text to be styled in italic.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="ItalicNode{TInner}"/> wrapping the provided text.
+    /// </returns>
+    public static ItalicNode<PlainTextNode> Apply(string text) =>
+        ItalicNode<PlainTextNode>.Apply(text);
+
     /// <summary>
     /// Applies italic style to the given integer.
     /// </summary>
@@ -48,4 +50,18 @@ public static class ItalicMarkdownV2
     /// </returns>
     public static ItalicNode<IntegerNode> Apply(int integer) =>
         ItalicNode<IntegerNode>.Apply(integer);
+
+    /// <summary>
+    /// Applies italic style to the given long integer.
+    /// </summary>
+    /// <param name="long">
+    /// The long integer to be styled as italic.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="ItalicNode{TInner}"/> containing the styled long integer.
+    /// </returns>
+    public static ItalicNode<LongNode> Apply(long @long) =>
+        ItalicNode<LongNode>.Apply(@long);
+
+    #endregion
 }

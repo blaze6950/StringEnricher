@@ -51,5 +51,17 @@ public static class CodeBlockHtml
     public static CodeBlockNode<IntegerNode> Apply(int integer) =>
         CodeBlockNode<IntegerNode>.Apply(integer);
 
+    /// <summary>
+    /// Applies code block style to the given long integer.
+    /// </summary>
+    /// <param name="long">
+    /// The long integer to be styled as a code block.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="CodeBlockNode{TInner}"/> containing the styled long integer.
+    /// </returns>
+    public static CodeBlockNode<LongNode> Apply(long @long) =>
+        CodeBlockNode<LongNode>.Apply(@long);
+
     #endregion
 }

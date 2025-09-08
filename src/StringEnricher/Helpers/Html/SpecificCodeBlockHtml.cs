@@ -40,5 +40,14 @@ public static class SpecificCodeBlockHtml
     public static SpecificCodeBlockNode<IntegerNode> Apply(int codeBlock, string language) =>
         SpecificCodeBlockNode<IntegerNode>.Apply(codeBlock, language);
 
+    /// <summary>
+    /// Applies specific code block style to the given long integer code block.
+    /// </summary>
+    /// <param name="codeBlock">The long integer to be styled as a code block.</param>
+    /// <param name="language">The language to be used in the class attribute.</param>
+    /// <returns>A new instance of <see cref="SpecificCodeBlockNode{TInner}"/> containing the styled long integer and language.</returns>
+    public static SpecificCodeBlockNode<LongNode> Apply(long codeBlock, string language) =>
+        SpecificCodeBlockNode<LongNode>.Apply(codeBlock, language);
+
     #endregion
 }

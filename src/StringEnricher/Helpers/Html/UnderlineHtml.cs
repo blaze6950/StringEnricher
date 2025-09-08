@@ -41,5 +41,17 @@ public static class UnderlineHtml
     public static UnderlineNode<IntegerNode> Apply(int integer) =>
         UnderlineNode<IntegerNode>.Apply(integer);
 
+    /// <summary>
+    /// Applies underline style to the given long integer.
+    /// </summary>
+    /// <param name="long">
+    /// The long integer to be styled as underlined.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="UnderlineNode{TInner}"/> containing the styled long integer.
+    /// </returns>
+    public static UnderlineNode<LongNode> Apply(long @long) =>
+        UnderlineNode<LongNode>.Apply(@long);
+
     #endregion
 }

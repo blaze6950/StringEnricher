@@ -11,18 +11,6 @@ namespace StringEnricher.Helpers.MarkdownV2;
 public static class StrikethroughMarkdownV2
 {
     /// <summary>
-    /// Applies strikethrough style to the given text using plain text style as inner style.
-    /// </summary>
-    /// <param name="text">
-    /// The text to be styled with strikethrough syntax.
-    /// </param>
-    /// <returns>
-    /// A new instance of <see cref="StrikethroughNode{TInner}"/> containing the specified text.
-    /// </returns>
-    public static StrikethroughNode<PlainTextNode> Apply(string text) =>
-        StrikethroughNode<PlainTextNode>.Apply(text);
-
-    /// <summary>
     /// Applies strikethrough style to the given inner style.
     /// </summary>
     /// <param name="style">
@@ -37,6 +25,20 @@ public static class StrikethroughMarkdownV2
     public static StrikethroughNode<T> Apply<T>(T style) where T : INode =>
         StrikethroughNode<T>.Apply(style);
 
+    #region Overloads for Common Types
+
+    /// <summary>
+    /// Applies strikethrough style to the given text using plain text style as inner style.
+    /// </summary>
+    /// <param name="text">
+    /// The text to be styled with strikethrough syntax.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="StrikethroughNode{TInner}"/> containing the specified text.
+    /// </returns>
+    public static StrikethroughNode<PlainTextNode> Apply(string text) =>
+        StrikethroughNode<PlainTextNode>.Apply(text);
+
     /// <summary>
     /// Applies strikethrough style to the given integer.
     /// </summary>
@@ -48,4 +50,18 @@ public static class StrikethroughMarkdownV2
     /// </returns>
     public static StrikethroughNode<IntegerNode> Apply(int integer) =>
         StrikethroughNode<IntegerNode>.Apply(integer);
+
+    /// <summary>
+    /// Applies strikethrough style to the given long integer.
+    /// </summary>
+    /// <param name="long">
+    /// The long integer to be styled with strikethrough.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="StrikethroughNode{TInner}"/> containing the styled long integer.
+    /// </returns>
+    public static StrikethroughNode<LongNode> Apply(long @long) =>
+        StrikethroughNode<LongNode>.Apply(@long);
+
+    #endregion
 }
