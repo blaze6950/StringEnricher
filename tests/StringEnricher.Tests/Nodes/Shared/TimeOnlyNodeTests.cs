@@ -1,16 +1,17 @@
 ﻿using StringEnricher.Nodes.Shared;
+using System.Globalization;
 
 namespace StringEnricher.Tests.Nodes.Shared;
 
 public class TimeOnlyNodeTests
 {
-    private static readonly TimeOnly TestTime = new TimeOnly(14, 30, 45);
+    private static readonly TimeOnly TestTimeOnly = new TimeOnly(14, 30, 45, 123);
 
     [Fact]
     public void Constructor_WithTimeOnly_InitializesCorrectly()
     {
         // Arrange
-        var value = TestTime;
+        var value = TestTimeOnly;
         var expectedString = value.ToString();
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0; // TimeOnlyNode has no syntax characters
@@ -24,16 +25,17 @@ public class TimeOnlyNodeTests
     }
 
     [Fact]
-    public void Constructor_WithMinValue_InitializesCorrectly()
+    public void Constructor_WithTimeOnlyAndFormat_InitializesCorrectly()
     {
         // Arrange
-        var value = TimeOnly.MinValue;
-        var expectedString = value.ToString();
+        var value = TestTimeOnly;
+        const string format = "HH:mm:ss";
+        var expectedString = value.ToString(format);
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0;
 
         // Act
-        var node = new TimeOnlyNode(value);
+        var node = new TimeOnlyNode(value, format);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -41,20 +43,65 @@ public class TimeOnlyNodeTests
     }
 
     [Fact]
-    public void Constructor_WithMaxValue_InitializesCorrectly()
+    public void Constructor_WithTimeOnlyFormatAndProvider_InitializesCorrectly()
     {
         // Arrange
-        var value = TimeOnly.MaxValue;
-        var expectedString = value.ToString();
+        var value = TestTimeOnly;
+        const string format = "h:mm:ss tt";
+        var provider = CultureInfo.GetCultureInfo("en-US");
+        var expectedString = value.ToString(format, provider);
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0;
 
         // Act
-        var node = new TimeOnlyNode(value);
+        var node = new TimeOnlyNode(value, format, provider);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
         Assert.Equal(expectedSyntaxLength, node.SyntaxLength);
+    }
+
+    [Theory]
+    [InlineData("HH:mm:ss")]      // 24-hour format
+    [InlineData("h:mm:ss tt")]    // 12-hour format with AM/PM
+    [InlineData("HH:mm")]         // Hours and minutes only
+    [InlineData("t")]             // Short time pattern
+    [InlineData("T")]             // Long time pattern
+    public void Constructor_WithVariousFormats_InitializesCorrectly(string format)
+    {
+        // Arrange
+        var value = TestTimeOnly;
+        var expectedString = value.ToString(format);
+        var expectedTotalLength = expectedString.Length;
+
+        // Act
+        var node = new TimeOnlyNode(value, format);
+
+        // Assert
+        Assert.Equal(expectedTotalLength, node.TotalLength);
+        Assert.Equal(expectedString, node.ToString());
+    }
+
+    [Theory]
+    [InlineData("en-US")]
+    [InlineData("en-GB")]
+    [InlineData("fr-FR")]
+    [InlineData("de-DE")]
+    [InlineData("ja-JP")]
+    public void Constructor_WithVariousProviders_InitializesCorrectly(string cultureName)
+    {
+        // Arrange
+        var value = TestTimeOnly;
+        var provider = CultureInfo.GetCultureInfo(cultureName);
+        var expectedString = value.ToString(provider);
+        var expectedTotalLength = expectedString.Length;
+
+        // Act
+        var node = new TimeOnlyNode(value, null, provider);
+
+        // Assert
+        Assert.Equal(expectedTotalLength, node.TotalLength);
+        Assert.Equal(expectedString, node.ToString());
     }
 
     [Theory]
@@ -77,7 +124,7 @@ public class TimeOnlyNodeTests
     public void CopyTo_WithTimeOnly_CopiesCorrectly()
     {
         // Arrange
-        var value = TestTime;
+        var value = TestTimeOnly;
         var node = new TimeOnlyNode(value);
         Span<char> destination = stackalloc char[20];
         var expectedString = value.ToString();
@@ -95,7 +142,7 @@ public class TimeOnlyNodeTests
     public void CopyTo_WithInsufficientSpace_ThrowsArgumentException()
     {
         // Arrange
-        var value = TestTime;
+        var value = TestTimeOnly;
         var node = new TimeOnlyNode(value);
 
         // Act
@@ -112,10 +159,49 @@ public class TimeOnlyNodeTests
     }
 
     [Fact]
+    public void CopyTo_WithFormat_CopiesCorrectly()
+    {
+        // Arrange
+        var value = TestTimeOnly;
+        const string format = "HH:mm:ss";
+        var node = new TimeOnlyNode(value, format);
+        Span<char> destination = stackalloc char[20];
+        var expectedString = value.ToString(format);
+        var expectedBytesWritten = expectedString.Length;
+
+        // Act
+        var bytesWritten = node.CopyTo(destination);
+
+        // Assert
+        Assert.Equal(expectedBytesWritten, bytesWritten);
+        Assert.Equal(expectedString, destination[..bytesWritten].ToString());
+    }
+
+    [Fact]
+    public void CopyTo_WithFormatAndProvider_CopiesCorrectly()
+    {
+        // Arrange
+        var value = TestTimeOnly;
+        const string format = "h:mm:ss tt";
+        var provider = CultureInfo.GetCultureInfo("en-US");
+        var node = new TimeOnlyNode(value, format, provider);
+        Span<char> destination = stackalloc char[20];
+        var expectedString = value.ToString(format, provider);
+        var expectedBytesWritten = expectedString.Length;
+
+        // Act
+        var bytesWritten = node.CopyTo(destination);
+
+        // Assert
+        Assert.Equal(expectedBytesWritten, bytesWritten);
+        Assert.Equal(expectedString, destination[..bytesWritten].ToString());
+    }
+
+    [Fact]
     public void TryGetChar_ValidIndices_ReturnsTrueAndCorrectChar()
     {
         // Arrange
-        var value = TestTime;
+        var value = TestTimeOnly;
         var node = new TimeOnlyNode(value);
         var expected = value.ToString();
 
@@ -134,7 +220,7 @@ public class TimeOnlyNodeTests
     public void TryGetChar_OutOfRangeIndices_ReturnsFalseAndNullChar(int index)
     {
         // Arrange
-        var node = new TimeOnlyNode(TestTime);
+        var node = new TimeOnlyNode(TestTimeOnly);
 
         // Act
         var result = node.TryGetChar(index, out var ch);
@@ -145,10 +231,47 @@ public class TimeOnlyNodeTests
     }
 
     [Fact]
+    public void TryGetChar_WithFormat_ReturnsTrueAndCorrectChar()
+    {
+        // Arrange
+        var value = TestTimeOnly;
+        const string format = "HH:mm";
+        var node = new TimeOnlyNode(value, format);
+        var expected = value.ToString(format);
+
+        // Act & Assert
+        for (var i = 0; i < expected.Length; i++)
+        {
+            var result = node.TryGetChar(i, out var ch);
+            Assert.True(result);
+            Assert.Equal(expected[i], ch);
+        }
+    }
+
+    [Fact]
+    public void TryGetChar_WithFormatAndProvider_ReturnsTrueAndCorrectChar()
+    {
+        // Arrange
+        var value = TestTimeOnly;
+        const string format = "t";
+        var provider = CultureInfo.GetCultureInfo("en-US");
+        var node = new TimeOnlyNode(value, format, provider);
+        var expected = value.ToString(format, provider);
+
+        // Act & Assert
+        for (var i = 0; i < expected.Length; i++)
+        {
+            var result = node.TryGetChar(i, out var ch);
+            Assert.True(result);
+            Assert.Equal(expected[i], ch);
+        }
+    }
+
+    [Fact]
     public void ImplicitConversion_FromTimeOnly_CreatesTimeOnlyNode()
     {
         // Arrange
-        var value = TestTime;
+        var value = TestTimeOnly;
         var expectedString = value.ToString();
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0;
@@ -165,9 +288,42 @@ public class TimeOnlyNodeTests
     public void ToString_WithTimeOnly_ReturnsCorrectString()
     {
         // Arrange
-        var value = TestTime;
+        var value = TestTimeOnly;
         var node = new TimeOnlyNode(value);
         var expected = value.ToString();
+
+        // Act
+        var result = node.ToString();
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void ToString_WithFormat_ReturnsFormattedString()
+    {
+        // Arrange
+        var value = TestTimeOnly;
+        const string format = "T";
+        var node = new TimeOnlyNode(value, format);
+        var expected = value.ToString(format);
+
+        // Act
+        var result = node.ToString();
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void ToString_WithFormatAndProvider_ReturnsFormattedString()
+    {
+        // Arrange
+        var value = TestTimeOnly;
+        const string format = "h:mm tt";
+        var provider = CultureInfo.GetCultureInfo("en-US");
+        var node = new TimeOnlyNode(value, format, provider);
+        var expected = value.ToString(format, provider);
 
         // Act
         var result = node.ToString();
@@ -182,7 +338,7 @@ public class TimeOnlyNodeTests
         // Arrange & Act & Assert
         Assert.Equal(0, new TimeOnlyNode(TimeOnly.MinValue).SyntaxLength);
         Assert.Equal(0, new TimeOnlyNode(TimeOnly.MaxValue).SyntaxLength);
-        Assert.Equal(0, new TimeOnlyNode(TestTime).SyntaxLength);
+        Assert.Equal(0, new TimeOnlyNode(TestTimeOnly).SyntaxLength);
         Assert.Equal(0, new TimeOnlyNode(TimeOnly.FromDateTime(DateTime.Now)).SyntaxLength);
     }
 
@@ -190,7 +346,7 @@ public class TimeOnlyNodeTests
     public void CopyTo_WithExactSpace_CopiesCorrectly()
     {
         // Arrange
-        var value = TestTime;
+        var value = TestTimeOnly;
         var node = new TimeOnlyNode(value);
         var expectedString = value.ToString();
         Span<char> destination = stackalloc char[expectedString.Length]; // Exact size

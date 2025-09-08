@@ -1,9 +1,12 @@
 ﻿using StringEnricher.Nodes.Shared;
+using System.Globalization;
 
 namespace StringEnricher.Tests.Nodes.Shared;
 
 public class LongNodeTests
 {
+    private const long TestLong = 1234567890L;
+
     [Fact]
     public void Constructor_WithPositiveLong_InitializesCorrectly()
     {
@@ -18,6 +21,195 @@ public class LongNodeTests
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
         Assert.Equal(expectedSyntaxLength, node.SyntaxLength);
+    }
+
+    [Fact]
+    public void Constructor_WithLongAndFormat_InitializesCorrectly()
+    {
+        // Arrange
+        const long value = TestLong;
+        const string format = "N0";
+        var expectedString = value.ToString(format);
+        var expectedTotalLength = expectedString.Length;
+        const int expectedSyntaxLength = 0;
+
+        // Act
+        var node = new LongNode(value, format);
+
+        // Assert
+        Assert.Equal(expectedTotalLength, node.TotalLength);
+        Assert.Equal(expectedSyntaxLength, node.SyntaxLength);
+    }
+
+    [Fact]
+    public void Constructor_WithLongFormatAndProvider_InitializesCorrectly()
+    {
+        // Arrange
+        const long value = TestLong;
+        const string format = "C";
+        var provider = CultureInfo.GetCultureInfo("en-GB");
+        var expectedString = value.ToString(format, provider);
+        var expectedTotalLength = expectedString.Length;
+        const int expectedSyntaxLength = 0;
+
+        // Act
+        var node = new LongNode(value, format, provider);
+
+        // Assert
+        Assert.Equal(expectedTotalLength, node.TotalLength);
+        Assert.Equal(expectedSyntaxLength, node.SyntaxLength);
+    }
+
+    [Theory]
+    [InlineData("D")]     // Decimal
+    [InlineData("N")]     // Number with thousands separator
+    [InlineData("X")]     // Hexadecimal uppercase
+    [InlineData("x")]     // Hexadecimal lowercase
+    [InlineData("C")]     // Currency
+    public void Constructor_WithVariousFormats_InitializesCorrectly(string format)
+    {
+        // Arrange
+        const long value = TestLong;
+        var expectedString = value.ToString(format);
+        var expectedTotalLength = expectedString.Length;
+
+        // Act
+        var node = new LongNode(value, format);
+
+        // Assert
+        Assert.Equal(expectedTotalLength, node.TotalLength);
+        Assert.Equal(expectedString, node.ToString());
+    }
+
+    [Theory]
+    [InlineData("en-US")]
+    [InlineData("en-GB")]
+    [InlineData("fr-FR")]
+    [InlineData("de-DE")]
+    [InlineData("ja-JP")]
+    public void Constructor_WithVariousProviders_InitializesCorrectly(string cultureName)
+    {
+        // Arrange
+        const long value = TestLong;
+        var provider = CultureInfo.GetCultureInfo(cultureName);
+        var expectedString = value.ToString(provider);
+        var expectedTotalLength = expectedString.Length;
+
+        // Act
+        var node = new LongNode(value, null, provider);
+
+        // Assert
+        Assert.Equal(expectedTotalLength, node.TotalLength);
+        Assert.Equal(expectedString, node.ToString());
+    }
+
+    [Fact]
+    public void CopyTo_WithFormat_CopiesCorrectly()
+    {
+        // Arrange
+        const long value = TestLong;
+        const string format = "N0";
+        var node = new LongNode(value, format);
+        Span<char> destination = stackalloc char[20];
+        var expectedString = value.ToString(format);
+        var expectedBytesWritten = expectedString.Length;
+
+        // Act
+        var bytesWritten = node.CopyTo(destination);
+
+        // Assert
+        Assert.Equal(expectedBytesWritten, bytesWritten);
+        Assert.Equal(expectedString, destination[..bytesWritten].ToString());
+    }
+
+    [Fact]
+    public void CopyTo_WithFormatAndProvider_CopiesCorrectly()
+    {
+        // Arrange
+        const long value = TestLong;
+        const string format = "C";
+        var provider = CultureInfo.GetCultureInfo("en-GB");
+        var node = new LongNode(value, format, provider);
+        Span<char> destination = stackalloc char[30];
+        var expectedString = value.ToString(format, provider);
+        var expectedBytesWritten = expectedString.Length;
+
+        // Act
+        var bytesWritten = node.CopyTo(destination);
+
+        // Assert
+        Assert.Equal(expectedBytesWritten, bytesWritten);
+        Assert.Equal(expectedString, destination[..bytesWritten].ToString());
+    }
+
+    [Fact]
+    public void TryGetChar_WithFormat_ReturnsTrueAndCorrectChar()
+    {
+        // Arrange
+        const long value = TestLong;
+        const string format = "X";
+        var node = new LongNode(value, format);
+        var expected = value.ToString(format);
+
+        // Act & Assert
+        for (var i = 0; i < expected.Length; i++)
+        {
+            var result = node.TryGetChar(i, out var ch);
+            Assert.True(result);
+            Assert.Equal(expected[i], ch);
+        }
+    }
+
+    [Fact]
+    public void TryGetChar_WithFormatAndProvider_ReturnsTrueAndCorrectChar()
+    {
+        // Arrange
+        const long value = TestLong;
+        const string format = "N";
+        var provider = CultureInfo.GetCultureInfo("de-DE");
+        var node = new LongNode(value, format, provider);
+        var expected = value.ToString(format, provider);
+
+        // Act & Assert
+        for (var i = 0; i < expected.Length; i++)
+        {
+            var result = node.TryGetChar(i, out var ch);
+            Assert.True(result);
+            Assert.Equal(expected[i], ch);
+        }
+    }
+
+    [Fact]
+    public void ToString_WithFormat_ReturnsFormattedString()
+    {
+        // Arrange
+        const long value = TestLong;
+        const string format = "D12";
+        var node = new LongNode(value, format);
+        var expected = value.ToString(format);
+
+        // Act
+        var result = node.ToString();
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void ToString_WithFormatAndProvider_ReturnsFormattedString()
+    {
+        // Arrange
+        const long value = TestLong;
+        const string format = "N0";
+        var provider = CultureInfo.GetCultureInfo("fr-FR");
+        var node = new LongNode(value, format, provider);
+        var expected = value.ToString(format, provider);
+
+        // Act
+        var result = node.ToString();
+
+        // Assert
+        Assert.Equal(expected, result);
     }
 
     [Fact]

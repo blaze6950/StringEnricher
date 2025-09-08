@@ -24,20 +24,42 @@ public class GuidNodeTests
     }
 
     [Fact]
-    public void Constructor_WithEmptyGuid_InitializesCorrectly()
+    public void Constructor_WithGuidAndFormat_InitializesCorrectly()
     {
         // Arrange
-        var value = Guid.Empty;
-        var expectedString = value.ToString();
-        var expectedTotalLength = expectedString.Length; // "00000000-0000-0000-0000-000000000000"
-        const int expectedSyntaxLength = 0; // GuidNode has no syntax characters
+        var value = TestGuid;
+        const string format = "N";
+        var expectedString = value.ToString(format);
+        var expectedTotalLength = expectedString.Length;
+        const int expectedSyntaxLength = 0;
 
         // Act
-        var node = new GuidNode(value);
+        var node = new GuidNode(value, format);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
         Assert.Equal(expectedSyntaxLength, node.SyntaxLength);
+    }
+
+    [Theory]
+    [InlineData("D")]     // Default format with hyphens
+    [InlineData("N")]     // No hyphens
+    [InlineData("B")]     // With braces
+    [InlineData("P")]     // With parentheses
+    [InlineData("X")]     // Hexadecimal format
+    public void Constructor_WithVariousFormats_InitializesCorrectly(string format)
+    {
+        // Arrange
+        var value = TestGuid;
+        var expectedString = value.ToString(format);
+        var expectedTotalLength = expectedString.Length;
+
+        // Act
+        var node = new GuidNode(value, format);
+
+        // Assert
+        Assert.Equal(expectedTotalLength, node.TotalLength);
+        Assert.Equal(expectedString, node.ToString());
     }
 
     [Fact]
@@ -62,6 +84,25 @@ public class GuidNodeTests
         var node = new GuidNode(value);
         Span<char> destination = stackalloc char[50];
         var expectedString = value.ToString();
+        var expectedBytesWritten = expectedString.Length;
+
+        // Act
+        var bytesWritten = node.CopyTo(destination);
+
+        // Assert
+        Assert.Equal(expectedBytesWritten, bytesWritten);
+        Assert.Equal(expectedString, destination[..bytesWritten].ToString());
+    }
+
+    [Fact]
+    public void CopyTo_WithFormat_CopiesCorrectly()
+    {
+        // Arrange
+        var value = TestGuid;
+        const string format = "N";
+        var node = new GuidNode(value, format);
+        Span<char> destination = stackalloc char[50];
+        var expectedString = value.ToString(format);
         var expectedBytesWritten = expectedString.Length;
 
         // Act
@@ -99,6 +140,24 @@ public class GuidNodeTests
         var value = TestGuid;
         var node = new GuidNode(value);
         var expected = value.ToString();
+
+        // Act & Assert
+        for (var i = 0; i < expected.Length; i++)
+        {
+            var result = node.TryGetChar(i, out var ch);
+            Assert.True(result);
+            Assert.Equal(expected[i], ch);
+        }
+    }
+
+    [Fact]
+    public void TryGetChar_WithFormat_ReturnsTrueAndCorrectChar()
+    {
+        // Arrange
+        var value = TestGuid;
+        const string format = "B";
+        var node = new GuidNode(value, format);
+        var expected = value.ToString(format);
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
@@ -150,6 +209,22 @@ public class GuidNodeTests
         var value = TestGuid;
         var node = new GuidNode(value);
         var expected = value.ToString();
+
+        // Act
+        var result = node.ToString();
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void ToString_WithFormat_ReturnsFormattedString()
+    {
+        // Arrange
+        var value = TestGuid;
+        const string format = "X";
+        var node = new GuidNode(value, format);
+        var expected = value.ToString(format);
 
         // Act
         var result = node.ToString();

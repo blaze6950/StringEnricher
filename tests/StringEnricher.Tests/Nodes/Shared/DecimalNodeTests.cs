@@ -1,9 +1,12 @@
 ﻿using StringEnricher.Nodes.Shared;
+using System.Globalization;
 
 namespace StringEnricher.Tests.Nodes.Shared;
 
 public class DecimalNodeTests
 {
+    private const decimal TestDecimal = 123.45m;
+
     [Fact]
     public void Constructor_WithPositiveDecimal_InitializesCorrectly()
     {
@@ -22,16 +25,17 @@ public class DecimalNodeTests
     }
 
     [Fact]
-    public void Constructor_WithNegativeDecimal_InitializesCorrectly()
+    public void Constructor_WithDecimalAndFormat_InitializesCorrectly()
     {
         // Arrange
-        const decimal value = -456.78m;
-        var expectedString = value.ToString();
+        const decimal value = TestDecimal;
+        const string format = "C";
+        var expectedString = value.ToString(format);
         var expectedTotalLength = expectedString.Length;
-        const int expectedSyntaxLength = 0; // DecimalNode has no syntax characters
+        const int expectedSyntaxLength = 0;
 
         // Act
-        var node = new DecimalNode(value);
+        var node = new DecimalNode(value, format);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -39,15 +43,18 @@ public class DecimalNodeTests
     }
 
     [Fact]
-    public void Constructor_WithZero_InitializesCorrectly()
+    public void Constructor_WithDecimalFormatAndProvider_InitializesCorrectly()
     {
         // Arrange
-        const decimal value = 0m;
-        const int expectedTotalLength = 1; // "0" has 1 character
-        const int expectedSyntaxLength = 0; // DecimalNode has no syntax characters
+        const decimal value = TestDecimal;
+        const string format = "C";
+        var provider = CultureInfo.GetCultureInfo("en-GB");
+        var expectedString = value.ToString(format, provider);
+        var expectedTotalLength = expectedString.Length;
+        const int expectedSyntaxLength = 0;
 
         // Act
-        var node = new DecimalNode(value);
+        var node = new DecimalNode(value, format, provider);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -55,17 +62,54 @@ public class DecimalNodeTests
     }
 
     [Theory]
-    [InlineData(1.0)]
-    [InlineData(12.34)]
-    [InlineData(123.456)]
-    [InlineData(-1.0)]
-    [InlineData(-12.34)]
-    [InlineData(-123.456)]
-    public void TotalLength_WithVariousDecimals_ReturnsCorrectLength(decimal value)
+    [InlineData("C")]     // Currency
+    [InlineData("N")]     // Number
+    [InlineData("F2")]    // Fixed-point with 2 decimals
+    [InlineData("P")]     // Percent
+    [InlineData("E")]     // Exponential
+    public void Constructor_WithVariousFormats_InitializesCorrectly(string format)
+    {
+        // Arrange
+        const decimal value = TestDecimal;
+        var expectedString = value.ToString(format);
+        var expectedTotalLength = expectedString.Length;
+
+        // Act
+        var node = new DecimalNode(value, format);
+
+        // Assert
+        Assert.Equal(expectedTotalLength, node.TotalLength);
+        Assert.Equal(expectedString, node.ToString());
+    }
+
+    [Theory]
+    [InlineData("en-US")]
+    [InlineData("en-GB")]
+    [InlineData("fr-FR")]
+    [InlineData("de-DE")]
+    [InlineData("ja-JP")]
+    public void Constructor_WithVariousProviders_InitializesCorrectly(string cultureName)
+    {
+        // Arrange
+        const decimal value = TestDecimal;
+        var provider = CultureInfo.GetCultureInfo(cultureName);
+        var expectedString = value.ToString(provider);
+        var expectedTotalLength = expectedString.Length;
+
+        // Act
+        var node = new DecimalNode(value, null, provider);
+
+        // Assert
+        Assert.Equal(expectedTotalLength, node.TotalLength);
+        Assert.Equal(expectedString, node.ToString());
+    }
+
+    [Fact]
+    public void TotalLength_WithVariousDecimals_ReturnsCorrectLength()
     {
         // Arrange & Act
-        var node = new DecimalNode(value);
-        var expectedLength = value.ToString().Length;
+        var node = new DecimalNode(TestDecimal);
+        var expectedLength = TestDecimal.ToString().Length;
 
         // Assert
         Assert.Equal(expectedLength, node.TotalLength);
@@ -97,6 +141,45 @@ public class DecimalNodeTests
         var node = new DecimalNode(value);
         Span<char> destination = stackalloc char[20];
         var expectedString = value.ToString();
+        var expectedBytesWritten = expectedString.Length;
+
+        // Act
+        var bytesWritten = node.CopyTo(destination);
+
+        // Assert
+        Assert.Equal(expectedBytesWritten, bytesWritten);
+        Assert.Equal(expectedString, destination[..bytesWritten].ToString());
+    }
+
+    [Fact]
+    public void CopyTo_WithFormat_CopiesCorrectly()
+    {
+        // Arrange
+        const decimal value = TestDecimal;
+        const string format = "N2";
+        var node = new DecimalNode(value, format);
+        Span<char> destination = stackalloc char[20];
+        var expectedString = value.ToString(format);
+        var expectedBytesWritten = expectedString.Length;
+
+        // Act
+        var bytesWritten = node.CopyTo(destination);
+
+        // Assert
+        Assert.Equal(expectedBytesWritten, bytesWritten);
+        Assert.Equal(expectedString, destination[..bytesWritten].ToString());
+    }
+
+    [Fact]
+    public void CopyTo_WithFormatAndProvider_CopiesCorrectly()
+    {
+        // Arrange
+        const decimal value = TestDecimal;
+        const string format = "C";
+        var provider = CultureInfo.GetCultureInfo("en-GB");
+        var node = new DecimalNode(value, format, provider);
+        Span<char> destination = stackalloc char[20];
+        var expectedString = value.ToString(format, provider);
         var expectedBytesWritten = expectedString.Length;
 
         // Act
@@ -161,6 +244,43 @@ public class DecimalNodeTests
     }
 
     [Fact]
+    public void TryGetChar_WithFormat_ReturnsTrueAndCorrectChar()
+    {
+        // Arrange
+        const decimal value = TestDecimal;
+        const string format = "F2";
+        var node = new DecimalNode(value, format);
+        var expected = value.ToString(format);
+
+        // Act & Assert
+        for (var i = 0; i < expected.Length; i++)
+        {
+            var result = node.TryGetChar(i, out var ch);
+            Assert.True(result);
+            Assert.Equal(expected[i], ch);
+        }
+    }
+
+    [Fact]
+    public void TryGetChar_WithFormatAndProvider_ReturnsTrueAndCorrectChar()
+    {
+        // Arrange
+        const decimal value = TestDecimal;
+        const string format = "N";
+        var provider = CultureInfo.GetCultureInfo("de-DE");
+        var node = new DecimalNode(value, format, provider);
+        var expected = value.ToString(format, provider);
+
+        // Act & Assert
+        for (var i = 0; i < expected.Length; i++)
+        {
+            var result = node.TryGetChar(i, out var ch);
+            Assert.True(result);
+            Assert.Equal(expected[i], ch);
+        }
+    }
+
+    [Fact]
     public void ImplicitConversion_FromDecimal_CreatesDecimalNode()
     {
         // Arrange
@@ -184,6 +304,39 @@ public class DecimalNodeTests
         const decimal value = 789.123m;
         var node = new DecimalNode(value);
         var expected = value.ToString();
+
+        // Act
+        var result = node.ToString();
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void ToString_WithFormat_ReturnsFormattedString()
+    {
+        // Arrange
+        const decimal value = TestDecimal;
+        const string format = "C";
+        var node = new DecimalNode(value, format);
+        var expected = value.ToString(format);
+
+        // Act
+        var result = node.ToString();
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void ToString_WithFormatAndProvider_ReturnsFormattedString()
+    {
+        // Arrange
+        const decimal value = TestDecimal;
+        const string format = "N2";
+        var provider = CultureInfo.GetCultureInfo("fr-FR");
+        var node = new DecimalNode(value, format, provider);
+        var expected = value.ToString(format, provider);
 
         // Act
         var result = node.ToString();

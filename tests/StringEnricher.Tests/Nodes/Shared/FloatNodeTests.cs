@@ -1,9 +1,12 @@
 ﻿using StringEnricher.Nodes.Shared;
+using System.Globalization;
 
 namespace StringEnricher.Tests.Nodes.Shared;
 
 public class FloatNodeTests
 {
+    private const float TestFloat = 123.456789f;
+
     [Fact]
     public void Constructor_WithPositiveFloat_InitializesCorrectly()
     {
@@ -22,16 +25,17 @@ public class FloatNodeTests
     }
 
     [Fact]
-    public void Constructor_WithNegativeFloat_InitializesCorrectly()
+    public void Constructor_WithFloatAndFormat_InitializesCorrectly()
     {
         // Arrange
-        const float value = -456.78f;
-        var expectedString = value.ToString();
+        const float value = TestFloat;
+        const string format = "F2";
+        var expectedString = value.ToString(format);
         var expectedTotalLength = expectedString.Length;
-        const int expectedSyntaxLength = 0; // FloatNode has no syntax characters
+        const int expectedSyntaxLength = 0;
 
         // Act
-        var node = new FloatNode(value);
+        var node = new FloatNode(value, format);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -39,15 +43,18 @@ public class FloatNodeTests
     }
 
     [Fact]
-    public void Constructor_WithZero_InitializesCorrectly()
+    public void Constructor_WithFloatFormatAndProvider_InitializesCorrectly()
     {
         // Arrange
-        const float value = 0.0f;
-        const int expectedTotalLength = 1; // "0" has 1 character
-        const int expectedSyntaxLength = 0; // FloatNode has no syntax characters
+        const float value = TestFloat;
+        const string format = "N";
+        var provider = CultureInfo.GetCultureInfo("en-GB");
+        var expectedString = value.ToString(format, provider);
+        var expectedTotalLength = expectedString.Length;
+        const int expectedSyntaxLength = 0;
 
         // Act
-        var node = new FloatNode(value);
+        var node = new FloatNode(value, format, provider);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -55,30 +62,57 @@ public class FloatNodeTests
     }
 
     [Theory]
-    [InlineData(1.0f)]
-    [InlineData(12.34f)]
-    [InlineData(123.456f)]
-    [InlineData(-1.0f)]
-    [InlineData(-12.34f)]
-    [InlineData(-123.456f)]
-    public void TotalLength_WithVariousFloats_ReturnsCorrectLength(float value)
+    [InlineData("F")]     // Fixed-point
+    [InlineData("F2")]    // Fixed-point with 2 decimals
+    [InlineData("N")]     // Number with thousands separator
+    [InlineData("E")]     // Scientific notation
+    [InlineData("P")]     // Percent
+    public void Constructor_WithVariousFormats_InitializesCorrectly(string format)
     {
-        // Arrange & Act
-        var node = new FloatNode(value);
-        var expectedLength = value.ToString().Length;
+        // Arrange
+        const float value = TestFloat;
+        var expectedString = value.ToString(format);
+        var expectedTotalLength = expectedString.Length;
+
+        // Act
+        var node = new FloatNode(value, format);
 
         // Assert
-        Assert.Equal(expectedLength, node.TotalLength);
+        Assert.Equal(expectedTotalLength, node.TotalLength);
+        Assert.Equal(expectedString, node.ToString());
+    }
+
+    [Theory]
+    [InlineData("en-US")]
+    [InlineData("en-GB")]
+    [InlineData("fr-FR")]
+    [InlineData("de-DE")]
+    [InlineData("ja-JP")]
+    public void Constructor_WithVariousProviders_InitializesCorrectly(string cultureName)
+    {
+        // Arrange
+        const float value = TestFloat;
+        var provider = CultureInfo.GetCultureInfo(cultureName);
+        var expectedString = value.ToString(provider);
+        var expectedTotalLength = expectedString.Length;
+
+        // Act
+        var node = new FloatNode(value, null, provider);
+
+        // Assert
+        Assert.Equal(expectedTotalLength, node.TotalLength);
+        Assert.Equal(expectedString, node.ToString());
     }
 
     [Fact]
-    public void CopyTo_WithFloat_CopiesCorrectly()
+    public void CopyTo_WithFormat_CopiesCorrectly()
     {
         // Arrange
-        const float value = 123.45f;
-        var node = new FloatNode(value);
-        Span<char> destination = stackalloc char[30];
-        var expectedString = value.ToString();
+        const float value = TestFloat;
+        const string format = "F2";
+        var node = new FloatNode(value, format);
+        Span<char> destination = stackalloc char[20];
+        var expectedString = value.ToString(format);
         var expectedBytesWritten = expectedString.Length;
 
         // Act
@@ -90,32 +124,33 @@ public class FloatNodeTests
     }
 
     [Fact]
-    public void CopyTo_WithInsufficientSpace_ThrowsArgumentException()
+    public void CopyTo_WithFormatAndProvider_CopiesCorrectly()
     {
         // Arrange
-        const float value = 123.45f;
-        var node = new FloatNode(value);
+        const float value = TestFloat;
+        const string format = "N";
+        var provider = CultureInfo.GetCultureInfo("de-DE");
+        var node = new FloatNode(value, format, provider);
+        Span<char> destination = stackalloc char[30];
+        var expectedString = value.ToString(format, provider);
+        var expectedBytesWritten = expectedString.Length;
 
         // Act
-        var exception = Record.Exception(() =>
-        {
-            Span<char> destination = stackalloc char[2]; // Too small
-            return node.CopyTo(destination);
-        });
+        var bytesWritten = node.CopyTo(destination);
 
         // Assert
-        Assert.NotNull(exception);
-        Assert.IsType<ArgumentException>(exception);
-        Assert.Equal("Destination span too small.", exception.Message);
+        Assert.Equal(expectedBytesWritten, bytesWritten);
+        Assert.Equal(expectedString, destination[..bytesWritten].ToString());
     }
 
     [Fact]
-    public void TryGetChar_ValidIndices_ReturnsTrueAndCorrectChar()
+    public void TryGetChar_WithFormat_ReturnsTrueAndCorrectChar()
     {
         // Arrange
-        const float value = 123.45f;
-        var node = new FloatNode(value);
-        var expected = value.ToString();
+        const float value = TestFloat;
+        const string format = "F2";
+        var node = new FloatNode(value, format);
+        var expected = value.ToString(format);
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
@@ -126,46 +161,50 @@ public class FloatNodeTests
         }
     }
 
-    [Theory]
-    [InlineData(-1)]
-    [InlineData(20)]
-    public void TryGetChar_OutOfRangeIndices_ReturnsFalseAndNullChar(int index)
+    [Fact]
+    public void TryGetChar_WithFormatAndProvider_ReturnsTrueAndCorrectChar()
     {
         // Arrange
-        var node = new FloatNode(123.45f);
+        const float value = TestFloat;
+        const string format = "N";
+        var provider = CultureInfo.GetCultureInfo("fr-FR");
+        var node = new FloatNode(value, format, provider);
+        var expected = value.ToString(format, provider);
 
-        // Act
-        var result = node.TryGetChar(index, out var ch);
-
-        // Assert
-        Assert.False(result);
-        Assert.Equal('\0', ch);
+        // Act & Assert
+        for (var i = 0; i < expected.Length; i++)
+        {
+            var result = node.TryGetChar(i, out var ch);
+            Assert.True(result);
+            Assert.Equal(expected[i], ch);
+        }
     }
 
     [Fact]
-    public void ImplicitConversion_FromFloat_CreatesFloatNode()
+    public void ToString_WithFormat_ReturnsFormattedString()
     {
         // Arrange
-        const float value = 42.5f;
-        var expectedString = value.ToString();
-        var expectedTotalLength = expectedString.Length;
-        const int expectedSyntaxLength = 0;
+        const float value = TestFloat;
+        const string format = "E2";
+        var node = new FloatNode(value, format);
+        var expected = value.ToString(format);
 
         // Act
-        FloatNode node = value; // Implicit conversion
+        var result = node.ToString();
 
         // Assert
-        Assert.Equal(expectedTotalLength, node.TotalLength);
-        Assert.Equal(expectedSyntaxLength, node.SyntaxLength);
+        Assert.Equal(expected, result);
     }
 
     [Fact]
-    public void ToString_WithFloat_ReturnsCorrectString()
+    public void ToString_WithFormatAndProvider_ReturnsFormattedString()
     {
         // Arrange
-        const float value = 789.123f;
-        var node = new FloatNode(value);
-        var expected = value.ToString();
+        const float value = TestFloat;
+        const string format = "F2";
+        var provider = CultureInfo.GetCultureInfo("de-DE");
+        var node = new FloatNode(value, format, provider);
+        var expected = value.ToString(format, provider);
 
         // Act
         var result = node.ToString();

@@ -1,4 +1,5 @@
 ﻿using StringEnricher.Nodes.Shared;
+using System.Globalization;
 
 namespace StringEnricher.Tests.Nodes.Shared;
 
@@ -24,16 +25,17 @@ public class DateOnlyNodeTests
     }
 
     [Fact]
-    public void Constructor_WithMinValue_InitializesCorrectly()
+    public void Constructor_WithDateOnlyAndFormat_InitializesCorrectly()
     {
         // Arrange
-        var value = DateOnly.MinValue;
-        var expectedString = value.ToString();
+        var value = TestDate;
+        const string format = "yyyy-MM-dd";
+        var expectedString = value.ToString(format);
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0;
 
         // Act
-        var node = new DateOnlyNode(value);
+        var node = new DateOnlyNode(value, format);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -41,16 +43,18 @@ public class DateOnlyNodeTests
     }
 
     [Fact]
-    public void Constructor_WithMaxValue_InitializesCorrectly()
+    public void Constructor_WithDateOnlyFormatAndProvider_InitializesCorrectly()
     {
         // Arrange
-        var value = DateOnly.MaxValue;
-        var expectedString = value.ToString();
+        var value = TestDate;
+        const string format = "dd/MM/yyyy";
+        var provider = CultureInfo.GetCultureInfo("en-GB");
+        var expectedString = value.ToString(format, provider);
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0;
 
         // Act
-        var node = new DateOnlyNode(value);
+        var node = new DateOnlyNode(value, format, provider);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -58,14 +62,51 @@ public class DateOnlyNodeTests
     }
 
     [Theory]
-    [InlineData(2023, 1, 1)]
-    [InlineData(2023, 12, 31)]
-    [InlineData(2000, 2, 29)] // Leap year
-    [InlineData(1999, 2, 28)] // Non-leap year
-    public void TotalLength_WithVariousDateOnlys_ReturnsCorrectLength(int year, int month, int day)
+    [InlineData("yyyy-MM-dd")]
+    [InlineData("dd/MM/yyyy")]
+    [InlineData("MMM dd, yyyy")]
+    [InlineData("yyyy")]
+    public void Constructor_WithVariousFormats_InitializesCorrectly(string format)
     {
         // Arrange
-        var value = new DateOnly(year, month, day);
+        var value = TestDate;
+        var expectedString = value.ToString(format);
+        var expectedTotalLength = expectedString.Length;
+
+        // Act
+        var node = new DateOnlyNode(value, format);
+
+        // Assert
+        Assert.Equal(expectedTotalLength, node.TotalLength);
+        Assert.Equal(expectedString, node.ToString());
+    }
+
+    [Theory]
+    [InlineData("en-US")]
+    [InlineData("en-GB")]
+    [InlineData("fr-FR")]
+    [InlineData("de-DE")]
+    public void Constructor_WithVariousProviders_InitializesCorrectly(string cultureName)
+    {
+        // Arrange
+        var value = TestDate;
+        var provider = CultureInfo.GetCultureInfo(cultureName);
+        var expectedString = value.ToString(provider);
+        var expectedTotalLength = expectedString.Length;
+
+        // Act
+        var node = new DateOnlyNode(value, null, provider);
+
+        // Assert
+        Assert.Equal(expectedTotalLength, node.TotalLength);
+        Assert.Equal(expectedString, node.ToString());
+    }
+
+    [Fact]
+    public void TotalLength_WithVariousDateOnlys_ReturnsCorrectLength()
+    {
+        // Arrange
+        var value = new DateOnly(2023, 12, 25);
         var node = new DateOnlyNode(value);
         var expectedLength = value.ToString().Length;
 
@@ -112,6 +153,45 @@ public class DateOnlyNodeTests
     }
 
     [Fact]
+    public void CopyTo_WithFormat_CopiesCorrectly()
+    {
+        // Arrange
+        var value = TestDate;
+        const string format = "yyyy-MM-dd";
+        var node = new DateOnlyNode(value, format);
+        Span<char> destination = stackalloc char[20];
+        var expectedString = value.ToString(format);
+        var expectedBytesWritten = expectedString.Length;
+
+        // Act
+        var bytesWritten = node.CopyTo(destination);
+
+        // Assert
+        Assert.Equal(expectedBytesWritten, bytesWritten);
+        Assert.Equal(expectedString, destination[..bytesWritten].ToString());
+    }
+
+    [Fact]
+    public void CopyTo_WithFormatAndProvider_CopiesCorrectly()
+    {
+        // Arrange
+        var value = TestDate;
+        const string format = "dd/MM/yyyy";
+        var provider = CultureInfo.GetCultureInfo("en-GB");
+        var node = new DateOnlyNode(value, format, provider);
+        Span<char> destination = stackalloc char[20];
+        var expectedString = value.ToString(format, provider);
+        var expectedBytesWritten = expectedString.Length;
+
+        // Act
+        var bytesWritten = node.CopyTo(destination);
+
+        // Assert
+        Assert.Equal(expectedBytesWritten, bytesWritten);
+        Assert.Equal(expectedString, destination[..bytesWritten].ToString());
+    }
+
+    [Fact]
     public void TryGetChar_ValidIndices_ReturnsTrueAndCorrectChar()
     {
         // Arrange
@@ -145,6 +225,43 @@ public class DateOnlyNodeTests
     }
 
     [Fact]
+    public void TryGetChar_WithFormat_ReturnsTrueAndCorrectChar()
+    {
+        // Arrange
+        var value = TestDate;
+        const string format = "yyyy-MM-dd";
+        var node = new DateOnlyNode(value, format);
+        var expected = value.ToString(format);
+
+        // Act & Assert
+        for (var i = 0; i < expected.Length; i++)
+        {
+            var result = node.TryGetChar(i, out var ch);
+            Assert.True(result);
+            Assert.Equal(expected[i], ch);
+        }
+    }
+
+    [Fact]
+    public void TryGetChar_WithFormatAndProvider_ReturnsTrueAndCorrectChar()
+    {
+        // Arrange
+        var value = TestDate;
+        const string format = "dd/MM/yyyy";
+        var provider = CultureInfo.GetCultureInfo("en-GB");
+        var node = new DateOnlyNode(value, format, provider);
+        var expected = value.ToString(format, provider);
+
+        // Act & Assert
+        for (var i = 0; i < expected.Length; i++)
+        {
+            var result = node.TryGetChar(i, out var ch);
+            Assert.True(result);
+            Assert.Equal(expected[i], ch);
+        }
+    }
+
+    [Fact]
     public void ImplicitConversion_FromDateOnly_CreatesDateOnlyNode()
     {
         // Arrange
@@ -168,6 +285,39 @@ public class DateOnlyNodeTests
         var value = TestDate;
         var node = new DateOnlyNode(value);
         var expected = value.ToString();
+
+        // Act
+        var result = node.ToString();
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void ToString_WithFormat_ReturnsFormattedString()
+    {
+        // Arrange
+        var value = TestDate;
+        const string format = "yyyy-MM-dd";
+        var node = new DateOnlyNode(value, format);
+        var expected = value.ToString(format);
+
+        // Act
+        var result = node.ToString();
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void ToString_WithFormatAndProvider_ReturnsFormattedString()
+    {
+        // Arrange
+        var value = TestDate;
+        const string format = "dd/MM/yyyy";
+        var provider = CultureInfo.GetCultureInfo("en-GB");
+        var node = new DateOnlyNode(value, format, provider);
+        var expected = value.ToString(format, provider);
 
         // Act
         var result = node.ToString();

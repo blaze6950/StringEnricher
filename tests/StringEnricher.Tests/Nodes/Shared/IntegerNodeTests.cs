@@ -1,9 +1,12 @@
 ﻿using StringEnricher.Nodes.Shared;
+using System.Globalization;
 
 namespace StringEnricher.Tests.Nodes.Shared;
 
 public class IntegerNodeTests
 {
+    private const int TestInteger = 12345;
+
     [Fact]
     public void Constructor_WithPositiveInteger_InitializesCorrectly()
     {
@@ -21,15 +24,17 @@ public class IntegerNodeTests
     }
 
     [Fact]
-    public void Constructor_WithNegativeInteger_InitializesCorrectly()
+    public void Constructor_WithIntegerAndFormat_InitializesCorrectly()
     {
         // Arrange
-        const int value = -456;
-        const int expectedTotalLength = 4; // "-456" has 4 characters
-        const int expectedSyntaxLength = 0; // IntegerNode has no syntax characters
+        const int value = TestInteger;
+        const string format = "N0";
+        var expectedString = value.ToString(format);
+        var expectedTotalLength = expectedString.Length;
+        const int expectedSyntaxLength = 0;
 
         // Act
-        var node = new IntegerNode(value);
+        var node = new IntegerNode(value, format);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -37,15 +42,18 @@ public class IntegerNodeTests
     }
 
     [Fact]
-    public void Constructor_WithZero_InitializesCorrectly()
+    public void Constructor_WithIntegerFormatAndProvider_InitializesCorrectly()
     {
         // Arrange
-        const int value = 0;
-        const int expectedTotalLength = 1; // "0" has 1 character
-        const int expectedSyntaxLength = 0; // IntegerNode has no syntax characters
+        const int value = TestInteger;
+        const string format = "C";
+        var provider = CultureInfo.GetCultureInfo("en-GB");
+        var expectedString = value.ToString(format, provider);
+        var expectedTotalLength = expectedString.Length;
+        const int expectedSyntaxLength = 0;
 
         // Act
-        var node = new IntegerNode(value);
+        var node = new IntegerNode(value, format, provider);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -53,23 +61,56 @@ public class IntegerNodeTests
     }
 
     [Theory]
-    [InlineData(1, 1)]
-    [InlineData(12, 2)]
-    [InlineData(123, 3)]
-    [InlineData(1234, 4)]
-    [InlineData(-1, 2)]
-    [InlineData(-12, 3)]
-    [InlineData(-123, 4)]
-    [InlineData(-1234, 5)]
-    [InlineData(int.MaxValue, 10)] // 2147483647
-    [InlineData(int.MinValue, 11)] // -2147483648
-    public void TotalLength_WithVariousIntegers_ReturnsCorrectLength(int value, int expectedLength)
+    [InlineData("D")]     // Decimal
+    [InlineData("N")]     // Number with thousands separator
+    [InlineData("X")]     // Hexadecimal uppercase
+    [InlineData("x")]     // Hexadecimal lowercase
+    [InlineData("C")]     // Currency
+    public void Constructor_WithVariousFormats_InitializesCorrectly(string format)
     {
-        // Arrange & Act
-        var node = new IntegerNode(value);
+        // Arrange
+        const int value = TestInteger;
+        var expectedString = value.ToString(format);
+        var expectedTotalLength = expectedString.Length;
+
+        // Act
+        var node = new IntegerNode(value, format);
 
         // Assert
-        Assert.Equal(expectedLength, node.TotalLength);
+        Assert.Equal(expectedTotalLength, node.TotalLength);
+        Assert.Equal(expectedString, node.ToString());
+    }
+
+    [Theory]
+    [InlineData("en-US")]
+    [InlineData("en-GB")]
+    [InlineData("fr-FR")]
+    [InlineData("de-DE")]
+    [InlineData("ja-JP")]
+    public void Constructor_WithVariousProviders_InitializesCorrectly(string cultureName)
+    {
+        // Arrange
+        const int value = TestInteger;
+        var provider = CultureInfo.GetCultureInfo(cultureName);
+        var expectedString = value.ToString(provider);
+        var expectedTotalLength = expectedString.Length;
+
+        // Act
+        var node = new IntegerNode(value, null, provider);
+
+        // Assert
+        Assert.Equal(expectedTotalLength, node.TotalLength);
+        Assert.Equal(expectedString, node.ToString());
+    }
+
+    [Fact]
+    public void TotalLength_WithVariousIntegers_ReturnsCorrectLength()
+    {
+        // Arrange & Act
+        var node = new IntegerNode(TestInteger);
+
+        // Assert
+        Assert.Equal(5, node.TotalLength); // "12345" has 5 characters
     }
 
     [Fact]
@@ -162,6 +203,45 @@ public class IntegerNodeTests
         // Assert
         Assert.Equal(expectedBytesWritten, bytesWritten);
         Assert.Equal(expectedString, destination.ToString());
+    }
+
+    [Fact]
+    public void CopyTo_WithFormat_CopiesCorrectly()
+    {
+        // Arrange
+        const int value = TestInteger;
+        const string format = "N0";
+        var node = new IntegerNode(value, format);
+        Span<char> destination = stackalloc char[20];
+        var expectedString = value.ToString(format);
+        var expectedBytesWritten = expectedString.Length;
+
+        // Act
+        var bytesWritten = node.CopyTo(destination);
+
+        // Assert
+        Assert.Equal(expectedBytesWritten, bytesWritten);
+        Assert.Equal(expectedString, destination[..bytesWritten].ToString());
+    }
+
+    [Fact]
+    public void CopyTo_WithFormatAndProvider_CopiesCorrectly()
+    {
+        // Arrange
+        const int value = TestInteger;
+        const string format = "C";
+        var provider = CultureInfo.GetCultureInfo("en-GB");
+        var node = new IntegerNode(value, format, provider);
+        Span<char> destination = stackalloc char[30];
+        var expectedString = value.ToString(format, provider);
+        var expectedBytesWritten = expectedString.Length;
+
+        // Act
+        var bytesWritten = node.CopyTo(destination);
+
+        // Assert
+        Assert.Equal(expectedBytesWritten, bytesWritten);
+        Assert.Equal(expectedString, destination[..bytesWritten].ToString());
     }
 
     [Fact]
@@ -329,5 +409,38 @@ public class IntegerNodeTests
         Assert.Equal(0, new IntegerNode(-456).SyntaxLength);
         Assert.Equal(0, new IntegerNode(int.MaxValue).SyntaxLength);
         Assert.Equal(0, new IntegerNode(int.MinValue).SyntaxLength);
+    }
+
+    [Fact]
+    public void ToString_WithFormat_ReturnsFormattedString()
+    {
+        // Arrange
+        const int value = TestInteger;
+        const string format = "D8";
+        var node = new IntegerNode(value, format);
+        var expected = value.ToString(format);
+
+        // Act
+        var result = node.ToString();
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void ToString_WithFormatAndProvider_ReturnsFormattedString()
+    {
+        // Arrange
+        const int value = TestInteger;
+        const string format = "N0";
+        var provider = CultureInfo.GetCultureInfo("fr-FR");
+        var node = new IntegerNode(value, format, provider);
+        var expected = value.ToString(format, provider);
+
+        // Act
+        var result = node.ToString();
+
+        // Assert
+        Assert.Equal(expected, result);
     }
 }

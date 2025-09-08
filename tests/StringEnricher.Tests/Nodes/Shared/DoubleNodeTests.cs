@@ -1,9 +1,12 @@
 ﻿using StringEnricher.Nodes.Shared;
+using System.Globalization;
 
 namespace StringEnricher.Tests.Nodes.Shared;
 
 public class DoubleNodeTests
 {
+    private const double TestDouble = 123.456789;
+
     [Fact]
     public void Constructor_WithPositiveDouble_InitializesCorrectly()
     {
@@ -22,16 +25,17 @@ public class DoubleNodeTests
     }
 
     [Fact]
-    public void Constructor_WithNegativeDouble_InitializesCorrectly()
+    public void Constructor_WithDoubleAndFormat_InitializesCorrectly()
     {
         // Arrange
-        const double value = -456.78;
-        var expectedString = value.ToString();
+        const double value = TestDouble;
+        const string format = "F2";
+        var expectedString = value.ToString(format);
         var expectedTotalLength = expectedString.Length;
-        const int expectedSyntaxLength = 0; // DoubleNode has no syntax characters
+        const int expectedSyntaxLength = 0;
 
         // Act
-        var node = new DoubleNode(value);
+        var node = new DoubleNode(value, format);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -39,15 +43,18 @@ public class DoubleNodeTests
     }
 
     [Fact]
-    public void Constructor_WithZero_InitializesCorrectly()
+    public void Constructor_WithDoubleFormatAndProvider_InitializesCorrectly()
     {
         // Arrange
-        const double value = 0.0;
-        const int expectedTotalLength = 1; // "0" has 1 character
-        const int expectedSyntaxLength = 0; // DoubleNode has no syntax characters
+        const double value = TestDouble;
+        const string format = "N";
+        var provider = CultureInfo.GetCultureInfo("en-GB");
+        var expectedString = value.ToString(format, provider);
+        var expectedTotalLength = expectedString.Length;
+        const int expectedSyntaxLength = 0;
 
         // Act
-        var node = new DoubleNode(value);
+        var node = new DoubleNode(value, format, provider);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -55,20 +62,46 @@ public class DoubleNodeTests
     }
 
     [Theory]
-    [InlineData(1.0)]
-    [InlineData(12.34)]
-    [InlineData(123.456)]
-    [InlineData(-1.0)]
-    [InlineData(-12.34)]
-    [InlineData(-123.456)]
-    public void TotalLength_WithVariousDoubles_ReturnsCorrectLength(double value)
+    [InlineData("F")]     // Fixed-point
+    [InlineData("F2")]    // Fixed-point with 2 decimals
+    [InlineData("N")]     // Number with thousands separator
+    [InlineData("E")]     // Scientific notation
+    [InlineData("P")]     // Percent
+    public void Constructor_WithVariousFormats_InitializesCorrectly(string format)
     {
-        // Arrange & Act
-        var node = new DoubleNode(value);
-        var expectedLength = value.ToString().Length;
+        // Arrange
+        const double value = TestDouble;
+        var expectedString = value.ToString(format);
+        var expectedTotalLength = expectedString.Length;
+
+        // Act
+        var node = new DoubleNode(value, format);
 
         // Assert
-        Assert.Equal(expectedLength, node.TotalLength);
+        Assert.Equal(expectedTotalLength, node.TotalLength);
+        Assert.Equal(expectedString, node.ToString());
+    }
+
+    [Theory]
+    [InlineData("en-US")]
+    [InlineData("en-GB")]
+    [InlineData("fr-FR")]
+    [InlineData("de-DE")]
+    [InlineData("ja-JP")]
+    public void Constructor_WithVariousProviders_InitializesCorrectly(string cultureName)
+    {
+        // Arrange
+        const double value = TestDouble;
+        var provider = CultureInfo.GetCultureInfo(cultureName);
+        var expectedString = value.ToString(provider);
+        var expectedTotalLength = expectedString.Length;
+
+        // Act
+        var node = new DoubleNode(value, null, provider);
+
+        // Assert
+        Assert.Equal(expectedTotalLength, node.TotalLength);
+        Assert.Equal(expectedString, node.ToString());
     }
 
     [Fact]
@@ -110,6 +143,45 @@ public class DoubleNodeTests
     }
 
     [Fact]
+    public void CopyTo_WithFormat_CopiesCorrectly()
+    {
+        // Arrange
+        const double value = TestDouble;
+        const string format = "F2";
+        var node = new DoubleNode(value, format);
+        Span<char> destination = stackalloc char[20];
+        var expectedString = value.ToString(format);
+        var expectedBytesWritten = expectedString.Length;
+
+        // Act
+        var bytesWritten = node.CopyTo(destination);
+
+        // Assert
+        Assert.Equal(expectedBytesWritten, bytesWritten);
+        Assert.Equal(expectedString, destination[..bytesWritten].ToString());
+    }
+
+    [Fact]
+    public void CopyTo_WithFormatAndProvider_CopiesCorrectly()
+    {
+        // Arrange
+        const double value = TestDouble;
+        const string format = "N";
+        var provider = CultureInfo.GetCultureInfo("de-DE");
+        var node = new DoubleNode(value, format, provider);
+        Span<char> destination = stackalloc char[30];
+        var expectedString = value.ToString(format, provider);
+        var expectedBytesWritten = expectedString.Length;
+
+        // Act
+        var bytesWritten = node.CopyTo(destination);
+
+        // Assert
+        Assert.Equal(expectedBytesWritten, bytesWritten);
+        Assert.Equal(expectedString, destination[..bytesWritten].ToString());
+    }
+
+    [Fact]
     public void TryGetChar_ValidIndices_ReturnsTrueAndCorrectChar()
     {
         // Arrange
@@ -143,6 +215,43 @@ public class DoubleNodeTests
     }
 
     [Fact]
+    public void TryGetChar_WithFormat_ReturnsTrueAndCorrectChar()
+    {
+        // Arrange
+        const double value = TestDouble;
+        const string format = "F2";
+        var node = new DoubleNode(value, format);
+        var expected = value.ToString(format);
+
+        // Act & Assert
+        for (var i = 0; i < expected.Length; i++)
+        {
+            var result = node.TryGetChar(i, out var ch);
+            Assert.True(result);
+            Assert.Equal(expected[i], ch);
+        }
+    }
+
+    [Fact]
+    public void TryGetChar_WithFormatAndProvider_ReturnsTrueAndCorrectChar()
+    {
+        // Arrange
+        const double value = TestDouble;
+        const string format = "N";
+        var provider = CultureInfo.GetCultureInfo("fr-FR");
+        var node = new DoubleNode(value, format, provider);
+        var expected = value.ToString(format, provider);
+
+        // Act & Assert
+        for (var i = 0; i < expected.Length; i++)
+        {
+            var result = node.TryGetChar(i, out var ch);
+            Assert.True(result);
+            Assert.Equal(expected[i], ch);
+        }
+    }
+
+    [Fact]
     public void ImplicitConversion_FromDouble_CreatesDoubleNode()
     {
         // Arrange
@@ -166,6 +275,39 @@ public class DoubleNodeTests
         const double value = 789.123;
         var node = new DoubleNode(value);
         var expected = value.ToString();
+
+        // Act
+        var result = node.ToString();
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void ToString_WithFormat_ReturnsFormattedString()
+    {
+        // Arrange
+        const double value = TestDouble;
+        const string format = "E2";
+        var node = new DoubleNode(value, format);
+        var expected = value.ToString(format);
+
+        // Act
+        var result = node.ToString();
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void ToString_WithFormatAndProvider_ReturnsFormattedString()
+    {
+        // Arrange
+        const double value = TestDouble;
+        const string format = "F2";
+        var provider = CultureInfo.GetCultureInfo("de-DE");
+        var node = new DoubleNode(value, format, provider);
+        var expected = value.ToString(format, provider);
 
         // Act
         var result = node.ToString();

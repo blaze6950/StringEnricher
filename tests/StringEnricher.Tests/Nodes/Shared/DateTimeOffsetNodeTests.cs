@@ -1,10 +1,11 @@
 ﻿using StringEnricher.Nodes.Shared;
+using System.Globalization;
 
 namespace StringEnricher.Tests.Nodes.Shared;
 
 public class DateTimeOffsetNodeTests
 {
-    private static readonly DateTimeOffset TestDateTimeOffset = new DateTimeOffset(2023, 12, 25, 14, 30, 45, TimeSpan.FromHours(-5));
+    private static readonly DateTimeOffset TestDateTimeOffset = new DateTimeOffset(2023, 12, 25, 14, 30, 45, TimeSpan.FromHours(5));
 
     [Fact]
     public void Constructor_WithDateTimeOffset_InitializesCorrectly()
@@ -13,23 +14,6 @@ public class DateTimeOffsetNodeTests
         var value = TestDateTimeOffset;
         var expectedString = value.ToString();
         var expectedTotalLength = expectedString.Length;
-        const int expectedSyntaxLength = 0; // DateTimeOffsetNode has no syntax characters
-
-        // Act
-        var node = new DateTimeOffsetNode(value);
-
-        // Assert
-        Assert.Equal(expectedTotalLength, node.TotalLength);
-        Assert.Equal(expectedSyntaxLength, node.SyntaxLength);
-    }
-
-    [Fact]
-    public void Constructor_WithMinValue_InitializesCorrectly()
-    {
-        // Arrange
-        var value = DateTimeOffset.MinValue;
-        var expectedString = value.ToString();
-        var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0;
 
         // Act
@@ -41,20 +25,83 @@ public class DateTimeOffsetNodeTests
     }
 
     [Fact]
-    public void Constructor_WithMaxValue_InitializesCorrectly()
+    public void Constructor_WithDateTimeOffsetAndFormat_InitializesCorrectly()
     {
         // Arrange
-        var value = DateTimeOffset.MaxValue;
-        var expectedString = value.ToString();
+        var value = TestDateTimeOffset;
+        const string format = "yyyy-MM-dd HH:mm:ss zzz";
+        var expectedString = value.ToString(format);
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0;
 
         // Act
-        var node = new DateTimeOffsetNode(value);
+        var node = new DateTimeOffsetNode(value, format);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
         Assert.Equal(expectedSyntaxLength, node.SyntaxLength);
+    }
+
+    [Fact]
+    public void Constructor_WithDateTimeOffsetFormatAndProvider_InitializesCorrectly()
+    {
+        // Arrange
+        var value = TestDateTimeOffset;
+        const string format = "dd/MM/yyyy HH:mm:ss zzz";
+        var provider = CultureInfo.GetCultureInfo("en-GB");
+        var expectedString = value.ToString(format, provider);
+        var expectedTotalLength = expectedString.Length;
+        const int expectedSyntaxLength = 0;
+
+        // Act
+        var node = new DateTimeOffsetNode(value, format, provider);
+
+        // Assert
+        Assert.Equal(expectedTotalLength, node.TotalLength);
+        Assert.Equal(expectedSyntaxLength, node.SyntaxLength);
+    }
+
+    [Theory]
+    [InlineData("yyyy-MM-dd HH:mm:ss zzz")]
+    [InlineData("MM/dd/yyyy h:mm:ss tt zzz")]
+    [InlineData("o")]  // Round-trip format
+    [InlineData("r")]  // RFC1123 format
+    [InlineData("u")]  // Universal sortable format
+    public void Constructor_WithVariousFormats_InitializesCorrectly(string format)
+    {
+        // Arrange
+        var value = TestDateTimeOffset;
+        var expectedString = value.ToString(format);
+        var expectedTotalLength = expectedString.Length;
+
+        // Act
+        var node = new DateTimeOffsetNode(value, format);
+
+        // Assert
+        Assert.Equal(expectedTotalLength, node.TotalLength);
+        Assert.Equal(expectedString, node.ToString());
+    }
+
+    [Theory]
+    [InlineData("en-US")]
+    [InlineData("en-GB")]
+    [InlineData("fr-FR")]
+    [InlineData("de-DE")]
+    [InlineData("ja-JP")]
+    public void Constructor_WithVariousProviders_InitializesCorrectly(string cultureName)
+    {
+        // Arrange
+        var value = TestDateTimeOffset;
+        var provider = CultureInfo.GetCultureInfo(cultureName);
+        var expectedString = value.ToString(provider);
+        var expectedTotalLength = expectedString.Length;
+
+        // Act
+        var node = new DateTimeOffsetNode(value, null, provider);
+
+        // Assert
+        Assert.Equal(expectedTotalLength, node.TotalLength);
+        Assert.Equal(expectedString, node.ToString());
     }
 
     [Theory]
@@ -82,6 +129,45 @@ public class DateTimeOffsetNodeTests
         var node = new DateTimeOffsetNode(value);
         Span<char> destination = stackalloc char[50];
         var expectedString = value.ToString();
+        var expectedBytesWritten = expectedString.Length;
+
+        // Act
+        var bytesWritten = node.CopyTo(destination);
+
+        // Assert
+        Assert.Equal(expectedBytesWritten, bytesWritten);
+        Assert.Equal(expectedString, destination[..bytesWritten].ToString());
+    }
+
+    [Fact]
+    public void CopyTo_WithFormat_CopiesCorrectly()
+    {
+        // Arrange
+        var value = TestDateTimeOffset;
+        const string format = "yyyy-MM-dd HH:mm:ss zzz";
+        var node = new DateTimeOffsetNode(value, format);
+        Span<char> destination = stackalloc char[50];
+        var expectedString = value.ToString(format);
+        var expectedBytesWritten = expectedString.Length;
+
+        // Act
+        var bytesWritten = node.CopyTo(destination);
+
+        // Assert
+        Assert.Equal(expectedBytesWritten, bytesWritten);
+        Assert.Equal(expectedString, destination[..bytesWritten].ToString());
+    }
+
+    [Fact]
+    public void CopyTo_WithFormatAndProvider_CopiesCorrectly()
+    {
+        // Arrange
+        var value = TestDateTimeOffset;
+        const string format = "dd/MM/yyyy HH:mm:ss zzz";
+        var provider = CultureInfo.GetCultureInfo("en-GB");
+        var node = new DateTimeOffsetNode(value, format, provider);
+        Span<char> destination = stackalloc char[50];
+        var expectedString = value.ToString(format, provider);
         var expectedBytesWritten = expectedString.Length;
 
         // Act
@@ -169,6 +255,39 @@ public class DateTimeOffsetNodeTests
         var value = TestDateTimeOffset;
         var node = new DateTimeOffsetNode(value);
         var expected = value.ToString();
+
+        // Act
+        var result = node.ToString();
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void ToString_WithFormat_ReturnsFormattedString()
+    {
+        // Arrange
+        var value = TestDateTimeOffset;
+        const string format = "o";
+        var node = new DateTimeOffsetNode(value, format);
+        var expected = value.ToString(format);
+
+        // Act
+        var result = node.ToString();
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void ToString_WithFormatAndProvider_ReturnsFormattedString()
+    {
+        // Arrange
+        var value = TestDateTimeOffset;
+        const string format = "dd/MM/yyyy HH:mm:ss zzz";
+        var provider = CultureInfo.GetCultureInfo("en-GB");
+        var node = new DateTimeOffsetNode(value, format, provider);
+        var expected = value.ToString(format, provider);
 
         // Act
         var result = node.ToString();
