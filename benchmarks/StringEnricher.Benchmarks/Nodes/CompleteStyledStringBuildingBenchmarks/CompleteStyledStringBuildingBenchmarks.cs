@@ -97,9 +97,9 @@ public class CompleteStyledStringBuildingBenchmarks
     [Benchmark]
     public string BuildStringWithConcatenation()
     {
-        string finalString = "";
+        var finalString = "";
 
-        for (int i = 0; i < Strings.Length - 1; i++)
+        for (var i = 0; i < Strings.Length - 1; i++)
         {
             finalString += "*__" + Strings[i] + "__*" + " ";
         }

@@ -24,6 +24,9 @@ public readonly struct IntegerNode : INode
     public int TotalLength { get; }
 
     /// <inheritdoc />
+    public override string ToString() => string.Create(TotalLength, this, static (span, node) => node.CopyTo(span));
+
+    /// <inheritdoc />
     public int CopyTo(Span<char> destination)
     {
         var textLength = TotalLength;

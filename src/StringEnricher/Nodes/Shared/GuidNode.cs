@@ -1,20 +1,20 @@
 namespace StringEnricher.Nodes.Shared;
 
 /// <summary>
-/// A style that represents a long.
+/// A style that represents an GUID.
 /// </summary>
-public readonly struct LongNode : INode
+public readonly struct GuidNode : INode
 {
-    private readonly long _long;
+    private readonly Guid _guid;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="LongNode"/> struct.
+    /// Initializes a new instance of the <see cref="GuidNode"/> struct.
     /// </summary>
-    /// <param name="long"></param>
-    public LongNode(long @long)
+    /// <param name="guid"></param>
+    public GuidNode(Guid guid)
     {
-        _long = @long;
-        TotalLength = GetLongLength(@long);
+        _guid = guid;
+        TotalLength = GetGuidLength(guid);
     }
 
     /// <inheritdoc />
@@ -35,7 +35,7 @@ public readonly struct LongNode : INode
             throw new ArgumentException("Destination span too small.");
         }
 
-        _long.TryFormat(destination, out _, "D");
+        _guid.TryFormat(destination, out _, "D");
 
         return textLength;
     }
@@ -50,43 +50,26 @@ public readonly struct LongNode : INode
         }
 
         Span<char> buffer = stackalloc char[TotalLength];
-        _long.TryFormat(buffer, out _, "D");
+        _guid.TryFormat(buffer, out _, "D");
         character = buffer[index];
         return true;
     }
 
     /// <summary>
-    /// Implicitly converts a long to a <see cref="LongNode"/>.
+    /// Implicitly converts an GUID to a <see cref="GuidNode"/>.
     /// </summary>
-    /// <param name="long">Source long</param>
-    /// <returns><see cref="LongNode"/></returns>
-    public static implicit operator LongNode(long @long) => new(@long);
+    /// <param name="guid">Source GUID</param>
+    /// <returns><see cref="GuidNode"/></returns>
+    public static implicit operator GuidNode(Guid guid) => new(guid);
 
     /// <summary>
-    /// Calculates the length of the long when represented as a string.
+    /// Calculates the length of the GUID when represented as a string.
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    private static int GetLongLength(long value)
+    private static int GetGuidLength(Guid value)
     {
-        if (value == 0)
-        {
-            return 1;
-        }
-
-        var length = 0;
-        if (value < 0)
-        {
-            length++; // for the minus sign '-'
-            value = -value;
-        }
-
-        while (value != 0)
-        {
-            length++;
-            value /= 10;
-        }
-
-        return length;
+        // "D" format is always 36 characters for Guid
+        return 36;
     }
 }

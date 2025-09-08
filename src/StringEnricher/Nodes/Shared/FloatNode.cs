@@ -1,20 +1,20 @@
 namespace StringEnricher.Nodes.Shared;
 
 /// <summary>
-/// A style that represents a long.
+/// A style that represents a float.
 /// </summary>
-public readonly struct LongNode : INode
+public readonly struct FloatNode : INode
 {
-    private readonly long _long;
+    private readonly float _float;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="LongNode"/> struct.
+    /// Initializes a new instance of the <see cref="FloatNode"/> struct.
     /// </summary>
-    /// <param name="long"></param>
-    public LongNode(long @long)
+    /// <param name="float"></param>
+    public FloatNode(float @float)
     {
-        _long = @long;
-        TotalLength = GetLongLength(@long);
+        _float = @float;
+        TotalLength = GetFloatLength(@float);
     }
 
     /// <inheritdoc />
@@ -35,7 +35,7 @@ public readonly struct LongNode : INode
             throw new ArgumentException("Destination span too small.");
         }
 
-        _long.TryFormat(destination, out _, "D");
+        _float.TryFormat(destination, out _, "G");
 
         return textLength;
     }
@@ -50,43 +50,28 @@ public readonly struct LongNode : INode
         }
 
         Span<char> buffer = stackalloc char[TotalLength];
-        _long.TryFormat(buffer, out _, "D");
+        _float.TryFormat(buffer, out _, "G");
         character = buffer[index];
         return true;
     }
 
     /// <summary>
-    /// Implicitly converts a long to a <see cref="LongNode"/>.
+    /// Implicitly converts a float to a <see cref="FloatNode"/>.
     /// </summary>
-    /// <param name="long">Source long</param>
-    /// <returns><see cref="LongNode"/></returns>
-    public static implicit operator LongNode(long @long) => new(@long);
+    /// <param name="float">Source float</param>
+    /// <returns><see cref="FloatNode"/></returns>
+    public static implicit operator FloatNode(float @float) => new(@float);
 
     /// <summary>
-    /// Calculates the length of the long when represented as a string.
+    /// Calculates the length of the float when represented as a string.
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    private static int GetLongLength(long value)
+    private static int GetFloatLength(float value)
     {
-        if (value == 0)
-        {
-            return 1;
-        }
-
-        var length = 0;
-        if (value < 0)
-        {
-            length++; // for the minus sign '-'
-            value = -value;
-        }
-
-        while (value != 0)
-        {
-            length++;
-            value /= 10;
-        }
-
-        return length;
+        Span<char> buffer = stackalloc char[32]; // 32 is enough for any float in "G" format
+        return value.TryFormat(buffer, out var charsWritten, "G")
+            ? charsWritten
+            : throw new FormatException("Failed to format float.");
     }
 }

@@ -112,7 +112,7 @@ public class HardcoreTenfoldBoldNodeBenchmarks
     [Benchmark]
     public string StringBuilder_Default()
     {
-        string result = textToBold;
+        var result = textToBold;
         var sb = new StringBuilder();
         sb.Append("**********");
         sb.Append(result);
@@ -124,7 +124,7 @@ public class HardcoreTenfoldBoldNodeBenchmarks
     [Benchmark]
     public string StringBuilder_PreciseSize()
     {
-        string result = textToBold;
+        var result = textToBold;
         var sb = new StringBuilder(10 + result.Length + 10);
         sb.Append("**********");
         sb.Append(result);
@@ -136,7 +136,7 @@ public class HardcoreTenfoldBoldNodeBenchmarks
     [Benchmark]
     public string StringBuilder_Reserved100()
     {
-        string result = textToBold;
+        var result = textToBold;
         var sb = new StringBuilder(100);
         sb.Append("**********");
         sb.Append(result);

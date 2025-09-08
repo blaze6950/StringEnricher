@@ -20,7 +20,7 @@ public record MessageTextNodeStringHandler
         }
 
         var totalLength = _stringHandler.LiteralLength;
-        for (int i = 0; i < parameters.Length; i++)
+        for (var i = 0; i < parameters.Length; i++)
         {
             totalLength += parameters[i].Length;
         }
@@ -34,7 +34,7 @@ public record MessageTextNodeStringHandler
             var currentFormattedIndex = 0;
             var currentLiteralIndex = 0;
 
-            for (int i = 0; i < totalStringPartCount; i++)
+            for (var i = 0; i < totalStringPartCount; i++)
             {
                 if (stringHandler.FormattedPositions[currentFormattedIndex] == i)
                 {

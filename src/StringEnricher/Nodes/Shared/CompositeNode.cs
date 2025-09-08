@@ -34,10 +34,7 @@ public readonly struct CompositeNode<TLeft, TRight> : INode
     public int TotalLength => _left.TotalLength + _right.TotalLength;
 
     /// <inheritdoc />
-    public override string ToString()
-    {
-        return string.Create(TotalLength, this, static (span, node) => node.CopyTo(span));
-    }
+    public override string ToString() => string.Create(TotalLength, this, static (span, node) => node.CopyTo(span));
 
     /// <inheritdoc />
     public int CopyTo(Span<char> destination)

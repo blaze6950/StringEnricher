@@ -24,6 +24,9 @@ public readonly struct PlainTextNode : INode
     public int TotalLength => _text.Length;
 
     /// <inheritdoc />
+    public override string ToString() => string.Create(TotalLength, this, static (span, node) => node.CopyTo(span));
+
+    /// <inheritdoc />
     public int CopyTo(Span<char> destination)
     {
         var textLength = _text.Length;

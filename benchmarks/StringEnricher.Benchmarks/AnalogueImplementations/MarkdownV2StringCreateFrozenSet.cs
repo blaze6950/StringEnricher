@@ -15,7 +15,7 @@ public static class MarkdownV2StringCreateFrozenSet
         }
 
         // calculate the required size of the StringBuilder
-        int additionalChars = 0;
+        var additionalChars = 0;
         for (int index = 0, added = 0; index < input.Length; index++)
         {
             if (CharsToEscape.Contains(input[index]))
@@ -33,7 +33,7 @@ public static class MarkdownV2StringCreateFrozenSet
         return string.Create(input.Length + additionalChars, input, static (span, stringToEscape) =>
         {
             var pos = 0;
-            for (int index = 0; index < stringToEscape.Length; index++)
+            for (var index = 0; index < stringToEscape.Length; index++)
             {
                 if (CharsToEscape.Contains(stringToEscape[index]))
                 {

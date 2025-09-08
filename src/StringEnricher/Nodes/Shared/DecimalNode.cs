@@ -1,20 +1,20 @@
 namespace StringEnricher.Nodes.Shared;
 
 /// <summary>
-/// A style that represents a long.
+/// A style that represents a decimal.
 /// </summary>
-public readonly struct LongNode : INode
+public readonly struct DecimalNode : INode
 {
-    private readonly long _long;
+    private readonly decimal _decimal;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="LongNode"/> struct.
+    /// Initializes a new instance of the <see cref="DecimalNode"/> struct.
     /// </summary>
-    /// <param name="long"></param>
-    public LongNode(long @long)
+    /// <param name="decimal"></param>
+    public DecimalNode(decimal @decimal)
     {
-        _long = @long;
-        TotalLength = GetLongLength(@long);
+        _decimal = @decimal;
+        TotalLength = GetDecimalLength(@decimal);
     }
 
     /// <inheritdoc />
@@ -35,7 +35,7 @@ public readonly struct LongNode : INode
             throw new ArgumentException("Destination span too small.");
         }
 
-        _long.TryFormat(destination, out _, "D");
+        _decimal.TryFormat(destination, out _, "G");
 
         return textLength;
     }
@@ -50,43 +50,28 @@ public readonly struct LongNode : INode
         }
 
         Span<char> buffer = stackalloc char[TotalLength];
-        _long.TryFormat(buffer, out _, "D");
+        _decimal.TryFormat(buffer, out _, "G");
         character = buffer[index];
         return true;
     }
 
     /// <summary>
-    /// Implicitly converts a long to a <see cref="LongNode"/>.
+    /// Implicitly converts a decimal to a <see cref="DecimalNode"/>.
     /// </summary>
-    /// <param name="long">Source long</param>
-    /// <returns><see cref="LongNode"/></returns>
-    public static implicit operator LongNode(long @long) => new(@long);
+    /// <param name="decimal">Source decimal</param>
+    /// <returns><see cref="DecimalNode"/></returns>
+    public static implicit operator DecimalNode(decimal @decimal) => new(@decimal);
 
     /// <summary>
-    /// Calculates the length of the long when represented as a string.
+    /// Calculates the length of the decimal when represented as a string.
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    private static int GetLongLength(long value)
+    private static int GetDecimalLength(decimal value)
     {
-        if (value == 0)
-        {
-            return 1;
-        }
-
-        var length = 0;
-        if (value < 0)
-        {
-            length++; // for the minus sign '-'
-            value = -value;
-        }
-
-        while (value != 0)
-        {
-            length++;
-            value /= 10;
-        }
-
-        return length;
+        Span<char> buffer = stackalloc char[32]; // 32 chars is enough for any decimal
+        return value.TryFormat(buffer, out var charsWritten, "G", System.Globalization.CultureInfo.InvariantCulture)
+            ? charsWritten
+            : throw new FormatException("Failed to format decimal.");
     }
 }
