@@ -3,46 +3,10 @@ using StringEnricher.Nodes.Shared;
 namespace StringEnricher.Nodes.Html.Formatting;
 
 /// <summary>
-/// Provides methods to apply Telegram emoji styling in HTML format.
-/// Example: "<tg-emoji emoji-id="id">emoji</tg-emoji>"
-/// </summary>
-public static class TgEmojiHtml
-{
-    /// <summary>
-    /// Applies Telegram emoji style to the given default and custom emoji.
-    /// </summary>
-    /// <param name="defaultEmoji">The default emoji to be wrapped with Telegram emoji HTML tags.</param>
-    /// <param name="customEmoji">The custom emoji ID to be used in the emoji-id attribute.</param>
-    /// <returns>A new instance of <see cref="TgEmojiNode{TInner}"/> wrapping the provided emoji and ID.</returns>
-    public static TgEmojiNode<PlainTextNode> Apply(string defaultEmoji, string customEmoji) =>
-        TgEmojiNode<PlainTextNode>.Apply(defaultEmoji, customEmoji);
-
-    /// <summary>
-    /// Applies Telegram emoji style to the given styled default and custom emoji.
-    /// </summary>
-    /// <param name="defaultEmoji">The styled default emoji.</param>
-    /// <param name="customEmoji">The styled custom emoji ID.</param>
-    /// <typeparam name="T">The type of the inner style that implements <see cref="INode"/>.</typeparam>
-    /// <returns>A new instance of <see cref="TgEmojiNode{TInner}"/> wrapping the provided styled emoji and ID.</returns>
-    public static TgEmojiNode<T> Apply<T>(T defaultEmoji, T customEmoji) where T : INode =>
-        TgEmojiNode<T>.Apply(defaultEmoji, customEmoji);
-
-    /// <summary>
-    /// Applies Telegram emoji style to the given integer emoji ID.
-    /// </summary>
-    /// <param name="defaultEmoji">The default emoji text.</param>
-    /// <param name="customEmojiId">The custom emoji ID as integer.</param>
-    /// <returns>A new instance of <see cref="TgEmojiNode{TInner}"/> wrapping the provided emoji and integer ID.</returns>
-    public static TgEmojiNode<PlainTextNode> Apply(string defaultEmoji, int customEmojiId) =>
-        TgEmojiNode<PlainTextNode>.Apply(defaultEmoji, customEmojiId.ToString());
-}
-
-/// <summary>
 /// Represents Telegram emoji text in HTML format.
-/// Example: "<tg-emoji emoji-id="id">emoji</tg-emoji>"
+/// Example: "&lt;tg-emoji emoji-id="id"&gt;emoji&lt;/tg-emoji&gt;"
 /// </summary>
-public readonly struct TgEmojiNode<TInner> : INode
-    where TInner : INode
+public readonly struct TgEmojiNode : INode
 {
     /// <summary>
     /// The opening Telegram emoji tag and emoji-id attribute.
@@ -59,18 +23,18 @@ public readonly struct TgEmojiNode<TInner> : INode
     /// </summary>
     public const string Suffix = "</tg-emoji>";
 
-    private readonly TInner _defaultEmoji;
-    private readonly TInner _customEmoji;
+    private readonly PlainTextNode _defaultEmoji;
+    private readonly LongNode _customEmojiId;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TgEmojiNode{TInner}"/> struct.
+    /// Initializes a new instance of the <see cref="TgEmojiNode"/> struct.
     /// </summary>
-    /// <param name="defaultEmoji">The styled default emoji.</param>
-    /// <param name="customEmoji">The styled custom emoji ID.</param>
-    public TgEmojiNode(TInner defaultEmoji, TInner customEmoji)
+    /// <param name="defaultEmoji">The default emoji.</param>
+    /// <param name="customEmojiId">The custom emoji ID.</param>
+    public TgEmojiNode(PlainTextNode defaultEmoji, LongNode customEmojiId)
     {
         _defaultEmoji = defaultEmoji;
-        _customEmoji = customEmoji;
+        _customEmojiId = customEmojiId;
     }
 
     /// <inheritdoc/>
@@ -79,7 +43,7 @@ public readonly struct TgEmojiNode<TInner> : INode
     /// <summary>
     /// Gets the length of the default and custom emoji.
     /// </summary>
-    public int InnerLength => _defaultEmoji.TotalLength + _customEmoji.TotalLength;
+    public int InnerLength => _defaultEmoji.TotalLength + _customEmojiId.TotalLength;
 
     /// <summary>
     /// Gets the total length of the HTML Telegram emoji syntax.
@@ -109,8 +73,8 @@ public readonly struct TgEmojiNode<TInner> : INode
         Prefix.AsSpan().CopyTo(destination.Slice(pos, Prefix.Length));
         pos += Prefix.Length;
 
-        _customEmoji.CopyTo(destination.Slice(pos, _customEmoji.TotalLength));
-        pos += _customEmoji.TotalLength;
+        _customEmojiId.CopyTo(destination.Slice(pos, _customEmojiId.TotalLength));
+        pos += _customEmojiId.TotalLength;
 
         Separator.AsSpan().CopyTo(destination.Slice(pos, Separator.Length));
         pos += Separator.Length;
@@ -141,12 +105,12 @@ public readonly struct TgEmojiNode<TInner> : INode
 
         index -= Prefix.Length;
 
-        if (index < _customEmoji.TotalLength)
+        if (index < _customEmojiId.TotalLength)
         {
-            return _customEmoji.TryGetChar(index, out character);
+            return _customEmojiId.TryGetChar(index, out character);
         }
 
-        index -= _customEmoji.TotalLength;
+        index -= _customEmojiId.TotalLength;
 
         if (index < Separator.Length)
         {
@@ -173,6 +137,6 @@ public readonly struct TgEmojiNode<TInner> : INode
     /// </summary>
     /// <param name="defaultEmoji">The default emoji to be wrapped with Telegram emoji HTML tags.</param>
     /// <param name="customEmoji">The custom emoji ID to be used in the emoji-id attribute.</param>
-    /// <returns>A new instance of <see cref="TgEmojiNode{TInner}"/> wrapping the provided emoji and ID.</returns>
-    public static TgEmojiNode<TInner> Apply(TInner defaultEmoji, TInner customEmoji) => new(defaultEmoji, customEmoji);
+    /// <returns>A new instance of <see cref="TgEmojiNode"/> wrapping the provided emoji and ID.</returns>
+    public static TgEmojiNode Apply(PlainTextNode defaultEmoji, LongNode customEmoji) => new(defaultEmoji, customEmoji);
 }

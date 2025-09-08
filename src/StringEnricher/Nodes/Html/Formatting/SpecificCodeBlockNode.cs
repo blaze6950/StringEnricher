@@ -1,45 +1,8 @@
-using StringEnricher.Nodes.Shared;
-
 namespace StringEnricher.Nodes.Html.Formatting;
 
 /// <summary>
-/// Provides methods to apply specific code block styling in HTML format with language class.
-/// Example: "<pre><code class="language-csharp">code block</code></pre>"
-/// </summary>
-public static class SpecificCodeBlockHtml
-{
-    /// <summary>
-    /// Applies specific code block style to the given text and language.
-    /// </summary>
-    /// <param name="codeBlock">The code block text to be wrapped with code block HTML tags.</param>
-    /// <param name="language">The language to be used in the class attribute.</param>
-    /// <returns>A new instance of <see cref="SpecificCodeBlockNode{TInner}"/> wrapping the provided code block and language.</returns>
-    public static SpecificCodeBlockNode<PlainTextNode> Apply(string codeBlock, string language) =>
-        SpecificCodeBlockNode<PlainTextNode>.Apply(codeBlock, language);
-
-    /// <summary>
-    /// Applies specific code block style to the given styled code block and language.
-    /// </summary>
-    /// <param name="codeBlock">The styled code block text.</param>
-    /// <param name="language">The language to be used in the class attribute.</param>
-    /// <typeparam name="T">The type of the inner style that implements <see cref="INode"/>.</typeparam>
-    /// <returns>A new instance of <see cref="SpecificCodeBlockNode{TInner}"/> wrapping the provided styled code block and language.</returns>
-    public static SpecificCodeBlockNode<T> Apply<T>(T codeBlock, string language) where T : INode =>
-        SpecificCodeBlockNode<T>.Apply(codeBlock, language);
-
-    /// <summary>
-    /// Applies specific code block style to the given integer code block.
-    /// </summary>
-    /// <param name="codeBlock">The integer to be styled as a code block.</param>
-    /// <param name="language">The language to be used in the class attribute.</param>
-    /// <returns>A new instance of <see cref="SpecificCodeBlockNode{TInner}"/> containing the styled integer and language.</returns>
-    public static SpecificCodeBlockNode<IntegerNode> Apply(int codeBlock, string language) =>
-        SpecificCodeBlockNode<IntegerNode>.Apply(codeBlock, language);
-}
-
-/// <summary>
 /// Represents a specific code block in HTML format with language class.
-/// Example: "<pre><code class=\"language-csharp\">code block</code></pre>"
+/// Example: "&lt;pre&gt;&lt;code class="language-csharp"&gt;code block&lt;/code&gt;&lt;/pre&gt;"
 /// </summary>
 public readonly struct SpecificCodeBlockNode<TInner> : INode
     where TInner : INode
