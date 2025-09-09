@@ -93,7 +93,7 @@ public readonly struct GuidNode : INode
             bufferSize *= 2;
             if (bufferSize > 128)
             {
-                throw new InvalidOperationException("int format string is too long.");
+                throw new InvalidOperationException("GUID format string is too long.");
             }
         }
     }
