@@ -1,40 +1,6 @@
 namespace StringEnricher.Nodes.MarkdownV2.Formatting;
 
 /// <summary>
-/// Provides methods to apply expandable blockquote style in MarkdownV2 format.
-/// Example: "&gt;blockquote text example\n&gt;new expandable blockquote line||"
-/// </summary>
-public static class ExpandableBlockquoteMarkdownV2
-{
-    /// <summary>
-    /// Applies expandable blockquote style to the given text.
-    /// </summary>
-    /// <param name="text">
-    /// The text to be styled as an expandable blockquote.
-    /// </param>
-    /// <returns>
-    /// A new instance of <see cref="ExpandableBlockquoteNode{TInner}"/> containing the styled text.
-    /// </returns>
-    public static ExpandableBlockquoteNode<PlainTextNode> Apply(string text) =>
-        ExpandableBlockquoteNode<PlainTextNode>.Apply(text);
-
-    /// <summary>
-    /// Applies expandable blockquote style to the given style.
-    /// </summary>
-    /// <param name="style">
-    /// The style to be wrapped with expandable blockquote syntax.
-    /// </param>
-    /// <typeparam name="T">
-    /// The type of the style that implements <see cref="INode"/>.
-    /// </typeparam>
-    /// <returns>
-    /// A new instance of <see cref="ExpandableBlockquoteNode{TInner}"/> containing the styled text.
-    /// </returns>
-    public static ExpandableBlockquoteNode<T> Apply<T>(T style) where T : INode =>
-        ExpandableBlockquoteNode<T>.Apply(style);
-}
-
-/// <summary>
 /// Represents expandable blockquote text in MarkdownV2 format.
 /// Example: "&gt;blockquote text example\n&gt;new expandable blockquote line||"
 /// </summary>

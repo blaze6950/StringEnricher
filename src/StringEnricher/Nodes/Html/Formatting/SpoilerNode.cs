@@ -1,32 +1,8 @@
 ﻿namespace StringEnricher.Nodes.Html.Formatting;
 
 /// <summary>
-/// Provides methods to apply spoiler styling in HTML format.
-/// Example: "<tg-spoiler>spoiler text</tg-spoiler>"
-/// </summary>
-public static class SpoilerHtml
-{
-    /// <summary>
-    /// Applies spoiler style to the given text.
-    /// </summary>
-    /// <param name="text">The text to be wrapped with spoiler HTML tags.</param>
-    /// <returns>A new instance of <see cref="SpoilerNode{TInner}"/> wrapping the provided text.</returns>
-    public static SpoilerNode<PlainTextNode> Apply(string text) =>
-        SpoilerNode<PlainTextNode>.Apply(text);
-
-    /// <summary>
-    /// Applies spoiler style to the given style.
-    /// </summary>
-    /// <param name="style">The inner style to be wrapped with spoiler HTML tags.</param>
-    /// <typeparam name="T">The type of the inner style that implements <see cref="INode"/>.</typeparam>
-    /// <returns>A new instance of <see cref="SpoilerNode{TInner}"/> wrapping the provided inner style.</returns>
-    public static SpoilerNode<T> Apply<T>(T style) where T : INode =>
-        SpoilerNode<T>.Apply(style);
-}
-
-/// <summary>
 /// Represents spoiler text in HTML format.
-/// Example: "<tg-spoiler>spoiler text</tg-spoiler>"
+/// Example: "&lt;tg-spoiler&gt;spoiler text&lt;/tg-spoiler&gt;"
 /// </summary>
 public readonly struct SpoilerNode<TInner> : INode
     where TInner : INode

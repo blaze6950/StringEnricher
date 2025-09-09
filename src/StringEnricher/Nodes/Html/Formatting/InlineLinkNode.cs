@@ -1,34 +1,8 @@
 namespace StringEnricher.Nodes.Html.Formatting;
 
 /// <summary>
-/// Provides methods to apply inline link styling in HTML format.
-/// Example: "<a href="url">title</a>"
-/// </summary>
-public static class InlineLinkHtml
-{
-    /// <summary>
-    /// Applies inline link style to the given title and URL.
-    /// </summary>
-    /// <param name="linkTitle">The link title to be wrapped with anchor HTML tags.</param>
-    /// <param name="linkUrl">The link URL to be used in the anchor tag.</param>
-    /// <returns>A new instance of <see cref="InlineLinkNode{TInner}"/> wrapping the provided title and URL.</returns>
-    public static InlineLinkNode<PlainTextNode> Apply(string linkTitle, string linkUrl) =>
-        InlineLinkNode<PlainTextNode>.Apply(linkTitle, linkUrl);
-
-    /// <summary>
-    /// Applies inline link style to the given styled title and URL.
-    /// </summary>
-    /// <param name="linkTitle">The styled link title to be wrapped with anchor HTML tags.</param>
-    /// <param name="linkUrl">The link URL to be used in the anchor tag.</param>
-    /// <typeparam name="T">The type of the inner style that implements <see cref="INode"/>.</typeparam>
-    /// <returns>A new instance of <see cref="InlineLinkNode{TInner}"/> wrapping the provided styled title and URL.</returns>
-    public static InlineLinkNode<T> Apply<T>(T linkTitle, string linkUrl) where T : INode =>
-        InlineLinkNode<T>.Apply(linkTitle, linkUrl);
-}
-
-/// <summary>
 /// Represents inline link text in HTML format.
-/// Example: "<a href="url">title</a>"
+/// Example: "&lt;a href="url"&gt;title&lt;/a&gt;"
 /// </summary>
 public readonly struct InlineLinkNode<TInner> : INode
     where TInner : INode

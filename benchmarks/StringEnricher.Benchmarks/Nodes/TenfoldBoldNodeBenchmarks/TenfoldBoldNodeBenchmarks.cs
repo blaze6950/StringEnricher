@@ -2,7 +2,7 @@ using System.Text;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
 using StringEnricher.Benchmarks.AnalogueImplementations;
-using StringEnricher.Nodes.MarkdownV2.Formatting;
+using StringEnricher.Helpers.MarkdownV2;
 
 namespace StringEnricher.Benchmarks.Nodes.TenfoldBoldNodeBenchmarks;
 
@@ -154,8 +154,8 @@ public class TenfoldBoldNodeBenchmarks
     [Benchmark]
     public string StringBuilder_Default()
     {
-        string result = textToBold;
-        for (int i = 0; i < 10; i++)
+        var result = textToBold;
+        for (var i = 0; i < 10; i++)
         {
             var sb = new StringBuilder();
             sb.Append("*");
@@ -169,8 +169,8 @@ public class TenfoldBoldNodeBenchmarks
     [Benchmark]
     public string StringBuilder_PreciseSize()
     {
-        string result = textToBold;
-        for (int i = 0; i < 10; i++)
+        var result = textToBold;
+        for (var i = 0; i < 10; i++)
         {
             var sb = new StringBuilder(2 + result.Length);
             sb.Append("*");
@@ -184,8 +184,8 @@ public class TenfoldBoldNodeBenchmarks
     [Benchmark]
     public string StringBuilder_Reserved100()
     {
-        string result = textToBold;
-        for (int i = 0; i < 10; i++)
+        var result = textToBold;
+        for (var i = 0; i < 10; i++)
         {
             var sb = new StringBuilder(100);
             sb.Append("*");

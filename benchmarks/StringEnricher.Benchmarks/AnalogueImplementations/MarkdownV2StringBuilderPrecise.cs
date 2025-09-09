@@ -12,7 +12,7 @@ public static class MarkdownV2StringBuilderPrecise
         }
 
         // calculate the required size of the StringBuilder
-        int additionalChars = 0;
+        var additionalChars = 0;
         for (int index = 0, added = 0; index < input.Length; index++)
         {
             switch (input[index])

@@ -189,11 +189,18 @@ This approach centralizes format selection, making it easy to switch formats for
 ## Notes
 - Prefer .CopyTo() for zero allocations.
 - Use .ToString() for final string creation.
-- .TryGetChar() for single character access.
+- .TryGetChar() for random character access.
+  - **DO NOT USE IT** in loops or performance-critical paths as it is O(n) operation (in the worst case).
+  - The only purpose is to get a single character without creating the entire string.
+  - If you need to iterate over all characters, use .ToString() and then iterate over the resulting string. OR use .CopyTo() to copy to a buffer (you can use stack allocated buffer) and then iterate over the buffer.
 - .CombineWith() for merging nodes at a compile time.
 - MessageBuilder for fluent API and complex message construction at runtime.
+  - Comprehensive support for primitive types and INode - see MessageBuilder.Append() overloads. Means you can append any primitive type directly without converting to string first.
+  - Using MessageBuilder requires pre-calculation of the total length for the final string. This allows to build the entire message in a single final string allocation without intermediate allocations.
+  - If you cannot pre-calculate the total length, use StringBuilder or other approaches to build the message in multiple steps. This library is optimized for zero allocations only when the total length is known in advance.
+- Use `using` aliases in a `GlobalUsings.cs` file to easily switch between HTML and MarkdownV2 formats across your project.
 - Escape special characters using EscapeHtml or EscapeMarkdownV2 nodes.
-  - Also, available as static methods: `HtmlEscaper.Escape(string)` and `MarkdownV2Escaper.Escape(string)`. But these create intermediate strings.
+  - Also, available as static methods: `HtmlEscaper.Escape(string)` and `MarkdownV2Escaper.Escape(string)`. But these create returns strings as the result, while nodes provides lazy evaluation and zero allocations until the final string is created. So prefer nodes over static methods when possible.
 - It is recommended to use Html format for better performance and stability by format consumers (like TG) unless MarkdownV2 is specifically required.
   - Html by its nature is more robust and less error-prone than MarkdownV2.
   - MarkdownV2 has many edge cases and limitations that can lead to formatting issues.
@@ -204,6 +211,7 @@ This approach centralizes format selection, making it easy to switch formats for
   - You can find interesting results there, including comparisons of different string building approaches.
   - I strongly recommend to review all benchmarks if you want to write the most performant code using this library. You will get understanding how the library works under the hood and how to use it in the most efficient way.
   - Also, I recommend to write your custom benchmarks for your specific use cases to check performance and memory allocations. Sometimes the most optimal approach is not obvious and depends on the specific scenario.
+  - Also, I recommend to check existing unit tests in the `tests/StringEnricher.Tests` folder. They cover all styles and formats and can be a good reference for usage examples.
 
 ## Project Structure
 - `src/StringEnricher/`: Core library
@@ -224,3 +232,16 @@ Benchmarks are available in the `benchmarks` folder. You can run them using Benc
 
 ---
 Feel free to contribute or open issues for feature requests and bug reports!
+
+---
+# TODOs
+- Consider adding support for more primitive types in MessageBuilder.Append() overloads and Node types if needed.
+  - `short`, `byte`, `sbyte`, `ushort`, `uint`, `ulong`, `object`
+  - Add support for enums?
+  - Are there any other types that are commonly used and should be supported directly?
+- Think about the possibility to add support for custom user-defined types in MessageBuilder.Append() and Node types.
+   - Make a guide on how to implement INode for custom types.
+   - Make a guide on how to extend MessageBuilder to support custom types.
+- Add more benchmarks for different scenarios and use cases.
+  - Consider extending the ci-cd pipeline to run benchmarks and update results.
+- Add more test cases for nodes.

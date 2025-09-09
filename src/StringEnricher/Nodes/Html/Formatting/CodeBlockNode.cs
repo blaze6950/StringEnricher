@@ -1,42 +1,8 @@
 namespace StringEnricher.Nodes.Html.Formatting;
 
 /// <summary>
-/// Provides methods to apply code block styling in HTML format.
-/// Example: "<pre>code block</pre>"
-/// </summary>
-public static class CodeBlockHtml
-{
-    /// <summary>
-    /// Applies code block style to the given text.
-    /// </summary>
-    /// <param name="codeBlock">
-    /// The text to be wrapped with code block HTML tags.
-    /// </param>
-    /// <returns>
-    /// A new instance of <see cref="CodeBlockNode{TInner}"/> wrapping the provided text.
-    /// </returns>
-    public static CodeBlockNode<PlainTextNode> Apply(string codeBlock) =>
-        CodeBlockNode<PlainTextNode>.Apply(codeBlock);
-
-    /// <summary>
-    /// Applies code block style to the given style.
-    /// </summary>
-    /// <param name="codeBlock">
-    /// The inner style to be wrapped with code block HTML tags.
-    /// </param>
-    /// <typeparam name="T">
-    /// The type of the inner style that implements <see cref="INode"/>.
-    /// </typeparam>
-    /// <returns>
-    /// A new instance of <see cref="CodeBlockNode{TInner}"/> wrapping the provided inner style.
-    /// </returns>
-    public static CodeBlockNode<T> Apply<T>(T codeBlock) where T : INode =>
-        CodeBlockNode<T>.Apply(codeBlock);
-}
-
-/// <summary>
 /// Represents code block text in HTML format.
-/// Example: "<pre>code block</pre>"
+/// Example: "&lt;pre&gt;code block&lt;/pre&gt;"
 /// </summary>
 public readonly struct CodeBlockNode<TInner> : INode
     where TInner : INode

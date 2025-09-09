@@ -2,7 +2,7 @@ using System.Text;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
 using StringEnricher.Benchmarks.AnalogueImplementations;
-using StringEnricher.Nodes.MarkdownV2.Formatting;
+using StringEnricher.Helpers.MarkdownV2;
 
 namespace StringEnricher.Benchmarks.Nodes.HardcoreTenfoldBoldNodeBenchmarks;
 
@@ -24,8 +24,9 @@ public class HardcoreTenfoldBoldNodeBenchmarks
     }
 
     [Benchmark]
-    public string BoldMarkdownV2_Apply() =>
-        BoldMarkdownV2.Apply( // 10
+    public string BoldMarkdownV2_Apply()
+    {
+        return BoldMarkdownV2.Apply( // 10
             BoldMarkdownV2.Apply( // 9
                 BoldMarkdownV2.Apply( // 8
                     BoldMarkdownV2.Apply( // 7
@@ -44,6 +45,7 @@ public class HardcoreTenfoldBoldNodeBenchmarks
                 )
             )
         ).ToString();
+    }
 
     [Benchmark]
     public string MessageTextStyleLambda_Bold()
@@ -78,24 +80,39 @@ public class HardcoreTenfoldBoldNodeBenchmarks
     }
 
     [Benchmark(Baseline = true)]
-    public string InterpolatedString() => $"**********{textToBold}**********";
+    public string InterpolatedString()
+    {
+        return $"**********{textToBold}**********";
+    }
 
     [Benchmark]
-    public string StringFormat() => string.Format("**********{0}**********", textToBold);
+    public string StringFormat()
+    {
+        return string.Format("**********{0}**********", textToBold);
+    }
 
     [Benchmark]
-    public string Concatenation() => "**********" + textToBold + "**********";
+    public string Concatenation()
+    {
+        return "**********" + textToBold + "**********";
+    }
 
     [Benchmark]
-    public string StringJoin() => string.Join(string.Empty, "**********", textToBold, "**********");
+    public string StringJoin()
+    {
+        return string.Join(string.Empty, "**********", textToBold, "**********");
+    }
 
     [Benchmark]
-    public string StringConcat() => string.Concat("**********", textToBold, "**********");
+    public string StringConcat()
+    {
+        return string.Concat("**********", textToBold, "**********");
+    }
 
     [Benchmark]
     public string StringBuilder_Default()
     {
-        string result = textToBold;
+        var result = textToBold;
         var sb = new StringBuilder();
         sb.Append("**********");
         sb.Append(result);
@@ -107,7 +124,7 @@ public class HardcoreTenfoldBoldNodeBenchmarks
     [Benchmark]
     public string StringBuilder_PreciseSize()
     {
-        string result = textToBold;
+        var result = textToBold;
         var sb = new StringBuilder(10 + result.Length + 10);
         sb.Append("**********");
         sb.Append(result);
@@ -119,7 +136,7 @@ public class HardcoreTenfoldBoldNodeBenchmarks
     [Benchmark]
     public string StringBuilder_Reserved100()
     {
-        string result = textToBold;
+        var result = textToBold;
         var sb = new StringBuilder(100);
         sb.Append("**********");
         sb.Append(result);

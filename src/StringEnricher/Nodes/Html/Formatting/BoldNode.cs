@@ -1,42 +1,8 @@
 namespace StringEnricher.Nodes.Html.Formatting;
 
 /// <summary>
-/// Provides methods to apply bold styling in HTML format.
-/// Example: "<b>bold text</b>"
-/// </summary>
-public static class BoldHtml
-{
-    /// <summary>
-    /// Applies bold style to the given text.
-    /// </summary>
-    /// <param name="text">
-    /// The text to be wrapped with bold HTML tags.
-    /// </param>
-    /// <returns>
-    /// A new instance of <see cref="BoldNode{TInner}"/> wrapping the provided text.
-    /// </returns>
-    public static BoldNode<PlainTextNode> Apply(string text) =>
-        BoldNode<PlainTextNode>.Apply(text);
-
-    /// <summary>
-    /// Applies bold style to the given style.
-    /// </summary>
-    /// <param name="style">
-    /// The inner style to be wrapped with bold HTML tags.
-    /// </param>
-    /// <typeparam name="T">
-    /// The type of the inner style that implements <see cref="INode"/>.
-    /// </typeparam>
-    /// <returns>
-    /// A new instance of <see cref="BoldNode{TInner}"/> wrapping the provided inner style.
-    /// </returns>
-    public static BoldNode<T> Apply<T>(T style) where T : INode =>
-        BoldNode<T>.Apply(style);
-}
-
-/// <summary>
 /// Represents bold text in HTML format.
-/// Example: "<b>bold text</b>"
+/// Example: "&lt;b&gt;bold text&lt;/b&gt;"
 /// </summary>
 public readonly struct BoldNode<TInner> : INode
     where TInner : INode

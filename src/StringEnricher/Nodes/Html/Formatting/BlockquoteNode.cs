@@ -1,42 +1,8 @@
 namespace StringEnricher.Nodes.Html.Formatting;
 
 /// <summary>
-/// Provides methods to apply blockquote styling in HTML format.
-/// Example: "<blockquote>quoted text</blockquote>"
-/// </summary>
-public static class BlockquoteHtml
-{
-    /// <summary>
-    /// Applies blockquote style to the given text.
-    /// </summary>
-    /// <param name="text">
-    /// The text to be wrapped with blockquote HTML tags.
-    /// </param>
-    /// <returns>
-    /// A new instance of <see cref="BlockquoteNode{TInner}"/> wrapping the provided text.
-    /// </returns>
-    public static BlockquoteNode<PlainTextNode> Apply(string text) =>
-        BlockquoteNode<PlainTextNode>.Apply(text);
-
-    /// <summary>
-    /// Applies blockquote style to the given style.
-    /// </summary>
-    /// <param name="style">
-    /// The inner style to be wrapped with blockquote HTML tags.
-    /// </param>
-    /// <typeparam name="T">
-    /// The type of the inner style that implements <see cref="INode"/>.
-    /// </typeparam>
-    /// <returns>
-    /// A new instance of <see cref="BlockquoteNode{TInner}"/> wrapping the provided inner style.
-    /// </returns>
-    public static BlockquoteNode<T> Apply<T>(T style) where T : INode =>
-        BlockquoteNode<T>.Apply(style);
-}
-
-/// <summary>
 /// Represents blockquote text in HTML format.
-/// Example: "<blockquote>quoted text</blockquote>"
+/// Example: "&lt;blockquote&gt;quoted text&lt;/blockquote&gt;"
 /// </summary>
 public readonly struct BlockquoteNode<TInner> : INode
     where TInner : INode

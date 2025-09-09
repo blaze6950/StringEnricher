@@ -1,32 +1,8 @@
 ﻿namespace StringEnricher.Nodes.Html.Formatting;
 
 /// <summary>
-/// Provides methods to apply italic styling in HTML format.
-/// Example: "<i>italic text</i>"
-/// </summary>
-public static class ItalicHtml
-{
-    /// <summary>
-    /// Applies italic style to the given text.
-    /// </summary>
-    /// <param name="text">The text to be wrapped with italic HTML tags.</param>
-    /// <returns>A new instance of <see cref="ItalicNode{TInner}"/> wrapping the provided text.</returns>
-    public static ItalicNode<PlainTextNode> Apply(string text) =>
-        ItalicNode<PlainTextNode>.Apply(text);
-
-    /// <summary>
-    /// Applies italic style to the given style.
-    /// </summary>
-    /// <param name="style">The inner style to be wrapped with italic HTML tags.</param>
-    /// <typeparam name="T">The type of the inner style that implements <see cref="INode"/>.</typeparam>
-    /// <returns>A new instance of <see cref="ItalicNode{TInner}"/> wrapping the provided inner style.</returns>
-    public static ItalicNode<T> Apply<T>(T style) where T : INode =>
-        ItalicNode<T>.Apply(style);
-}
-
-/// <summary>
 /// Represents italic text in HTML format.
-/// Example: "<i>italic text</i>"
+/// Example: "&lt;i&gt;italic text&lt;/i&gt;"
 /// </summary>
 public readonly struct ItalicNode<TInner> : INode
     where TInner : INode
@@ -120,5 +96,14 @@ public readonly struct ItalicNode<TInner> : INode
         return true;
     }
 
+    /// <summary>
+    /// Applies italic style to the given inner style.
+    /// </summary>
+    /// <param name="innerStyle">
+    /// The inner style to be wrapped with italic HTML tags.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="ItalicNode{TInner}"/> wrapping the provided inner style.
+    /// </returns>
     public static ItalicNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
 }

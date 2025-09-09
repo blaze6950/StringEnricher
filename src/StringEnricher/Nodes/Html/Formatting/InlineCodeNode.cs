@@ -1,42 +1,8 @@
 namespace StringEnricher.Nodes.Html.Formatting;
 
 /// <summary>
-/// Provides methods to apply inline code styling in HTML format.
-/// Example: "<code>inline code</code>"
-/// </summary>
-public static class InlineCodeHtml
-{
-    /// <summary>
-    /// Applies inline code style to the given text.
-    /// </summary>
-    /// <param name="text">
-    /// The text to be wrapped with inline code HTML tags.
-    /// </param>
-    /// <returns>
-    /// A new instance of <see cref="InlineCodeNode{TInner}"/> wrapping the provided text.
-    /// </returns>
-    public static InlineCodeNode<PlainTextNode> Apply(string text) =>
-        InlineCodeNode<PlainTextNode>.Apply(text);
-
-    /// <summary>
-    /// Applies inline code style to the given style.
-    /// </summary>
-    /// <param name="style">
-    /// The inner style to be wrapped with inline code HTML tags.
-    /// </param>
-    /// <typeparam name="T">
-    /// The type of the inner style that implements <see cref="INode"/>.
-    /// </typeparam>
-    /// <returns>
-    /// A new instance of <see cref="InlineCodeNode{TInner}"/> wrapping the provided inner style.
-    /// </returns>
-    public static InlineCodeNode<T> Apply<T>(T style) where T : INode =>
-        InlineCodeNode<T>.Apply(style);
-}
-
-/// <summary>
 /// Represents inline code text in HTML format.
-/// Example: "<code>inline code</code>"
+/// Example: "&lt;code&gt;inline code&lt;/code&gt;"
 /// </summary>
 public readonly struct InlineCodeNode<TInner> : INode
     where TInner : INode

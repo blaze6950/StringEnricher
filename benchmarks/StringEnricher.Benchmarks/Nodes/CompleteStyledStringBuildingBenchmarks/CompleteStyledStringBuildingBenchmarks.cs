@@ -1,7 +1,6 @@
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
-using StringEnricher.Nodes;
-using StringEnricher.Nodes.MarkdownV2.Formatting;
+using StringEnricher.Helpers.MarkdownV2;
 
 namespace StringEnricher.Benchmarks.Nodes.CompleteStyledStringBuildingBenchmarks;
 
@@ -97,9 +96,9 @@ public class CompleteStyledStringBuildingBenchmarks
     [Benchmark]
     public string BuildStringWithConcatenation()
     {
-        string finalString = "";
+        var finalString = "";
 
-        for (int i = 0; i < Strings.Length - 1; i++)
+        for (var i = 0; i < Strings.Length - 1; i++)
         {
             finalString += "*__" + Strings[i] + "__*" + " ";
         }
