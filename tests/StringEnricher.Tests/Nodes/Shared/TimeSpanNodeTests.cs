@@ -5,19 +5,20 @@ namespace StringEnricher.Tests.Nodes.Shared;
 
 public class TimeSpanNodeTests
 {
-    private static readonly TimeSpan TestTimeSpan = new TimeSpan(1, 2, 3, 4, 500); // 1 day, 2 hours, 3 minutes, 4 seconds, 500 milliseconds
+    private static readonly TimeSpan
+        TestTimeSpan = new(1, 2, 3, 4, 500); // 1 day, 2 hours, 3 minutes, 4 seconds, 500 milliseconds
 
     [Fact]
     public void Constructor_WithTimeSpan_InitializesCorrectly()
     {
         // Arrange
         var value = TestTimeSpan;
-        var expectedString = value.ToString();
+        var expectedString = value.ToString(format: null, formatProvider: CultureInfo.InvariantCulture);
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0; // TimeSpanNode has no syntax characters
 
         // Act
-        var node = new TimeSpanNode(value);
+        var node = new TimeSpanNode(value, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -30,12 +31,12 @@ public class TimeSpanNodeTests
         // Arrange
         var value = TestTimeSpan;
         const string format = "c";
-        var expectedString = value.ToString(format);
+        var expectedString = value.ToString(format, formatProvider: CultureInfo.InvariantCulture);
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0;
 
         // Act
-        var node = new TimeSpanNode(value, format);
+        var node = new TimeSpanNode(value, format, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -62,20 +63,20 @@ public class TimeSpanNodeTests
     }
 
     [Theory]
-    [InlineData("c")]      // Constant format
-    [InlineData("g")]      // General short format
-    [InlineData("G")]      // General long format
-    [InlineData(@"hh\:mm\:ss")]  // Custom format
+    [InlineData("c")] // Constant format
+    [InlineData("g")] // General short format
+    [InlineData("G")] // General long format
+    [InlineData(@"hh\:mm\:ss")] // Custom format
     [InlineData(@"dd\.hh\:mm\:ss")] // Days, hours, minutes, seconds
     public void Constructor_WithVariousFormats_InitializesCorrectly(string format)
     {
         // Arrange
         var value = TestTimeSpan;
-        var expectedString = value.ToString(format);
+        var expectedString = value.ToString(format, formatProvider: CultureInfo.InvariantCulture);
         var expectedTotalLength = expectedString.Length;
 
         // Act
-        var node = new TimeSpanNode(value, format);
+        var node = new TimeSpanNode(value, format, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -110,12 +111,12 @@ public class TimeSpanNodeTests
     {
         // Arrange
         var value = TimeSpan.MinValue;
-        var expectedString = value.ToString();
+        var expectedString = value.ToString(format: null, formatProvider: CultureInfo.InvariantCulture);
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0;
 
         // Act
-        var node = new TimeSpanNode(value);
+        var node = new TimeSpanNode(value, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -127,12 +128,12 @@ public class TimeSpanNodeTests
     {
         // Arrange
         var value = TimeSpan.MaxValue;
-        var expectedString = value.ToString();
+        var expectedString = value.ToString(format: null, formatProvider: CultureInfo.InvariantCulture);
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0;
 
         // Act
-        var node = new TimeSpanNode(value);
+        var node = new TimeSpanNode(value, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -144,12 +145,12 @@ public class TimeSpanNodeTests
     {
         // Arrange
         var value = TimeSpan.Zero;
-        var expectedString = value.ToString();
+        var expectedString = value.ToString(format: null, formatProvider: CultureInfo.InvariantCulture);
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0;
 
         // Act
-        var node = new TimeSpanNode(value);
+        var node = new TimeSpanNode(value, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -166,8 +167,8 @@ public class TimeSpanNodeTests
     {
         // Arrange
         var value = new TimeSpan(days, hours, minutes, seconds);
-        var node = new TimeSpanNode(value);
-        var expectedLength = value.ToString().Length;
+        var node = new TimeSpanNode(value, provider: CultureInfo.InvariantCulture);
+        var expectedLength = value.ToString(null, CultureInfo.InvariantCulture).Length;
 
         // Act & Assert
         Assert.Equal(expectedLength, node.TotalLength);
@@ -178,9 +179,9 @@ public class TimeSpanNodeTests
     {
         // Arrange
         var value = TestTimeSpan;
-        var node = new TimeSpanNode(value);
+        var node = new TimeSpanNode(value, provider: CultureInfo.InvariantCulture);
         Span<char> destination = stackalloc char[30];
-        var expectedString = value.ToString();
+        var expectedString = value.ToString(format: null, formatProvider: CultureInfo.InvariantCulture);
         var expectedBytesWritten = expectedString.Length;
 
         // Act
@@ -197,9 +198,9 @@ public class TimeSpanNodeTests
         // Arrange
         var value = TestTimeSpan;
         const string format = "c";
-        var node = new TimeSpanNode(value, format);
+        var node = new TimeSpanNode(value, format, provider: CultureInfo.InvariantCulture);
         Span<char> destination = stackalloc char[30];
-        var expectedString = value.ToString(format);
+        var expectedString = value.ToString(format, formatProvider: CultureInfo.InvariantCulture);
         var expectedBytesWritten = expectedString.Length;
 
         // Act
@@ -235,7 +236,7 @@ public class TimeSpanNodeTests
     {
         // Arrange
         var value = TestTimeSpan;
-        var node = new TimeSpanNode(value);
+        var node = new TimeSpanNode(value, provider: CultureInfo.InvariantCulture);
 
         // Act
         var exception = Record.Exception(() =>
@@ -255,8 +256,8 @@ public class TimeSpanNodeTests
     {
         // Arrange
         var value = TestTimeSpan;
-        var node = new TimeSpanNode(value);
-        var expected = value.ToString();
+        var node = new TimeSpanNode(value, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(format: null, formatProvider: CultureInfo.InvariantCulture);
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
@@ -273,7 +274,7 @@ public class TimeSpanNodeTests
     public void TryGetChar_OutOfRangeIndices_ReturnsFalseAndNullChar(int index)
     {
         // Arrange
-        var node = new TimeSpanNode(TestTimeSpan);
+        var node = new TimeSpanNode(TestTimeSpan, provider: CultureInfo.InvariantCulture);
 
         // Act
         var result = node.TryGetChar(index, out var ch);
@@ -289,8 +290,8 @@ public class TimeSpanNodeTests
         // Arrange
         var value = TestTimeSpan;
         const string format = @"hh\:mm\:ss";
-        var node = new TimeSpanNode(value, format);
-        var expected = value.ToString(format);
+        var node = new TimeSpanNode(value, format, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(format, formatProvider: CultureInfo.InvariantCulture);
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
@@ -325,7 +326,7 @@ public class TimeSpanNodeTests
     {
         // Arrange
         var value = TestTimeSpan;
-        var expectedString = value.ToString();
+        var expectedString = value.ToString(format: null, formatProvider: CultureInfo.CurrentCulture);
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0;
 
@@ -342,8 +343,8 @@ public class TimeSpanNodeTests
     {
         // Arrange
         var value = TestTimeSpan;
-        var node = new TimeSpanNode(value);
-        var expected = value.ToString();
+        var node = new TimeSpanNode(value, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(format: null, formatProvider: CultureInfo.InvariantCulture);
 
         // Act
         var result = node.ToString();
@@ -358,8 +359,8 @@ public class TimeSpanNodeTests
         // Arrange
         var value = TestTimeSpan;
         const string format = "G";
-        var node = new TimeSpanNode(value, format);
-        var expected = value.ToString(format);
+        var node = new TimeSpanNode(value, format, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(format, formatProvider: CultureInfo.InvariantCulture);
 
         // Act
         var result = node.ToString();
@@ -389,10 +390,10 @@ public class TimeSpanNodeTests
     public void SyntaxLength_AlwaysReturnsZero()
     {
         // Arrange & Act & Assert
-        Assert.Equal(0, new TimeSpanNode(TimeSpan.MinValue).SyntaxLength);
-        Assert.Equal(0, new TimeSpanNode(TimeSpan.MaxValue).SyntaxLength);
-        Assert.Equal(0, new TimeSpanNode(TestTimeSpan).SyntaxLength);
-        Assert.Equal(0, new TimeSpanNode(TimeSpan.Zero).SyntaxLength);
+        Assert.Equal(0, new TimeSpanNode(TimeSpan.MinValue, provider: CultureInfo.InvariantCulture).SyntaxLength);
+        Assert.Equal(0, new TimeSpanNode(TimeSpan.MaxValue, provider: CultureInfo.InvariantCulture).SyntaxLength);
+        Assert.Equal(0, new TimeSpanNode(TestTimeSpan, provider: CultureInfo.InvariantCulture).SyntaxLength);
+        Assert.Equal(0, new TimeSpanNode(TimeSpan.Zero, provider: CultureInfo.InvariantCulture).SyntaxLength);
     }
 
     [Fact]
@@ -400,8 +401,8 @@ public class TimeSpanNodeTests
     {
         // Arrange
         var value = TestTimeSpan;
-        var node = new TimeSpanNode(value);
-        var expectedString = value.ToString();
+        var node = new TimeSpanNode(value, provider: CultureInfo.InvariantCulture);
+        var expectedString = value.ToString(format: null, formatProvider: CultureInfo.InvariantCulture);
         Span<char> destination = stackalloc char[expectedString.Length]; // Exact size
 
         // Act
@@ -417,12 +418,12 @@ public class TimeSpanNodeTests
     {
         // Arrange
         var value = new TimeSpan(-1, -2, -3, -4);
-        var expectedString = value.ToString();
+        var expectedString = value.ToString(format: null, formatProvider: CultureInfo.InvariantCulture);
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0;
 
         // Act
-        var node = new TimeSpanNode(value);
+        var node = new TimeSpanNode(value, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -434,12 +435,12 @@ public class TimeSpanNodeTests
     {
         // Arrange
         var value = new TimeSpan(0, 1, 2, 3, 456);
-        var expectedString = value.ToString();
+        var expectedString = value.ToString(format: null, formatProvider: CultureInfo.InvariantCulture);
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0;
 
         // Act
-        var node = new TimeSpanNode(value);
+        var node = new TimeSpanNode(value, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);

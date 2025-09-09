@@ -153,5 +153,5 @@ public readonly struct TgEmojiNode : INode
     /// The created instance of the <see cref="TgEmojiNode"/> struct.
     /// </returns>
     public static TgEmojiNode Apply(PlainTextNode defaultEmoji, LongNode customEmojiId) =>
-        new TgEmojiNode(defaultEmoji, customEmojiId);
+        new(defaultEmoji, customEmojiId);
 }

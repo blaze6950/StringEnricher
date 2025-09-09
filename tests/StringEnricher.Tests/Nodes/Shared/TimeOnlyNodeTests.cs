@@ -5,7 +5,7 @@ namespace StringEnricher.Tests.Nodes.Shared;
 
 public class TimeOnlyNodeTests
 {
-    private static readonly TimeOnly TestTimeOnly = new TimeOnly(14, 30, 45, 123);
+    private static readonly TimeOnly TestTimeOnly = new(14, 30, 45, 123);
 
     [Fact]
     public void Constructor_WithTimeOnly_InitializesCorrectly()

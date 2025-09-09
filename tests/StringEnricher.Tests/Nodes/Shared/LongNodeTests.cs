@@ -12,11 +12,12 @@ public class LongNodeTests
     {
         // Arrange
         const long value = 123L;
-        const int expectedTotalLength = 3; // "123" has 3 characters
+        var expectedString = value.ToString(CultureInfo.InvariantCulture);
+        var expectedTotalLength = expectedString.Length; // "123" has 3 characters
         const int expectedSyntaxLength = 0; // LongNode has no syntax characters
 
         // Act
-        var node = new LongNode(value);
+        var node = new LongNode(value, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -29,12 +30,12 @@ public class LongNodeTests
         // Arrange
         const long value = TestLong;
         const string format = "N0";
-        var expectedString = value.ToString(format);
+        var expectedString = value.ToString(format, provider: CultureInfo.InvariantCulture);
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0;
 
         // Act
-        var node = new LongNode(value, format);
+        var node = new LongNode(value, format, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -61,20 +62,20 @@ public class LongNodeTests
     }
 
     [Theory]
-    [InlineData("D")]     // Decimal
-    [InlineData("N")]     // Number with thousands separator
-    [InlineData("X")]     // Hexadecimal uppercase
-    [InlineData("x")]     // Hexadecimal lowercase
-    [InlineData("C")]     // Currency
+    [InlineData("D")] // Decimal
+    [InlineData("N")] // Number with thousands separator
+    [InlineData("X")] // Hexadecimal uppercase
+    [InlineData("x")] // Hexadecimal lowercase
+    [InlineData("C")] // Currency
     public void Constructor_WithVariousFormats_InitializesCorrectly(string format)
     {
         // Arrange
         const long value = TestLong;
-        var expectedString = value.ToString(format);
+        var expectedString = value.ToString(format, provider: CultureInfo.InvariantCulture);
         var expectedTotalLength = expectedString.Length;
 
         // Act
-        var node = new LongNode(value, format);
+        var node = new LongNode(value, format, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -109,9 +110,9 @@ public class LongNodeTests
         // Arrange
         const long value = TestLong;
         const string format = "N0";
-        var node = new LongNode(value, format);
+        var node = new LongNode(value, format, provider: CultureInfo.InvariantCulture);
         Span<char> destination = stackalloc char[20];
-        var expectedString = value.ToString(format);
+        var expectedString = value.ToString(format, provider: CultureInfo.InvariantCulture);
         var expectedBytesWritten = expectedString.Length;
 
         // Act
@@ -148,8 +149,8 @@ public class LongNodeTests
         // Arrange
         const long value = TestLong;
         const string format = "X";
-        var node = new LongNode(value, format);
-        var expected = value.ToString(format);
+        var node = new LongNode(value, format, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(format, provider: CultureInfo.InvariantCulture);
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
@@ -185,8 +186,8 @@ public class LongNodeTests
         // Arrange
         const long value = TestLong;
         const string format = "D12";
-        var node = new LongNode(value, format);
-        var expected = value.ToString(format);
+        var node = new LongNode(value, format, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(format, provider: CultureInfo.InvariantCulture);
 
         // Act
         var result = node.ToString();
@@ -217,11 +218,12 @@ public class LongNodeTests
     {
         // Arrange
         const long value = -456L;
-        const int expectedTotalLength = 4; // "-456" has 4 characters
+        var expectedString = value.ToString(CultureInfo.InvariantCulture);
+        var expectedTotalLength = expectedString.Length; // "-456" has 4 characters
         const int expectedSyntaxLength = 0; // LongNode has no syntax characters
 
         // Act
-        var node = new LongNode(value);
+        var node = new LongNode(value, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -233,7 +235,8 @@ public class LongNodeTests
     {
         // Arrange
         const long value = 0L;
-        const int expectedTotalLength = 1; // "0" has 1 character
+        var expectedString = value.ToString(CultureInfo.InvariantCulture);
+        var expectedTotalLength = expectedString.Length; // "0" has 1 character
         const int expectedSyntaxLength = 0; // LongNode has no syntax characters
 
         // Act
@@ -258,7 +261,7 @@ public class LongNodeTests
     public void TotalLength_WithVariousLongs_ReturnsCorrectLength(long value, int expectedLength)
     {
         // Arrange & Act
-        var node = new LongNode(value);
+        var node = new LongNode(value, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedLength, node.TotalLength);
@@ -269,10 +272,10 @@ public class LongNodeTests
     {
         // Arrange
         const long value = 123L;
-        var node = new LongNode(value);
+        var node = new LongNode(value, provider: CultureInfo.InvariantCulture);
         Span<char> destination = stackalloc char[10];
         const int expectedBytesWritten = 3; // "123" has 3 characters
-        const string expectedString = "123";
+        var expectedString = value.ToString(CultureInfo.InvariantCulture);
 
         // Act
         var bytesWritten = node.CopyTo(destination);
@@ -287,10 +290,10 @@ public class LongNodeTests
     {
         // Arrange
         const long value = -456L;
-        var node = new LongNode(value);
+        var node = new LongNode(value, provider: CultureInfo.InvariantCulture);
         Span<char> destination = stackalloc char[10];
         const int expectedBytesWritten = 4; // "-456" has 4 characters
-        const string expectedString = "-456";
+        var expectedString = value.ToString(CultureInfo.InvariantCulture);
 
         // Act
         var bytesWritten = node.CopyTo(destination);
@@ -305,10 +308,10 @@ public class LongNodeTests
     {
         // Arrange
         const long value = 0L;
-        var node = new LongNode(value);
+        var node = new LongNode(value, provider: CultureInfo.InvariantCulture);
         Span<char> destination = stackalloc char[10];
         const int expectedBytesWritten = 1; // "0" has 1 character
-        const string expectedString = "0";
+        var expectedString = value.ToString(CultureInfo.InvariantCulture);
 
         // Act
         var bytesWritten = node.CopyTo(destination);
@@ -323,7 +326,7 @@ public class LongNodeTests
     {
         // Arrange
         const long value = 123L;
-        var node = new LongNode(value);
+        var node = new LongNode(value, provider: CultureInfo.InvariantCulture);
 
         // Act
         var exception = Record.Exception(() =>
@@ -343,10 +346,10 @@ public class LongNodeTests
     {
         // Arrange
         const long value = 789L;
-        var node = new LongNode(value);
+        var node = new LongNode(value, provider: CultureInfo.InvariantCulture);
         Span<char> destination = stackalloc char[3]; // Exact size
         const int expectedBytesWritten = 3; // "789" has 3 characters
-        const string expectedString = "789";
+        var expectedString = value.ToString(CultureInfo.InvariantCulture);
 
         // Act
         var bytesWritten = node.CopyTo(destination);
@@ -361,8 +364,8 @@ public class LongNodeTests
     {
         // Arrange
         const long value = 123L;
-        var node = new LongNode(value);
-        const string expected = "123";
+        var node = new LongNode(value, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(CultureInfo.InvariantCulture);
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
@@ -378,8 +381,8 @@ public class LongNodeTests
     {
         // Arrange
         const long value = -456L;
-        var node = new LongNode(value);
-        const string expected = "-456";
+        var node = new LongNode(value, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(CultureInfo.InvariantCulture);
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
@@ -397,7 +400,7 @@ public class LongNodeTests
     public void TryGetChar_OutOfRangeIndices_ReturnsFalseAndNullChar(int index)
     {
         // Arrange
-        var node = new LongNode(123L);
+        var node = new LongNode(123L, provider: CultureInfo.InvariantCulture);
 
         // Act
         var result = node.TryGetChar(index, out var ch);
@@ -412,8 +415,8 @@ public class LongNodeTests
     {
         // Arrange
         const long value = 0L;
-        var node = new LongNode(value);
-        const char expectedChar = '0';
+        var node = new LongNode(value, provider: CultureInfo.InvariantCulture);
+        var expectedChar = value.ToString(CultureInfo.InvariantCulture)[0];
 
         // Act
         var result = node.TryGetChar(0, out var ch);
@@ -430,7 +433,7 @@ public class LongNodeTests
     public void TryGetChar_SingleDigitNumbers_ReturnsTrueAndCorrectChar(long value, char expectedChar)
     {
         // Arrange
-        var node = new LongNode(value);
+        var node = new LongNode(value, provider: CultureInfo.InvariantCulture);
 
         // Act
         var result = node.TryGetChar(0, out var ch);
@@ -445,7 +448,8 @@ public class LongNodeTests
     {
         // Arrange
         const int value = 42;
-        const int expectedTotalLength = 2; // "42" has 2 characters
+        var expectedString = value.ToString(CultureInfo.InvariantCulture);
+        var expectedTotalLength = expectedString.Length; // "42" has 2 characters
         const int expectedSyntaxLength = 0; // LongNode has no syntax characters
 
         // Act
@@ -461,7 +465,8 @@ public class LongNodeTests
     {
         // Arrange
         const int value = -99;
-        const int expectedTotalLength = 3; // "-99" has 3 characters
+        var expectedString = value.ToString(CultureInfo.InvariantCulture);
+        var expectedTotalLength = expectedString.Length; // "-99" has 3 characters
         const int expectedSyntaxLength = 0; // LongNode has no syntax characters
 
         // Act
@@ -480,8 +485,8 @@ public class LongNodeTests
     public void CopyTo_WithLargeNumbers_CopiesCorrectly(long value)
     {
         // Arrange
-        var node = new LongNode(value);
-        var expected = value.ToString();
+        var node = new LongNode(value, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(CultureInfo.InvariantCulture);
         Span<char> destination = stackalloc char[30]; // Large enough buffer
 
         // Act
@@ -500,8 +505,8 @@ public class LongNodeTests
     public void TryGetChar_WithLargeNumbers_ReturnsCorrectChars(long value)
     {
         // Arrange
-        var node = new LongNode(value);
-        var expected = value.ToString();
+        var node = new LongNode(value, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(CultureInfo.InvariantCulture);
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
@@ -516,11 +521,11 @@ public class LongNodeTests
     public void SyntaxLength_AlwaysReturnsZero()
     {
         // Arrange & Act & Assert
-        Assert.Equal(0, new LongNode(0L).SyntaxLength);
-        Assert.Equal(0, new LongNode(123L).SyntaxLength);
-        Assert.Equal(0, new LongNode(-456L).SyntaxLength);
-        Assert.Equal(0, new LongNode(long.MaxValue).SyntaxLength);
-        Assert.Equal(0, new LongNode(long.MinValue).SyntaxLength);
+        Assert.Equal(0, new LongNode(0L, provider: CultureInfo.InvariantCulture).SyntaxLength);
+        Assert.Equal(0, new LongNode(123L, provider: CultureInfo.InvariantCulture).SyntaxLength);
+        Assert.Equal(0, new LongNode(-456L, provider: CultureInfo.InvariantCulture).SyntaxLength);
+        Assert.Equal(0, new LongNode(long.MaxValue, provider: CultureInfo.InvariantCulture).SyntaxLength);
+        Assert.Equal(0, new LongNode(long.MinValue, provider: CultureInfo.InvariantCulture).SyntaxLength);
     }
 
     [Fact]
@@ -528,8 +533,8 @@ public class LongNodeTests
     {
         // Arrange
         const long value = long.MaxValue; // 9223372036854775807
-        var node = new LongNode(value);
-        var expected = value.ToString();
+        var node = new LongNode(value, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(CultureInfo.InvariantCulture);
         Span<char> destination = stackalloc char[30];
 
         // Act
@@ -546,8 +551,8 @@ public class LongNodeTests
     {
         // Arrange
         const long value = long.MinValue; // -9223372036854775808
-        var node = new LongNode(value);
-        var expected = value.ToString();
+        var node = new LongNode(value, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(CultureInfo.InvariantCulture);
         Span<char> destination = stackalloc char[30];
 
         // Act
@@ -563,11 +568,11 @@ public class LongNodeTests
     public void GetLongLength_EdgeCases_ReturnsCorrectLength()
     {
         // Arrange & Act & Assert
-        Assert.Equal(1, new LongNode(0L).TotalLength);
-        Assert.Equal(19, new LongNode(long.MaxValue).TotalLength);
-        Assert.Equal(20, new LongNode(long.MinValue).TotalLength);
-        Assert.Equal(10, new LongNode(1000000000L).TotalLength); // 1 billion
-        Assert.Equal(11, new LongNode(-1000000000L).TotalLength); // -1 billion
+        Assert.Equal(1, new LongNode(0L, provider: CultureInfo.InvariantCulture).TotalLength);
+        Assert.Equal(19, new LongNode(long.MaxValue, provider: CultureInfo.InvariantCulture).TotalLength);
+        Assert.Equal(20, new LongNode(long.MinValue, provider: CultureInfo.InvariantCulture).TotalLength);
+        Assert.Equal(10, new LongNode(1000000000L, provider: CultureInfo.InvariantCulture).TotalLength); // 1 billion
+        Assert.Equal(11, new LongNode(-1000000000L, provider: CultureInfo.InvariantCulture).TotalLength); // -1 billion
     }
 
     [Theory]
@@ -578,7 +583,7 @@ public class LongNodeTests
     public void TotalLength_WithSpecificLongValues_ReturnsCorrectLength(long value, int expectedLength)
     {
         // Arrange & Act
-        var node = new LongNode(value);
+        var node = new LongNode(value, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedLength, node.TotalLength);

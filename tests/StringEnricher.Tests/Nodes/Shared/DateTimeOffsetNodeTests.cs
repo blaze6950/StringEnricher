@@ -5,7 +5,7 @@ namespace StringEnricher.Tests.Nodes.Shared;
 
 public class DateTimeOffsetNodeTests
 {
-    private static readonly DateTimeOffset TestDateTimeOffset = new DateTimeOffset(2023, 12, 25, 14, 30, 45, TimeSpan.FromHours(5));
+    private static readonly DateTimeOffset TestDateTimeOffset = new(2023, 12, 25, 14, 30, 45, TimeSpan.FromHours(5));
 
     [Fact]
     public void Constructor_WithDateTimeOffset_InitializesCorrectly()

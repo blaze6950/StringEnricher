@@ -4,7 +4,7 @@ namespace StringEnricher.Tests.Nodes.Shared;
 
 public class GuidNodeTests
 {
-    private static readonly Guid TestGuid = new Guid("12345678-1234-5678-9012-123456789012");
+    private static readonly Guid TestGuid = new("12345678-1234-5678-9012-123456789012");
 
     [Fact]
     public void Constructor_WithGuid_InitializesCorrectly()

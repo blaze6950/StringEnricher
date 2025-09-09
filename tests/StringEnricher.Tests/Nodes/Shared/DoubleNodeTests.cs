@@ -12,12 +12,12 @@ public class DoubleNodeTests
     {
         // Arrange
         const double value = 123.45;
-        var expectedString = value.ToString();
+        var expectedString = value.ToString(CultureInfo.InvariantCulture);
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0; // DoubleNode has no syntax characters
 
         // Act
-        var node = new DoubleNode(value);
+        var node = new DoubleNode(value, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -30,12 +30,12 @@ public class DoubleNodeTests
         // Arrange
         const double value = TestDouble;
         const string format = "F2";
-        var expectedString = value.ToString(format);
+        var expectedString = value.ToString(format, provider: CultureInfo.InvariantCulture);
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0;
 
         // Act
-        var node = new DoubleNode(value, format);
+        var node = new DoubleNode(value, format, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -62,20 +62,20 @@ public class DoubleNodeTests
     }
 
     [Theory]
-    [InlineData("F")]     // Fixed-point
-    [InlineData("F2")]    // Fixed-point with 2 decimals
-    [InlineData("N")]     // Number with thousands separator
-    [InlineData("E")]     // Scientific notation
-    [InlineData("P")]     // Percent
+    [InlineData("F")] // Fixed-point
+    [InlineData("F2")] // Fixed-point with 2 decimals
+    [InlineData("N")] // Number with thousands separator
+    [InlineData("E")] // Scientific notation
+    [InlineData("P")] // Percent
     public void Constructor_WithVariousFormats_InitializesCorrectly(string format)
     {
         // Arrange
         const double value = TestDouble;
-        var expectedString = value.ToString(format);
+        var expectedString = value.ToString(format, provider: CultureInfo.InvariantCulture);
         var expectedTotalLength = expectedString.Length;
 
         // Act
-        var node = new DoubleNode(value, format);
+        var node = new DoubleNode(value, format, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -109,9 +109,9 @@ public class DoubleNodeTests
     {
         // Arrange
         const double value = 123.45;
-        var node = new DoubleNode(value);
+        var node = new DoubleNode(value, provider: CultureInfo.InvariantCulture);
         Span<char> destination = stackalloc char[30];
-        var expectedString = value.ToString();
+        var expectedString = value.ToString(CultureInfo.InvariantCulture);
         var expectedBytesWritten = expectedString.Length;
 
         // Act
@@ -127,7 +127,7 @@ public class DoubleNodeTests
     {
         // Arrange
         const double value = 123.45;
-        var node = new DoubleNode(value);
+        var node = new DoubleNode(value, provider: CultureInfo.InvariantCulture);
 
         // Act
         var exception = Record.Exception(() =>
@@ -148,9 +148,9 @@ public class DoubleNodeTests
         // Arrange
         const double value = TestDouble;
         const string format = "F2";
-        var node = new DoubleNode(value, format);
+        var node = new DoubleNode(value, format, provider: CultureInfo.InvariantCulture);
         Span<char> destination = stackalloc char[20];
-        var expectedString = value.ToString(format);
+        var expectedString = value.ToString(format, provider: CultureInfo.InvariantCulture);
         var expectedBytesWritten = expectedString.Length;
 
         // Act
@@ -186,8 +186,8 @@ public class DoubleNodeTests
     {
         // Arrange
         const double value = 123.45;
-        var node = new DoubleNode(value);
-        var expected = value.ToString();
+        var node = new DoubleNode(value, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(CultureInfo.InvariantCulture);
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
@@ -204,7 +204,7 @@ public class DoubleNodeTests
     public void TryGetChar_OutOfRangeIndices_ReturnsFalseAndNullChar(int index)
     {
         // Arrange
-        var node = new DoubleNode(123.45);
+        var node = new DoubleNode(123.45, provider: CultureInfo.InvariantCulture);
 
         // Act
         var result = node.TryGetChar(index, out var ch);
@@ -220,8 +220,8 @@ public class DoubleNodeTests
         // Arrange
         const double value = TestDouble;
         const string format = "F2";
-        var node = new DoubleNode(value, format);
-        var expected = value.ToString(format);
+        var node = new DoubleNode(value, format, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(format, provider: CultureInfo.InvariantCulture);
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
@@ -256,7 +256,7 @@ public class DoubleNodeTests
     {
         // Arrange
         const double value = 42.5;
-        var expectedString = value.ToString();
+        var expectedString = value.ToString(CultureInfo.CurrentCulture);
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0;
 
@@ -273,8 +273,8 @@ public class DoubleNodeTests
     {
         // Arrange
         const double value = 789.123;
-        var node = new DoubleNode(value);
-        var expected = value.ToString();
+        var node = new DoubleNode(value, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(CultureInfo.InvariantCulture);
 
         // Act
         var result = node.ToString();
@@ -289,8 +289,8 @@ public class DoubleNodeTests
         // Arrange
         const double value = TestDouble;
         const string format = "E2";
-        var node = new DoubleNode(value, format);
-        var expected = value.ToString(format);
+        var node = new DoubleNode(value, format, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(format, provider: CultureInfo.InvariantCulture);
 
         // Act
         var result = node.ToString();
@@ -320,11 +320,11 @@ public class DoubleNodeTests
     public void SyntaxLength_AlwaysReturnsZero()
     {
         // Arrange & Act & Assert
-        Assert.Equal(0, new DoubleNode(0.0).SyntaxLength);
-        Assert.Equal(0, new DoubleNode(123.45).SyntaxLength);
-        Assert.Equal(0, new DoubleNode(-456.78).SyntaxLength);
-        Assert.Equal(0, new DoubleNode(double.MaxValue).SyntaxLength);
-        Assert.Equal(0, new DoubleNode(double.MinValue).SyntaxLength);
+        Assert.Equal(0, new DoubleNode(0.0, provider: CultureInfo.InvariantCulture).SyntaxLength);
+        Assert.Equal(0, new DoubleNode(123.45, provider: CultureInfo.InvariantCulture).SyntaxLength);
+        Assert.Equal(0, new DoubleNode(-456.78, provider: CultureInfo.InvariantCulture).SyntaxLength);
+        Assert.Equal(0, new DoubleNode(double.MaxValue, provider: CultureInfo.InvariantCulture).SyntaxLength);
+        Assert.Equal(0, new DoubleNode(double.MinValue, provider: CultureInfo.InvariantCulture).SyntaxLength);
     }
 
     [Theory]
@@ -334,8 +334,8 @@ public class DoubleNodeTests
     public void SpecialDoubleValues_HandleCorrectly(double value)
     {
         // Arrange & Act
-        var node = new DoubleNode(value);
-        var expectedString = value.ToString();
+        var node = new DoubleNode(value, provider: CultureInfo.InvariantCulture);
+        var expectedString = value.ToString(CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedString.Length, node.TotalLength);

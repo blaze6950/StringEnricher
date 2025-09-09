@@ -12,12 +12,12 @@ public class FloatNodeTests
     {
         // Arrange
         const float value = 123.45f;
-        var expectedString = value.ToString();
+        var expectedString = value.ToString(CultureInfo.InvariantCulture);
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0; // FloatNode has no syntax characters
 
         // Act
-        var node = new FloatNode(value);
+        var node = new FloatNode(value, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -30,12 +30,12 @@ public class FloatNodeTests
         // Arrange
         const float value = TestFloat;
         const string format = "F2";
-        var expectedString = value.ToString(format);
+        var expectedString = value.ToString(format, provider: CultureInfo.InvariantCulture);
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0;
 
         // Act
-        var node = new FloatNode(value, format);
+        var node = new FloatNode(value, format, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -71,11 +71,11 @@ public class FloatNodeTests
     {
         // Arrange
         const float value = TestFloat;
-        var expectedString = value.ToString(format);
+        var expectedString = value.ToString(format, provider: CultureInfo.InvariantCulture);
         var expectedTotalLength = expectedString.Length;
 
         // Act
-        var node = new FloatNode(value, format);
+        var node = new FloatNode(value, format, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -110,9 +110,9 @@ public class FloatNodeTests
         // Arrange
         const float value = TestFloat;
         const string format = "F2";
-        var node = new FloatNode(value, format);
+        var node = new FloatNode(value, format, provider: CultureInfo.InvariantCulture);
         Span<char> destination = stackalloc char[20];
-        var expectedString = value.ToString(format);
+        var expectedString = value.ToString(format, provider: CultureInfo.InvariantCulture);
         var expectedBytesWritten = expectedString.Length;
 
         // Act
@@ -149,8 +149,8 @@ public class FloatNodeTests
         // Arrange
         const float value = TestFloat;
         const string format = "F2";
-        var node = new FloatNode(value, format);
-        var expected = value.ToString(format);
+        var node = new FloatNode(value, format, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(format, provider: CultureInfo.InvariantCulture);
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
@@ -186,8 +186,8 @@ public class FloatNodeTests
         // Arrange
         const float value = TestFloat;
         const string format = "E2";
-        var node = new FloatNode(value, format);
-        var expected = value.ToString(format);
+        var node = new FloatNode(value, format, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(format, provider: CultureInfo.InvariantCulture);
 
         // Act
         var result = node.ToString();
@@ -217,11 +217,11 @@ public class FloatNodeTests
     public void SyntaxLength_AlwaysReturnsZero()
     {
         // Arrange & Act & Assert
-        Assert.Equal(0, new FloatNode(0.0f).SyntaxLength);
-        Assert.Equal(0, new FloatNode(123.45f).SyntaxLength);
-        Assert.Equal(0, new FloatNode(-456.78f).SyntaxLength);
-        Assert.Equal(0, new FloatNode(float.MaxValue).SyntaxLength);
-        Assert.Equal(0, new FloatNode(float.MinValue).SyntaxLength);
+        Assert.Equal(0, new FloatNode(0.0f, provider: CultureInfo.InvariantCulture).SyntaxLength);
+        Assert.Equal(0, new FloatNode(123.45f, provider: CultureInfo.InvariantCulture).SyntaxLength);
+        Assert.Equal(0, new FloatNode(-456.78f, provider: CultureInfo.InvariantCulture).SyntaxLength);
+        Assert.Equal(0, new FloatNode(float.MaxValue, provider: CultureInfo.InvariantCulture).SyntaxLength);
+        Assert.Equal(0, new FloatNode(float.MinValue, provider: CultureInfo.InvariantCulture).SyntaxLength);
     }
 
     [Theory]
@@ -231,8 +231,8 @@ public class FloatNodeTests
     public void SpecialFloatValues_HandleCorrectly(float value)
     {
         // Arrange & Act
-        var node = new FloatNode(value);
-        var expectedString = value.ToString();
+        var node = new FloatNode(value, provider: CultureInfo.InvariantCulture);
+        var expectedString = value.ToString(CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedString.Length, node.TotalLength);

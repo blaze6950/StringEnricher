@@ -5,19 +5,19 @@ namespace StringEnricher.Tests.Nodes.Shared;
 
 public class DateOnlyNodeTests
 {
-    private static readonly DateOnly TestDate = new DateOnly(2023, 12, 25);
+    private static readonly DateOnly TestDate = new(2023, 12, 25);
 
     [Fact]
     public void Constructor_WithDateOnly_InitializesCorrectly()
     {
         // Arrange
         var value = TestDate;
-        var expectedString = value.ToString();
+        var expectedString = value.ToString(CultureInfo.InvariantCulture);
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0; // DateOnlyNode has no syntax characters
 
         // Act
-        var node = new DateOnlyNode(value);
+        var node = new DateOnlyNode(value, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -30,12 +30,12 @@ public class DateOnlyNodeTests
         // Arrange
         var value = TestDate;
         const string format = "yyyy-MM-dd";
-        var expectedString = value.ToString(format);
+        var expectedString = value.ToString(format, provider: CultureInfo.InvariantCulture);
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0;
 
         // Act
-        var node = new DateOnlyNode(value, format);
+        var node = new DateOnlyNode(value, format, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -70,11 +70,11 @@ public class DateOnlyNodeTests
     {
         // Arrange
         var value = TestDate;
-        var expectedString = value.ToString(format);
+        var expectedString = value.ToString(format, provider: CultureInfo.InvariantCulture);
         var expectedTotalLength = expectedString.Length;
 
         // Act
-        var node = new DateOnlyNode(value, format);
+        var node = new DateOnlyNode(value, format, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -107,8 +107,8 @@ public class DateOnlyNodeTests
     {
         // Arrange
         var value = new DateOnly(2023, 12, 25);
-        var node = new DateOnlyNode(value);
-        var expectedLength = value.ToString().Length;
+        var node = new DateOnlyNode(value, provider: CultureInfo.InvariantCulture);
+        var expectedLength = value.ToString(CultureInfo.InvariantCulture).Length;
 
         // Act & Assert
         Assert.Equal(expectedLength, node.TotalLength);
@@ -119,9 +119,9 @@ public class DateOnlyNodeTests
     {
         // Arrange
         var value = TestDate;
-        var node = new DateOnlyNode(value);
+        var node = new DateOnlyNode(value, provider: CultureInfo.InvariantCulture);
         Span<char> destination = stackalloc char[20];
-        var expectedString = value.ToString();
+        var expectedString = value.ToString(CultureInfo.InvariantCulture);
         var expectedBytesWritten = expectedString.Length;
 
         // Act
@@ -137,7 +137,7 @@ public class DateOnlyNodeTests
     {
         // Arrange
         var value = TestDate;
-        var node = new DateOnlyNode(value);
+        var node = new DateOnlyNode(value, provider: CultureInfo.InvariantCulture);
 
         // Act
         var exception = Record.Exception(() =>
@@ -158,7 +158,7 @@ public class DateOnlyNodeTests
         // Arrange
         var value = TestDate;
         const string format = "yyyy-MM-dd";
-        var node = new DateOnlyNode(value, format);
+        var node = new DateOnlyNode(value, format, provider: CultureInfo.InvariantCulture);
         Span<char> destination = stackalloc char[20];
         var expectedString = value.ToString(format);
         var expectedBytesWritten = expectedString.Length;
@@ -196,8 +196,8 @@ public class DateOnlyNodeTests
     {
         // Arrange
         var value = TestDate;
-        var node = new DateOnlyNode(value);
-        var expected = value.ToString();
+        var node = new DateOnlyNode(value, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(CultureInfo.InvariantCulture);
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
@@ -214,7 +214,7 @@ public class DateOnlyNodeTests
     public void TryGetChar_OutOfRangeIndices_ReturnsFalseAndNullChar(int index)
     {
         // Arrange
-        var node = new DateOnlyNode(TestDate);
+        var node = new DateOnlyNode(TestDate, provider: CultureInfo.InvariantCulture);
 
         // Act
         var result = node.TryGetChar(index, out var ch);
@@ -230,8 +230,8 @@ public class DateOnlyNodeTests
         // Arrange
         var value = TestDate;
         const string format = "yyyy-MM-dd";
-        var node = new DateOnlyNode(value, format);
-        var expected = value.ToString(format);
+        var node = new DateOnlyNode(value, format, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(format, provider: CultureInfo.InvariantCulture);
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
@@ -266,7 +266,7 @@ public class DateOnlyNodeTests
     {
         // Arrange
         var value = TestDate;
-        var expectedString = value.ToString();
+        var expectedString = value.ToString(CultureInfo.CurrentCulture);
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0;
 
@@ -283,8 +283,8 @@ public class DateOnlyNodeTests
     {
         // Arrange
         var value = TestDate;
-        var node = new DateOnlyNode(value);
-        var expected = value.ToString();
+        var node = new DateOnlyNode(value, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(CultureInfo.InvariantCulture);
 
         // Act
         var result = node.ToString();
@@ -299,8 +299,8 @@ public class DateOnlyNodeTests
         // Arrange
         var value = TestDate;
         const string format = "yyyy-MM-dd";
-        var node = new DateOnlyNode(value, format);
-        var expected = value.ToString(format);
+        var node = new DateOnlyNode(value, format, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(format, provider: CultureInfo.InvariantCulture);
 
         // Act
         var result = node.ToString();
@@ -330,10 +330,10 @@ public class DateOnlyNodeTests
     public void SyntaxLength_AlwaysReturnsZero()
     {
         // Arrange & Act & Assert
-        Assert.Equal(0, new DateOnlyNode(DateOnly.MinValue).SyntaxLength);
-        Assert.Equal(0, new DateOnlyNode(DateOnly.MaxValue).SyntaxLength);
-        Assert.Equal(0, new DateOnlyNode(TestDate).SyntaxLength);
-        Assert.Equal(0, new DateOnlyNode(DateOnly.FromDateTime(DateTime.Now)).SyntaxLength);
+        Assert.Equal(0, new DateOnlyNode(DateOnly.MinValue, provider: CultureInfo.InvariantCulture).SyntaxLength);
+        Assert.Equal(0, new DateOnlyNode(DateOnly.MaxValue, provider: CultureInfo.InvariantCulture).SyntaxLength);
+        Assert.Equal(0, new DateOnlyNode(TestDate, provider: CultureInfo.InvariantCulture).SyntaxLength);
+        Assert.Equal(0, new DateOnlyNode(DateOnly.FromDateTime(DateTime.Now), provider: CultureInfo.InvariantCulture).SyntaxLength);
     }
 
     [Fact]
@@ -341,8 +341,8 @@ public class DateOnlyNodeTests
     {
         // Arrange
         var value = TestDate;
-        var node = new DateOnlyNode(value);
-        var expectedString = value.ToString();
+        var node = new DateOnlyNode(value, provider: CultureInfo.InvariantCulture);
+        var expectedString = value.ToString(CultureInfo.InvariantCulture);
         Span<char> destination = stackalloc char[expectedString.Length]; // Exact size
 
         // Act

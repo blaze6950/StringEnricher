@@ -16,7 +16,7 @@ public class IntegerNodeTests
         const int expectedSyntaxLength = 0; // IntegerNode has no syntax characters
 
         // Act
-        var node = new IntegerNode(value);
+        var node = new IntegerNode(value, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -29,12 +29,12 @@ public class IntegerNodeTests
         // Arrange
         const int value = TestInteger;
         const string format = "N0";
-        var expectedString = value.ToString(format);
+        var expectedString = value.ToString(format, provider: CultureInfo.InvariantCulture);
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0;
 
         // Act
-        var node = new IntegerNode(value, format);
+        var node = new IntegerNode(value, format, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -61,20 +61,20 @@ public class IntegerNodeTests
     }
 
     [Theory]
-    [InlineData("D")]     // Decimal
-    [InlineData("N")]     // Number with thousands separator
-    [InlineData("X")]     // Hexadecimal uppercase
-    [InlineData("x")]     // Hexadecimal lowercase
-    [InlineData("C")]     // Currency
+    [InlineData("D")] // Decimal
+    [InlineData("N")] // Number with thousands separator
+    [InlineData("X")] // Hexadecimal uppercase
+    [InlineData("x")] // Hexadecimal lowercase
+    [InlineData("C")] // Currency
     public void Constructor_WithVariousFormats_InitializesCorrectly(string format)
     {
         // Arrange
         const int value = TestInteger;
-        var expectedString = value.ToString(format);
+        var expectedString = value.ToString(format, provider: CultureInfo.InvariantCulture);
         var expectedTotalLength = expectedString.Length;
 
         // Act
-        var node = new IntegerNode(value, format);
+        var node = new IntegerNode(value, format, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -107,7 +107,7 @@ public class IntegerNodeTests
     public void TotalLength_WithVariousIntegers_ReturnsCorrectLength()
     {
         // Arrange & Act
-        var node = new IntegerNode(TestInteger);
+        var node = new IntegerNode(TestInteger, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(5, node.TotalLength); // "12345" has 5 characters
@@ -118,10 +118,10 @@ public class IntegerNodeTests
     {
         // Arrange
         const int value = 123;
-        var node = new IntegerNode(value);
+        var node = new IntegerNode(value, provider: CultureInfo.InvariantCulture);
         Span<char> destination = stackalloc char[10];
         const int expectedBytesWritten = 3; // "123" has 3 characters
-        const string expectedString = "123";
+        var expectedString = value.ToString(provider: CultureInfo.InvariantCulture);
 
         // Act
         var bytesWritten = node.CopyTo(destination);
@@ -136,10 +136,10 @@ public class IntegerNodeTests
     {
         // Arrange
         const int value = -456;
-        var node = new IntegerNode(value);
+        var node = new IntegerNode(value, provider: CultureInfo.InvariantCulture);
         Span<char> destination = stackalloc char[10];
         const int expectedBytesWritten = 4; // "-456" has 4 characters
-        const string expectedString = "-456";
+        var expectedString = value.ToString(CultureInfo.InvariantCulture);
 
         // Act
         var bytesWritten = node.CopyTo(destination);
@@ -154,10 +154,10 @@ public class IntegerNodeTests
     {
         // Arrange
         const int value = 0;
-        var node = new IntegerNode(value);
+        var node = new IntegerNode(value, provider: CultureInfo.InvariantCulture);
         Span<char> destination = stackalloc char[10];
         const int expectedBytesWritten = 1; // "0" has 1 character
-        const string expectedString = "0";
+        var expectedString = value.ToString(CultureInfo.InvariantCulture);
 
         // Act
         var bytesWritten = node.CopyTo(destination);
@@ -172,7 +172,7 @@ public class IntegerNodeTests
     {
         // Arrange
         const int value = 123;
-        var node = new IntegerNode(value);
+        var node = new IntegerNode(value, provider: CultureInfo.InvariantCulture);
 
         // Act
         var exception = Record.Exception(() =>
@@ -192,10 +192,10 @@ public class IntegerNodeTests
     {
         // Arrange
         const int value = 789;
-        var node = new IntegerNode(value);
+        var node = new IntegerNode(value, provider: CultureInfo.InvariantCulture);
         Span<char> destination = stackalloc char[3]; // Exact size
         const int expectedBytesWritten = 3; // "789" has 3 characters
-        const string expectedString = "789";
+        var expectedString = value.ToString(CultureInfo.InvariantCulture);
 
         // Act
         var bytesWritten = node.CopyTo(destination);
@@ -211,9 +211,9 @@ public class IntegerNodeTests
         // Arrange
         const int value = TestInteger;
         const string format = "N0";
-        var node = new IntegerNode(value, format);
+        var node = new IntegerNode(value, format, provider: CultureInfo.InvariantCulture);
         Span<char> destination = stackalloc char[20];
-        var expectedString = value.ToString(format);
+        var expectedString = value.ToString(format, provider: CultureInfo.InvariantCulture);
         var expectedBytesWritten = expectedString.Length;
 
         // Act
@@ -249,8 +249,8 @@ public class IntegerNodeTests
     {
         // Arrange
         const int value = 123;
-        var node = new IntegerNode(value);
-        const string expected = "123";
+        var node = new IntegerNode(value, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(CultureInfo.InvariantCulture);
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
@@ -266,8 +266,8 @@ public class IntegerNodeTests
     {
         // Arrange
         const int value = -456;
-        var node = new IntegerNode(value);
-        const string expected = "-456";
+        var node = new IntegerNode(value, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(CultureInfo.InvariantCulture);
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
@@ -285,7 +285,7 @@ public class IntegerNodeTests
     public void TryGetChar_OutOfRangeIndices_ReturnsFalseAndNullChar(int index)
     {
         // Arrange
-        var node = new IntegerNode(123);
+        var node = new IntegerNode(123, provider: CultureInfo.InvariantCulture);
 
         // Act
         var result = node.TryGetChar(index, out var ch);
@@ -300,8 +300,8 @@ public class IntegerNodeTests
     {
         // Arrange
         const int value = 0;
-        var node = new IntegerNode(value);
-        const char expectedChar = '0';
+        var node = new IntegerNode(value, provider: CultureInfo.InvariantCulture);
+        var expectedChar = value.ToString(CultureInfo.InvariantCulture)[0];
 
         // Act
         var result = node.TryGetChar(0, out var ch);
@@ -318,7 +318,7 @@ public class IntegerNodeTests
     public void TryGetChar_SingleDigitNumbers_ReturnsTrueAndCorrectChar(int value, char expectedChar)
     {
         // Arrange
-        var node = new IntegerNode(value);
+        var node = new IntegerNode(value, provider: CultureInfo.InvariantCulture);
 
         // Act
         var result = node.TryGetChar(0, out var ch);
@@ -333,7 +333,8 @@ public class IntegerNodeTests
     {
         // Arrange
         const int value = 42;
-        const int expectedTotalLength = 2; // "42" has 2 characters
+        var expectedString = value.ToString(CultureInfo.CurrentCulture);
+        var expectedTotalLength = expectedString.Length; // "42" has 2 characters
         const int expectedSyntaxLength = 0; // IntegerNode has no syntax characters
 
         // Act
@@ -349,7 +350,8 @@ public class IntegerNodeTests
     {
         // Arrange
         const int value = -99;
-        const int expectedTotalLength = 3; // "-99" has 3 characters
+        var expectedString = value.ToString(CultureInfo.CurrentCulture);
+        var expectedTotalLength = expectedString.Length; // "-99" has 3 characters
         const int expectedSyntaxLength = 0; // IntegerNode has no syntax characters
 
         // Act
@@ -368,8 +370,8 @@ public class IntegerNodeTests
     public void CopyTo_WithLargeNumbers_CopiesCorrectly(int value)
     {
         // Arrange
-        var node = new IntegerNode(value);
-        var expected = value.ToString();
+        var node = new IntegerNode(value, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(CultureInfo.InvariantCulture);
         Span<char> destination = stackalloc char[20]; // Large enough buffer
 
         // Act
@@ -388,8 +390,8 @@ public class IntegerNodeTests
     public void TryGetChar_WithLargeNumbers_ReturnsCorrectChars(int value)
     {
         // Arrange
-        var node = new IntegerNode(value);
-        var expected = value.ToString();
+        var node = new IntegerNode(value, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(CultureInfo.InvariantCulture);
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
@@ -404,11 +406,11 @@ public class IntegerNodeTests
     public void SyntaxLength_AlwaysReturnsZero()
     {
         // Arrange & Act & Assert
-        Assert.Equal(0, new IntegerNode(0).SyntaxLength);
-        Assert.Equal(0, new IntegerNode(123).SyntaxLength);
-        Assert.Equal(0, new IntegerNode(-456).SyntaxLength);
-        Assert.Equal(0, new IntegerNode(int.MaxValue).SyntaxLength);
-        Assert.Equal(0, new IntegerNode(int.MinValue).SyntaxLength);
+        Assert.Equal(0, new IntegerNode(0, provider: CultureInfo.InvariantCulture).SyntaxLength);
+        Assert.Equal(0, new IntegerNode(123, provider: CultureInfo.InvariantCulture).SyntaxLength);
+        Assert.Equal(0, new IntegerNode(-456, provider: CultureInfo.InvariantCulture).SyntaxLength);
+        Assert.Equal(0, new IntegerNode(int.MaxValue, provider: CultureInfo.InvariantCulture).SyntaxLength);
+        Assert.Equal(0, new IntegerNode(int.MinValue, provider: CultureInfo.InvariantCulture).SyntaxLength);
     }
 
     [Fact]
@@ -417,8 +419,8 @@ public class IntegerNodeTests
         // Arrange
         const int value = TestInteger;
         const string format = "D8";
-        var node = new IntegerNode(value, format);
-        var expected = value.ToString(format);
+        var node = new IntegerNode(value, format, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(format, provider: CultureInfo.InvariantCulture);
 
         // Act
         var result = node.ToString();

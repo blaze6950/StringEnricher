@@ -12,12 +12,12 @@ public class DecimalNodeTests
     {
         // Arrange
         const decimal value = 123.45m;
-        var expectedString = value.ToString();
+        var expectedString = value.ToString(CultureInfo.InvariantCulture);
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0; // DecimalNode has no syntax characters
 
         // Act
-        var node = new DecimalNode(value);
+        var node = new DecimalNode(value, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -30,12 +30,12 @@ public class DecimalNodeTests
         // Arrange
         const decimal value = TestDecimal;
         const string format = "C";
-        var expectedString = value.ToString(format);
+        var expectedString = value.ToString(format, provider: CultureInfo.InvariantCulture);
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0;
 
         // Act
-        var node = new DecimalNode(value, format);
+        var node = new DecimalNode(value, format, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -62,20 +62,20 @@ public class DecimalNodeTests
     }
 
     [Theory]
-    [InlineData("C")]     // Currency
-    [InlineData("N")]     // Number
-    [InlineData("F2")]    // Fixed-point with 2 decimals
-    [InlineData("P")]     // Percent
-    [InlineData("E")]     // Exponential
+    [InlineData("C")] // Currency
+    [InlineData("N")] // Number
+    [InlineData("F2")] // Fixed-point with 2 decimals
+    [InlineData("P")] // Percent
+    [InlineData("E")] // Exponential
     public void Constructor_WithVariousFormats_InitializesCorrectly(string format)
     {
         // Arrange
         const decimal value = TestDecimal;
-        var expectedString = value.ToString(format);
+        var expectedString = value.ToString(format, provider: CultureInfo.InvariantCulture);
         var expectedTotalLength = expectedString.Length;
 
         // Act
-        var node = new DecimalNode(value, format);
+        var node = new DecimalNode(value, format, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -108,8 +108,8 @@ public class DecimalNodeTests
     public void TotalLength_WithVariousDecimals_ReturnsCorrectLength()
     {
         // Arrange & Act
-        var node = new DecimalNode(TestDecimal);
-        var expectedLength = TestDecimal.ToString().Length;
+        var node = new DecimalNode(TestDecimal, provider: CultureInfo.InvariantCulture);
+        var expectedLength = TestDecimal.ToString(CultureInfo.InvariantCulture).Length;
 
         // Assert
         Assert.Equal(expectedLength, node.TotalLength);
@@ -120,9 +120,9 @@ public class DecimalNodeTests
     {
         // Arrange
         const decimal value = 123.45m;
-        var node = new DecimalNode(value);
+        var node = new DecimalNode(value, provider: CultureInfo.InvariantCulture);
         Span<char> destination = stackalloc char[20];
-        var expectedString = value.ToString();
+        var expectedString = value.ToString(CultureInfo.InvariantCulture);
         var expectedBytesWritten = expectedString.Length;
 
         // Act
@@ -138,9 +138,9 @@ public class DecimalNodeTests
     {
         // Arrange
         const decimal value = -456.78m;
-        var node = new DecimalNode(value);
+        var node = new DecimalNode(value, provider: CultureInfo.InvariantCulture);
         Span<char> destination = stackalloc char[20];
-        var expectedString = value.ToString();
+        var expectedString = value.ToString(CultureInfo.InvariantCulture);
         var expectedBytesWritten = expectedString.Length;
 
         // Act
@@ -157,9 +157,9 @@ public class DecimalNodeTests
         // Arrange
         const decimal value = TestDecimal;
         const string format = "N2";
-        var node = new DecimalNode(value, format);
+        var node = new DecimalNode(value, format, provider: CultureInfo.InvariantCulture);
         Span<char> destination = stackalloc char[20];
-        var expectedString = value.ToString(format);
+        var expectedString = value.ToString(format, provider: CultureInfo.InvariantCulture);
         var expectedBytesWritten = expectedString.Length;
 
         // Act
@@ -195,7 +195,7 @@ public class DecimalNodeTests
     {
         // Arrange
         const decimal value = 123.45m;
-        var node = new DecimalNode(value);
+        var node = new DecimalNode(value, provider: CultureInfo.InvariantCulture);
 
         // Act
         var exception = Record.Exception(() =>
@@ -215,8 +215,8 @@ public class DecimalNodeTests
     {
         // Arrange
         const decimal value = 123.45m;
-        var node = new DecimalNode(value);
-        var expected = value.ToString();
+        var node = new DecimalNode(value, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(CultureInfo.InvariantCulture);
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
@@ -233,7 +233,7 @@ public class DecimalNodeTests
     public void TryGetChar_OutOfRangeIndices_ReturnsFalseAndNullChar(int index)
     {
         // Arrange
-        var node = new DecimalNode(123.45m);
+        var node = new DecimalNode(123.45m, provider: CultureInfo.InvariantCulture);
 
         // Act
         var result = node.TryGetChar(index, out var ch);
@@ -249,8 +249,8 @@ public class DecimalNodeTests
         // Arrange
         const decimal value = TestDecimal;
         const string format = "F2";
-        var node = new DecimalNode(value, format);
-        var expected = value.ToString(format);
+        var node = new DecimalNode(value, format, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(format, provider: CultureInfo.InvariantCulture);
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
@@ -285,7 +285,7 @@ public class DecimalNodeTests
     {
         // Arrange
         const decimal value = 42.5m;
-        var expectedString = value.ToString();
+        var expectedString = value.ToString(CultureInfo.CurrentCulture);
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0;
 
@@ -302,8 +302,8 @@ public class DecimalNodeTests
     {
         // Arrange
         const decimal value = 789.123m;
-        var node = new DecimalNode(value);
-        var expected = value.ToString();
+        var node = new DecimalNode(value, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(CultureInfo.InvariantCulture);
 
         // Act
         var result = node.ToString();
@@ -318,8 +318,8 @@ public class DecimalNodeTests
         // Arrange
         const decimal value = TestDecimal;
         const string format = "C";
-        var node = new DecimalNode(value, format);
-        var expected = value.ToString(format);
+        var node = new DecimalNode(value, format, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(format, provider: CultureInfo.InvariantCulture);
 
         // Act
         var result = node.ToString();
@@ -349,10 +349,10 @@ public class DecimalNodeTests
     public void SyntaxLength_AlwaysReturnsZero()
     {
         // Arrange & Act & Assert
-        Assert.Equal(0, new DecimalNode(0m).SyntaxLength);
-        Assert.Equal(0, new DecimalNode(123.45m).SyntaxLength);
-        Assert.Equal(0, new DecimalNode(-456.78m).SyntaxLength);
-        Assert.Equal(0, new DecimalNode(decimal.MaxValue).SyntaxLength);
-        Assert.Equal(0, new DecimalNode(decimal.MinValue).SyntaxLength);
+        Assert.Equal(0, new DecimalNode(0m, provider: CultureInfo.InvariantCulture).SyntaxLength);
+        Assert.Equal(0, new DecimalNode(123.45m, provider: CultureInfo.InvariantCulture).SyntaxLength);
+        Assert.Equal(0, new DecimalNode(-456.78m, provider: CultureInfo.InvariantCulture).SyntaxLength);
+        Assert.Equal(0, new DecimalNode(decimal.MaxValue, provider: CultureInfo.InvariantCulture).SyntaxLength);
+        Assert.Equal(0, new DecimalNode(decimal.MinValue, provider: CultureInfo.InvariantCulture).SyntaxLength);
     }
 }
