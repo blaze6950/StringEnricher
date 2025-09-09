@@ -99,19 +99,19 @@ public readonly struct GuidNode : INode
     }
 
     /// <summary>
-    /// Tries to get the length of the formatted string representation of a int.
+    /// Tries to get the length of the formatted string representation of a GUID.
     /// </summary>
     /// <param name="value">
-    /// The int value.
+    /// The GUID value.
     /// </param>
     /// <param name="format">
-    /// The format to use when converting the int to a string.
+    /// The format to use when converting the GUID to a string.
     /// </param>
     /// <param name="bufferSize">
-    /// The size of the buffer to use when formatting the int.
+    /// The size of the buffer to use when formatting the GUID.
     /// </param>
     /// <param name="length">
-    /// The length of the formatted string representation of the int.
+    /// The length of the formatted string representation of the GUID.
     /// </param>
     /// <returns>
     /// True if the length was successfully obtained; otherwise, false.
