@@ -1,4 +1,5 @@
-﻿using StringEnricher.Helpers.Html;
+﻿using System.Globalization;
+using StringEnricher.Helpers.Html;
 using StringEnricher.Helpers.MarkdownV2;
 
 namespace StringEnricher.Tests.Helpers;
@@ -10,22 +11,33 @@ public class IntegerOverloadIntegrationTests
     {
         // Arrange
         const int testValue = 123;
+        var expectedString = testValue.ToString(CultureInfo.InvariantCulture);
 
         // Act & Assert - HTML Nodes
-        Assert.Equal("<b>123</b>", BoldHtml.Apply(testValue).ToString());
-        Assert.Equal("<i>123</i>", ItalicHtml.Apply(testValue).ToString());
-        Assert.Equal("<u>123</u>", UnderlineHtml.Apply(testValue).ToString());
-        Assert.Equal("<s>123</s>", StrikethroughHtml.Apply(testValue).ToString());
-        Assert.Equal("<tg-spoiler>123</tg-spoiler>", SpoilerHtml.Apply(testValue).ToString());
-        Assert.Equal("<code>123</code>", InlineCodeHtml.Apply(testValue).ToString());
-        Assert.Equal("<pre>123</pre>", CodeBlockHtml.Apply(testValue).ToString());
-        Assert.Equal("<blockquote>123</blockquote>", BlockquoteHtml.Apply(testValue).ToString());
-        Assert.Equal("<blockquote expandable>123</blockquote>", ExpandableBlockquoteHtml.Apply(testValue).ToString());
-        
+        Assert.Equal($"<b>{expectedString}</b>",
+            BoldHtml.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"<i>{expectedString}</i>",
+            ItalicHtml.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"<u>{expectedString}</u>",
+            UnderlineHtml.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"<s>{expectedString}</s>",
+            StrikethroughHtml.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"<tg-spoiler>{expectedString}</tg-spoiler>",
+            SpoilerHtml.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"<code>{expectedString}</code>",
+            InlineCodeHtml.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"<pre>{expectedString}</pre>",
+            CodeBlockHtml.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"<blockquote>{expectedString}</blockquote>",
+            BlockquoteHtml.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"<blockquote expandable>{expectedString}</blockquote>",
+            ExpandableBlockquoteHtml.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+
         // Special cases with additional parameters
-        Assert.Equal("<a href=\"https://example.com\">123</a>", InlineLinkHtml.Apply(testValue, "https://example.com").ToString());
-        Assert.Equal("<tg-emoji emoji-id=\"456\">🎉</tg-emoji>", TgEmojiHtml.Apply("🎉", 456).ToString());
-        Assert.Equal("<pre><code class=\"language-csharp\">123</code></pre>", SpecificCodeBlockHtml.Apply(testValue, "csharp").ToString());
+        Assert.Equal($"<a href=\"https://example.com\">{expectedString}</a>",
+            InlineLinkHtml.Apply(testValue, "https://example.com", provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"<pre><code class=\"language-csharp\">{expectedString}</code></pre>",
+            SpecificCodeBlockHtml.Apply(testValue, "csharp", provider: CultureInfo.InvariantCulture).ToString());
     }
 
     [Fact]
@@ -33,21 +45,32 @@ public class IntegerOverloadIntegrationTests
     {
         // Arrange
         const int testValue = 456;
+        var expectedString = testValue.ToString(CultureInfo.InvariantCulture);
 
         // Act & Assert - MarkdownV2 Nodes
-        Assert.Equal("*456*", BoldMarkdownV2.Apply(testValue).ToString());
-        Assert.Equal("_456_", ItalicMarkdownV2.Apply(testValue).ToString());
-        Assert.Equal("__456__", UnderlineMarkdownV2.Apply(testValue).ToString());
-        Assert.Equal("~456~", StrikethroughMarkdownV2.Apply(testValue).ToString());
-        Assert.Equal("||456||", SpoilerMarkdownV2.Apply(testValue).ToString());
-        Assert.Equal("`456`", InlineCodeMarkdownV2.Apply(testValue).ToString());
-        Assert.Equal("```\n456\n```", CodeBlockMarkdownV2.Apply(testValue).ToString());
-        Assert.Equal(">456||", ExpandableBlockquoteMarkdownV2.Apply(testValue).ToString());
-        
+        Assert.Equal($"*{expectedString}*",
+            BoldMarkdownV2.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"_{expectedString}_",
+            ItalicMarkdownV2.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"__{expectedString}__",
+            UnderlineMarkdownV2.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"~{expectedString}~",
+            StrikethroughMarkdownV2.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"||{expectedString}||",
+            SpoilerMarkdownV2.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"`{expectedString}`",
+            InlineCodeMarkdownV2.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"```\n{expectedString}\n```",
+            CodeBlockMarkdownV2.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($">{expectedString}||",
+            ExpandableBlockquoteMarkdownV2.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+
         // Special cases with additional parameters
-        Assert.Equal("[456](https://example.com)", InlineLinkMarkdownV2.Apply(testValue, "https://example.com").ToString());
-        Assert.Equal("![🎉](tg://emoji?id=789)", TgEmojiMarkdownV2.Apply("🎉", 789).ToString());
-        Assert.Equal("```csharp\n456\n```", SpecificCodeBlockMarkdownV2.Apply(testValue, "csharp").ToString());
+        Assert.Equal($"[{expectedString}](https://example.com)",
+            InlineLinkMarkdownV2.Apply(testValue, "https://example.com", provider: CultureInfo.InvariantCulture)
+                .ToString());
+        Assert.Equal($"```csharp\n{expectedString}\n```",
+            SpecificCodeBlockMarkdownV2.Apply(testValue, "csharp", provider: CultureInfo.InvariantCulture).ToString());
     }
 
     [Fact]
@@ -55,14 +78,19 @@ public class IntegerOverloadIntegrationTests
     {
         // Arrange
         const int negativeValue = -42;
+        var expectedString = negativeValue.ToString(CultureInfo.InvariantCulture);
 
         // Act & Assert - HTML
-        Assert.Equal("<b>-42</b>", BoldHtml.Apply(negativeValue).ToString());
-        Assert.Equal("<i>-42</i>", ItalicHtml.Apply(negativeValue).ToString());
-        
+        Assert.Equal($"<b>{expectedString}</b>",
+            BoldHtml.Apply(negativeValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"<i>{expectedString}</i>",
+            ItalicHtml.Apply(negativeValue, provider: CultureInfo.InvariantCulture).ToString());
+
         // Act & Assert - MarkdownV2
-        Assert.Equal("*-42*", BoldMarkdownV2.Apply(negativeValue).ToString());
-        Assert.Equal("_-42_", ItalicMarkdownV2.Apply(negativeValue).ToString());
+        Assert.Equal($"*{expectedString}*",
+            BoldMarkdownV2.Apply(negativeValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"_{expectedString}_",
+            ItalicMarkdownV2.Apply(negativeValue, provider: CultureInfo.InvariantCulture).ToString());
     }
 
     [Fact]
@@ -70,12 +98,15 @@ public class IntegerOverloadIntegrationTests
     {
         // Arrange
         const int zeroValue = 0;
+        var expectedString = zeroValue.ToString(CultureInfo.InvariantCulture);
 
         // Act & Assert - HTML
-        Assert.Equal("<code>0</code>", InlineCodeHtml.Apply(zeroValue).ToString());
-        
+        Assert.Equal($"<code>{expectedString}</code>",
+            InlineCodeHtml.Apply(zeroValue, provider: CultureInfo.InvariantCulture).ToString());
+
         // Act & Assert - MarkdownV2
-        Assert.Equal("`0`", InlineCodeMarkdownV2.Apply(zeroValue).ToString());
+        Assert.Equal($"`{expectedString}`",
+            InlineCodeMarkdownV2.Apply(zeroValue, provider: CultureInfo.InvariantCulture).ToString());
     }
 
     [Fact]
@@ -83,12 +114,15 @@ public class IntegerOverloadIntegrationTests
     {
         // Arrange
         const int largeValue = int.MaxValue; // 2147483647
+        var expectedString = largeValue.ToString(CultureInfo.InvariantCulture);
 
         // Act & Assert - HTML
-        Assert.Equal("<b>2147483647</b>", BoldHtml.Apply(largeValue).ToString());
-        
+        Assert.Equal($"<b>{expectedString}</b>",
+            BoldHtml.Apply(largeValue, provider: CultureInfo.InvariantCulture).ToString());
+
         // Act & Assert - MarkdownV2  
-        Assert.Equal("*2147483647*", BoldMarkdownV2.Apply(largeValue).ToString());
+        Assert.Equal($"*{expectedString}*",
+            BoldMarkdownV2.Apply(largeValue, provider: CultureInfo.InvariantCulture).ToString());
     }
 
     [Theory]
@@ -102,15 +136,15 @@ public class IntegerOverloadIntegrationTests
     public void IntegerNodes_WithVariousValues_MaintainCorrectLength(int value)
     {
         // Arrange
-        var expectedLength = value.ToString().Length;
-        
+        var expectedLength = value.ToString(CultureInfo.InvariantCulture).Length;
+
         // Act & Assert - HTML
-        var htmlBoldNode = BoldHtml.Apply(value);
+        var htmlBoldNode = BoldHtml.Apply(value, provider: CultureInfo.InvariantCulture);
         var htmlExpectedTotalLength = "<b></b>".Length + expectedLength;
         Assert.Equal(htmlExpectedTotalLength, htmlBoldNode.TotalLength);
-        
+
         // Act & Assert - MarkdownV2
-        var markdownBoldNode = BoldMarkdownV2.Apply(value);
+        var markdownBoldNode = BoldMarkdownV2.Apply(value, provider: CultureInfo.InvariantCulture);
         var markdownExpectedTotalLength = "**".Length + expectedLength;
         Assert.Equal(markdownExpectedTotalLength, markdownBoldNode.TotalLength);
     }

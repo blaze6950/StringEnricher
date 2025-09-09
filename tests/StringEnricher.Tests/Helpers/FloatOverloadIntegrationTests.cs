@@ -11,24 +11,33 @@ public class FloatOverloadIntegrationTests
     {
         // Arrange
         const float testValue = 123.45f;
+        var expectedString = testValue.ToString(CultureInfo.InvariantCulture);
 
         // Act & Assert - HTML Nodes
-        Assert.Equal("<b>123.45</b>", BoldHtml.Apply(testValue).ToString());
-        Assert.Equal("<i>123.45</i>", ItalicHtml.Apply(testValue).ToString());
-        Assert.Equal("<u>123.45</u>", UnderlineHtml.Apply(testValue).ToString());
-        Assert.Equal("<s>123.45</s>", StrikethroughHtml.Apply(testValue).ToString());
-        Assert.Equal("<tg-spoiler>123.45</tg-spoiler>", SpoilerHtml.Apply(testValue).ToString());
-        Assert.Equal("<code>123.45</code>", InlineCodeHtml.Apply(testValue).ToString());
-        Assert.Equal("<pre>123.45</pre>", CodeBlockHtml.Apply(testValue).ToString());
-        Assert.Equal("<blockquote>123.45</blockquote>", BlockquoteHtml.Apply(testValue).ToString());
-        Assert.Equal("<blockquote expandable>123.45</blockquote>",
-            ExpandableBlockquoteHtml.Apply(testValue).ToString());
+        Assert.Equal($"<b>{expectedString}</b>",
+            BoldHtml.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"<i>{expectedString}</i>",
+            ItalicHtml.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"<u>{expectedString}</u>",
+            UnderlineHtml.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"<s>{expectedString}</s>",
+            StrikethroughHtml.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"<tg-spoiler>{expectedString}</tg-spoiler>",
+            SpoilerHtml.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"<code>{expectedString}</code>",
+            InlineCodeHtml.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"<pre>{expectedString}</pre>",
+            CodeBlockHtml.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"<blockquote>{expectedString}</blockquote>",
+            BlockquoteHtml.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"<blockquote expandable>{expectedString}</blockquote>",
+            ExpandableBlockquoteHtml.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
 
         // Special cases with additional parameters
-        Assert.Equal("<a href=\"https://example.com\">123.45</a>",
-            InlineLinkHtml.Apply(testValue, "https://example.com").ToString());
-        Assert.Equal("<pre><code class=\"language-csharp\">123.45</code></pre>",
-            SpecificCodeBlockHtml.Apply(testValue, "csharp").ToString());
+        Assert.Equal($"<a href=\"https://example.com\">{expectedString}</a>",
+            InlineLinkHtml.Apply(testValue, "https://example.com", provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"<pre><code class=\"language-csharp\">{expectedString}</code></pre>",
+            SpecificCodeBlockHtml.Apply(testValue, "csharp", provider: CultureInfo.InvariantCulture).ToString());
     }
 
     [Fact]
@@ -36,22 +45,34 @@ public class FloatOverloadIntegrationTests
     {
         // Arrange
         const float testValue = 456.78f;
+        var expectedString = testValue.ToString(CultureInfo.InvariantCulture);
 
         // Act & Assert - MarkdownV2 Nodes
-        Assert.Equal("*456.78*", BoldMarkdownV2.Apply(testValue).ToString());
-        Assert.Equal("_456.78_", ItalicMarkdownV2.Apply(testValue).ToString());
-        Assert.Equal("__456.78__", UnderlineMarkdownV2.Apply(testValue).ToString());
-        Assert.Equal("~456.78~", StrikethroughMarkdownV2.Apply(testValue).ToString());
-        Assert.Equal("||456.78||", SpoilerMarkdownV2.Apply(testValue).ToString());
-        Assert.Equal("`456.78`", InlineCodeMarkdownV2.Apply(testValue).ToString());
-        Assert.Equal("```\n456.78\n```", CodeBlockMarkdownV2.Apply(testValue).ToString());
-        Assert.Equal(">456.78", BlockquoteMarkdownV2.Apply(testValue).ToString());
-        Assert.Equal(">456.78||", ExpandableBlockquoteMarkdownV2.Apply(testValue).ToString());
+        Assert.Equal($"*{expectedString}*",
+            BoldMarkdownV2.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"_{expectedString}_",
+            ItalicMarkdownV2.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"__{expectedString}__",
+            UnderlineMarkdownV2.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"~{expectedString}~",
+            StrikethroughMarkdownV2.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"||{expectedString}||",
+            SpoilerMarkdownV2.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"`{expectedString}`",
+            InlineCodeMarkdownV2.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"```\n{expectedString}\n```",
+            CodeBlockMarkdownV2.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($">{expectedString}",
+            BlockquoteMarkdownV2.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($">{expectedString}||",
+            ExpandableBlockquoteMarkdownV2.Apply(testValue, provider: CultureInfo.InvariantCulture).ToString());
 
         // Special cases with additional parameters
-        Assert.Equal("[456.78](https://example.com)",
-            InlineLinkMarkdownV2.Apply(testValue, "https://example.com").ToString());
-        Assert.Equal("```csharp\n456.78\n```", SpecificCodeBlockMarkdownV2.Apply(testValue, "csharp").ToString());
+        Assert.Equal($"[{expectedString}](https://example.com)",
+            InlineLinkMarkdownV2.Apply(testValue, "https://example.com", provider: CultureInfo.InvariantCulture)
+                .ToString());
+        Assert.Equal($"```csharp\n{expectedString}\n```",
+            SpecificCodeBlockMarkdownV2.Apply(testValue, "csharp", provider: CultureInfo.InvariantCulture).ToString());
     }
 
     [Fact]
@@ -59,14 +80,19 @@ public class FloatOverloadIntegrationTests
     {
         // Arrange
         const float negativeValue = -42.5f;
+        var expectedString = negativeValue.ToString(CultureInfo.InvariantCulture);
 
         // Act & Assert - HTML
-        Assert.Equal("<b>-42.5</b>", BoldHtml.Apply(negativeValue).ToString());
-        Assert.Equal("<i>-42.5</i>", ItalicHtml.Apply(negativeValue).ToString());
+        Assert.Equal($"<b>{expectedString}</b>",
+            BoldHtml.Apply(negativeValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"<i>{expectedString}</i>",
+            ItalicHtml.Apply(negativeValue, provider: CultureInfo.InvariantCulture).ToString());
 
         // Act & Assert - MarkdownV2
-        Assert.Equal("*-42.5*", BoldMarkdownV2.Apply(negativeValue).ToString());
-        Assert.Equal("_-42.5_", ItalicMarkdownV2.Apply(negativeValue).ToString());
+        Assert.Equal($"*{expectedString}*",
+            BoldMarkdownV2.Apply(negativeValue, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal($"_{expectedString}_",
+            ItalicMarkdownV2.Apply(negativeValue, provider: CultureInfo.InvariantCulture).ToString());
     }
 
     [Fact]
@@ -74,12 +100,15 @@ public class FloatOverloadIntegrationTests
     {
         // Arrange
         const float zeroValue = 0.0f;
+        var expectedString = zeroValue.ToString(CultureInfo.InvariantCulture);
 
         // Act & Assert - HTML
-        Assert.Equal("<code>0</code>", InlineCodeHtml.Apply(zeroValue).ToString());
+        Assert.Equal($"<code>{expectedString}</code>",
+            InlineCodeHtml.Apply(zeroValue, provider: CultureInfo.InvariantCulture).ToString());
 
         // Act & Assert - MarkdownV2
-        Assert.Equal("`0`", InlineCodeMarkdownV2.Apply(zeroValue).ToString());
+        Assert.Equal($"`{expectedString}`",
+            InlineCodeMarkdownV2.Apply(zeroValue, provider: CultureInfo.InvariantCulture).ToString());
     }
 
     [Fact]
@@ -111,15 +140,15 @@ public class FloatOverloadIntegrationTests
     public void FloatNodes_WithVariousValues_MaintainCorrectLength(float value)
     {
         // Arrange
-        var expectedLength = value.ToString().Length;
+        var expectedLength = value.ToString(CultureInfo.InvariantCulture).Length;
 
         // Act & Assert - HTML
-        var htmlBoldNode = BoldHtml.Apply(value);
+        var htmlBoldNode = BoldHtml.Apply(value, provider: CultureInfo.InvariantCulture);
         var htmlExpectedTotalLength = "<b></b>".Length + expectedLength;
         Assert.Equal(htmlExpectedTotalLength, htmlBoldNode.TotalLength);
 
         // Act & Assert - MarkdownV2
-        var markdownBoldNode = BoldMarkdownV2.Apply(value);
+        var markdownBoldNode = BoldMarkdownV2.Apply(value, provider: CultureInfo.InvariantCulture);
         var markdownExpectedTotalLength = "**".Length + expectedLength;
         Assert.Equal(markdownExpectedTotalLength, markdownBoldNode.TotalLength);
     }
