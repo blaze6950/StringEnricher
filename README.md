@@ -232,3 +232,16 @@ Benchmarks are available in the `benchmarks` folder. You can run them using Benc
 
 ---
 Feel free to contribute or open issues for feature requests and bug reports!
+
+---
+# TODOs
+- Consider adding support for more primitive types in MessageBuilder.Append() overloads and Node types if needed.
+  - `short`, `byte`, `sbyte`, `ushort`, `uint`, `ulong`, `object`
+  - Add support for enums?
+  - Are there any other types that are commonly used and should be supported directly?
+- Think about the possibility to add support for custom user-defined types in MessageBuilder.Append() and Node types.
+   - Make a guide on how to implement INode for custom types.
+   - Make a guide on how to extend MessageBuilder to support custom types.
+- Add more benchmarks for different scenarios and use cases.
+  - Consider extending the ci-cd pipeline to run benchmarks and update results.
+- Add more test cases for nodes.

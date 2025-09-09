@@ -1,4 +1,4 @@
-﻿namespace StringEnricher.Tests.Helpers.Html;
+﻿namespace StringEnricher.Tests.Helpers.MarkdownV2;
 
 public class MarkdownV2Tests
 {
