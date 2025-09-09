@@ -1,4 +1,5 @@
-﻿using StringEnricher.Helpers.Html;
+﻿using System.Globalization;
+using StringEnricher.Helpers.Html;
 using StringEnricher.Helpers.MarkdownV2;
 
 namespace StringEnricher.Tests.Helpers;
@@ -20,11 +21,14 @@ public class FloatOverloadIntegrationTests
         Assert.Equal("<code>123.45</code>", InlineCodeHtml.Apply(testValue).ToString());
         Assert.Equal("<pre>123.45</pre>", CodeBlockHtml.Apply(testValue).ToString());
         Assert.Equal("<blockquote>123.45</blockquote>", BlockquoteHtml.Apply(testValue).ToString());
-        Assert.Equal("<blockquote expandable>123.45</blockquote>", ExpandableBlockquoteHtml.Apply(testValue).ToString());
-        
+        Assert.Equal("<blockquote expandable>123.45</blockquote>",
+            ExpandableBlockquoteHtml.Apply(testValue).ToString());
+
         // Special cases with additional parameters
-        Assert.Equal("<a href=\"https://example.com\">123.45</a>", InlineLinkHtml.Apply(testValue, "https://example.com").ToString());
-        Assert.Equal("<pre><code class=\"language-csharp\">123.45</code></pre>", SpecificCodeBlockHtml.Apply(testValue, "csharp").ToString());
+        Assert.Equal("<a href=\"https://example.com\">123.45</a>",
+            InlineLinkHtml.Apply(testValue, "https://example.com").ToString());
+        Assert.Equal("<pre><code class=\"language-csharp\">123.45</code></pre>",
+            SpecificCodeBlockHtml.Apply(testValue, "csharp").ToString());
     }
 
     [Fact]
@@ -43,9 +47,10 @@ public class FloatOverloadIntegrationTests
         Assert.Equal("```\n456.78\n```", CodeBlockMarkdownV2.Apply(testValue).ToString());
         Assert.Equal(">456.78", BlockquoteMarkdownV2.Apply(testValue).ToString());
         Assert.Equal(">456.78||", ExpandableBlockquoteMarkdownV2.Apply(testValue).ToString());
-        
+
         // Special cases with additional parameters
-        Assert.Equal("[456.78](https://example.com)", InlineLinkMarkdownV2.Apply(testValue, "https://example.com").ToString());
+        Assert.Equal("[456.78](https://example.com)",
+            InlineLinkMarkdownV2.Apply(testValue, "https://example.com").ToString());
         Assert.Equal("```csharp\n456.78\n```", SpecificCodeBlockMarkdownV2.Apply(testValue, "csharp").ToString());
     }
 
@@ -58,7 +63,7 @@ public class FloatOverloadIntegrationTests
         // Act & Assert - HTML
         Assert.Equal("<b>-42.5</b>", BoldHtml.Apply(negativeValue).ToString());
         Assert.Equal("<i>-42.5</i>", ItalicHtml.Apply(negativeValue).ToString());
-        
+
         // Act & Assert - MarkdownV2
         Assert.Equal("*-42.5*", BoldMarkdownV2.Apply(negativeValue).ToString());
         Assert.Equal("_-42.5_", ItalicMarkdownV2.Apply(negativeValue).ToString());
@@ -72,7 +77,7 @@ public class FloatOverloadIntegrationTests
 
         // Act & Assert - HTML
         Assert.Equal("<code>0</code>", InlineCodeHtml.Apply(zeroValue).ToString());
-        
+
         // Act & Assert - MarkdownV2
         Assert.Equal("`0`", InlineCodeMarkdownV2.Apply(zeroValue).ToString());
     }
@@ -81,14 +86,19 @@ public class FloatOverloadIntegrationTests
     public void FloatNodes_WithSpecialValues_ProduceCorrectOutput()
     {
         // Act & Assert - HTML
-        Assert.Equal("<b>∞</b>", BoldHtml.Apply(float.PositiveInfinity).ToString());
-        Assert.Equal("<i>-∞</i>", ItalicHtml.Apply(float.NegativeInfinity).ToString());
-        Assert.Equal("<code>NaN</code>", InlineCodeHtml.Apply(float.NaN).ToString());
-        
+        Assert.Equal("<b>Infinity</b>",
+            BoldHtml.Apply(float.PositiveInfinity, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal("<i>-Infinity</i>",
+            ItalicHtml.Apply(float.NegativeInfinity, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal("<code>NaN</code>",
+            InlineCodeHtml.Apply(float.NaN, provider: CultureInfo.InvariantCulture).ToString());
+
         // Act & Assert - MarkdownV2
-        Assert.Equal("*∞*", BoldMarkdownV2.Apply(float.PositiveInfinity).ToString());
-        Assert.Equal("_-∞_", ItalicMarkdownV2.Apply(float.NegativeInfinity).ToString());
-        Assert.Equal("`NaN`", InlineCodeMarkdownV2.Apply(float.NaN).ToString());
+        Assert.Equal("*Infinity*",
+            BoldMarkdownV2.Apply(float.PositiveInfinity, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal("_-Infinity_",
+            ItalicMarkdownV2.Apply(float.NegativeInfinity, provider: CultureInfo.InvariantCulture).ToString());
+        Assert.Equal("`NaN`", InlineCodeMarkdownV2.Apply(float.NaN, provider: CultureInfo.InvariantCulture).ToString());
     }
 
     [Theory]
@@ -102,12 +112,12 @@ public class FloatOverloadIntegrationTests
     {
         // Arrange
         var expectedLength = value.ToString().Length;
-        
+
         // Act & Assert - HTML
         var htmlBoldNode = BoldHtml.Apply(value);
         var htmlExpectedTotalLength = "<b></b>".Length + expectedLength;
         Assert.Equal(htmlExpectedTotalLength, htmlBoldNode.TotalLength);
-        
+
         // Act & Assert - MarkdownV2
         var markdownBoldNode = BoldMarkdownV2.Apply(value);
         var markdownExpectedTotalLength = "**".Length + expectedLength;
