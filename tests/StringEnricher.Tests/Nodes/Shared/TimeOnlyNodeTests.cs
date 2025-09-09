@@ -12,12 +12,12 @@ public class TimeOnlyNodeTests
     {
         // Arrange
         var value = TestTimeOnly;
-        var expectedString = value.ToString();
+        var expectedString = value.ToString(CultureInfo.InvariantCulture);
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0; // TimeOnlyNode has no syntax characters
 
         // Act
-        var node = new TimeOnlyNode(value);
+        var node = new TimeOnlyNode(value, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -30,12 +30,12 @@ public class TimeOnlyNodeTests
         // Arrange
         var value = TestTimeOnly;
         const string format = "HH:mm:ss";
-        var expectedString = value.ToString(format);
+        var expectedString = value.ToString(format, provider: CultureInfo.InvariantCulture);
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0;
 
         // Act
-        var node = new TimeOnlyNode(value, format);
+        var node = new TimeOnlyNode(value, format, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -62,20 +62,20 @@ public class TimeOnlyNodeTests
     }
 
     [Theory]
-    [InlineData("HH:mm:ss")]      // 24-hour format
-    [InlineData("h:mm:ss tt")]    // 12-hour format with AM/PM
-    [InlineData("HH:mm")]         // Hours and minutes only
-    [InlineData("t")]             // Short time pattern
-    [InlineData("T")]             // Long time pattern
+    [InlineData("HH:mm:ss")] // 24-hour format
+    [InlineData("h:mm:ss tt")] // 12-hour format with AM/PM
+    [InlineData("HH:mm")] // Hours and minutes only
+    [InlineData("t")] // Short time pattern
+    [InlineData("T")] // Long time pattern
     public void Constructor_WithVariousFormats_InitializesCorrectly(string format)
     {
         // Arrange
         var value = TestTimeOnly;
-        var expectedString = value.ToString(format);
+        var expectedString = value.ToString(format, provider: CultureInfo.InvariantCulture);
         var expectedTotalLength = expectedString.Length;
 
         // Act
-        var node = new TimeOnlyNode(value, format);
+        var node = new TimeOnlyNode(value, format, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
@@ -105,16 +105,16 @@ public class TimeOnlyNodeTests
     }
 
     [Theory]
-    [InlineData(0, 0, 0)]    // Midnight
-    [InlineData(12, 0, 0)]   // Noon
+    [InlineData(0, 0, 0)] // Midnight
+    [InlineData(12, 0, 0)] // Noon
     [InlineData(23, 59, 59)] // End of day
-    [InlineData(9, 15, 30)]  // Morning
+    [InlineData(9, 15, 30)] // Morning
     public void TotalLength_WithVariousTimes_ReturnsCorrectLength(int hour, int minute, int second)
     {
         // Arrange
         var value = new TimeOnly(hour, minute, second);
-        var node = new TimeOnlyNode(value);
-        var expectedLength = value.ToString().Length;
+        var node = new TimeOnlyNode(value, provider: CultureInfo.InvariantCulture);
+        var expectedLength = value.ToString(CultureInfo.InvariantCulture).Length;
 
         // Act & Assert
         Assert.Equal(expectedLength, node.TotalLength);
@@ -125,9 +125,9 @@ public class TimeOnlyNodeTests
     {
         // Arrange
         var value = TestTimeOnly;
-        var node = new TimeOnlyNode(value);
+        var node = new TimeOnlyNode(value, provider: CultureInfo.InvariantCulture);
         Span<char> destination = stackalloc char[20];
-        var expectedString = value.ToString();
+        var expectedString = value.ToString(CultureInfo.InvariantCulture);
         var expectedBytesWritten = expectedString.Length;
 
         // Act
@@ -143,12 +143,12 @@ public class TimeOnlyNodeTests
     {
         // Arrange
         var value = TestTimeOnly;
-        var node = new TimeOnlyNode(value);
+        var node = new TimeOnlyNode(value, provider: CultureInfo.InvariantCulture);
 
         // Act
         var exception = Record.Exception(() =>
         {
-            Span<char> destination = stackalloc char[5]; // Too small
+            Span<char> destination = stackalloc char[4]; // Too small
             return node.CopyTo(destination);
         });
 
@@ -164,9 +164,9 @@ public class TimeOnlyNodeTests
         // Arrange
         var value = TestTimeOnly;
         const string format = "HH:mm:ss";
-        var node = new TimeOnlyNode(value, format);
+        var node = new TimeOnlyNode(value, format, provider: CultureInfo.InvariantCulture);
         Span<char> destination = stackalloc char[20];
-        var expectedString = value.ToString(format);
+        var expectedString = value.ToString(format, provider: CultureInfo.InvariantCulture);
         var expectedBytesWritten = expectedString.Length;
 
         // Act
@@ -202,8 +202,8 @@ public class TimeOnlyNodeTests
     {
         // Arrange
         var value = TestTimeOnly;
-        var node = new TimeOnlyNode(value);
-        var expected = value.ToString();
+        var node = new TimeOnlyNode(value, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(CultureInfo.InvariantCulture);
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
@@ -220,7 +220,7 @@ public class TimeOnlyNodeTests
     public void TryGetChar_OutOfRangeIndices_ReturnsFalseAndNullChar(int index)
     {
         // Arrange
-        var node = new TimeOnlyNode(TestTimeOnly);
+        var node = new TimeOnlyNode(TestTimeOnly, provider: CultureInfo.InvariantCulture);
 
         // Act
         var result = node.TryGetChar(index, out var ch);
@@ -236,8 +236,8 @@ public class TimeOnlyNodeTests
         // Arrange
         var value = TestTimeOnly;
         const string format = "HH:mm";
-        var node = new TimeOnlyNode(value, format);
-        var expected = value.ToString(format);
+        var node = new TimeOnlyNode(value, format, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(format, provider: CultureInfo.InvariantCulture);
 
         // Act & Assert
         for (var i = 0; i < expected.Length; i++)
@@ -272,7 +272,7 @@ public class TimeOnlyNodeTests
     {
         // Arrange
         var value = TestTimeOnly;
-        var expectedString = value.ToString();
+        var expectedString = value.ToString(CultureInfo.CurrentCulture);
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0;
 
@@ -289,8 +289,8 @@ public class TimeOnlyNodeTests
     {
         // Arrange
         var value = TestTimeOnly;
-        var node = new TimeOnlyNode(value);
-        var expected = value.ToString();
+        var node = new TimeOnlyNode(value, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(CultureInfo.InvariantCulture);
 
         // Act
         var result = node.ToString();
@@ -305,8 +305,8 @@ public class TimeOnlyNodeTests
         // Arrange
         var value = TestTimeOnly;
         const string format = "T";
-        var node = new TimeOnlyNode(value, format);
-        var expected = value.ToString(format);
+        var node = new TimeOnlyNode(value, format, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(format, provider: CultureInfo.InvariantCulture);
 
         // Act
         var result = node.ToString();
@@ -336,10 +336,11 @@ public class TimeOnlyNodeTests
     public void SyntaxLength_AlwaysReturnsZero()
     {
         // Arrange & Act & Assert
-        Assert.Equal(0, new TimeOnlyNode(TimeOnly.MinValue).SyntaxLength);
-        Assert.Equal(0, new TimeOnlyNode(TimeOnly.MaxValue).SyntaxLength);
-        Assert.Equal(0, new TimeOnlyNode(TestTimeOnly).SyntaxLength);
-        Assert.Equal(0, new TimeOnlyNode(TimeOnly.FromDateTime(DateTime.Now)).SyntaxLength);
+        Assert.Equal(0, new TimeOnlyNode(TimeOnly.MinValue, provider: CultureInfo.InvariantCulture).SyntaxLength);
+        Assert.Equal(0, new TimeOnlyNode(TimeOnly.MaxValue, provider: CultureInfo.InvariantCulture).SyntaxLength);
+        Assert.Equal(0, new TimeOnlyNode(TestTimeOnly, provider: CultureInfo.InvariantCulture).SyntaxLength);
+        Assert.Equal(0,
+            new TimeOnlyNode(TimeOnly.FromDateTime(DateTime.Now), provider: CultureInfo.InvariantCulture).SyntaxLength);
     }
 
     [Fact]
@@ -347,8 +348,8 @@ public class TimeOnlyNodeTests
     {
         // Arrange
         var value = TestTimeOnly;
-        var node = new TimeOnlyNode(value);
-        var expectedString = value.ToString();
+        var node = new TimeOnlyNode(value, provider: CultureInfo.InvariantCulture);
+        var expectedString = value.ToString(CultureInfo.InvariantCulture);
         Span<char> destination = stackalloc char[expectedString.Length]; // Exact size
 
         // Act
@@ -364,12 +365,12 @@ public class TimeOnlyNodeTests
     {
         // Arrange
         var value = new TimeOnly(14, 30, 45, 123);
-        var expectedString = value.ToString();
+        var expectedString = value.ToString(CultureInfo.InvariantCulture);
         var expectedTotalLength = expectedString.Length;
         const int expectedSyntaxLength = 0;
 
         // Act
-        var node = new TimeOnlyNode(value);
+        var node = new TimeOnlyNode(value, provider: CultureInfo.InvariantCulture);
 
         // Assert
         Assert.Equal(expectedTotalLength, node.TotalLength);
