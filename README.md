@@ -140,38 +140,38 @@ To simplify switching between HTML and MarkdownV2 styles across your project, yo
 // Place this file in your project root or any folder included in compilation.
 
 // HTML formatting nodes
-global using Bold = StringEnricher.Nodes.Html.Formatting.BoldHtml;
-global using Italic = StringEnricher.Nodes.Html.Formatting.ItalicHtml;
-global using Underline = StringEnricher.Nodes.Html.Formatting.UnderlineHtml;
-global using Strikethrough = StringEnricher.Nodes.Html.Formatting.StrikethroughHtml;
-global using Spoiler = StringEnricher.Nodes.Html.Formatting.SpoilerHtml;
-global using InlineLink = StringEnricher.Nodes.Html.Formatting.InlineLinkHtml;
-global using Blockquote = StringEnricher.Nodes.Html.Formatting.BlockquoteHtml;
-global using ExpandableBlockquote = StringEnricher.Nodes.Html.Formatting.ExpandableBlockquoteHtml;
-global using CodeBlock = StringEnricher.Nodes.Html.Formatting.CodeBlockHtml;
-global using SpecificCodeBlock = StringEnricher.Nodes.Html.Formatting.SpecificCodeBlockHtml;
-global using InlineCode = StringEnricher.Nodes.Html.Formatting.InlineCodeHtml;
-global using TgEmoji = StringEnricher.Nodes.Html.Formatting.TgEmojiHtml;
-global using Escape = StringEnricher.Nodes.Html.EscapeHtml;
+global using Bold = StringEnricher.Helpers.Html.BoldHtml;
+global using Italic = StringEnricher.Helpers.Html.ItalicHtml;
+global using Underline = StringEnricher.Helpers.Html.UnderlineHtml;
+global using Strikethrough = StringEnricher.Helpers.Html.StrikethroughHtml;
+global using Spoiler = StringEnricher.Helpers.Html.SpoilerHtml;
+global using InlineLink = StringEnricher.Helpers.Html.InlineLinkHtml;
+global using Blockquote = StringEnricher.Helpers.Html.BlockquoteHtml;
+global using ExpandableBlockquote = StringEnricher.Helpers.Html.ExpandableBlockquoteHtml;
+global using CodeBlock = StringEnricher.Helpers.Html.CodeBlockHtml;
+global using SpecificCodeBlock = StringEnricher.Helpers.Html.SpecificCodeBlockHtml;
+global using InlineCode = StringEnricher.Helpers.Html.InlineCodeHtml;
+global using TgEmoji = StringEnricher.Helpers.Html.TgEmojiHtml;
+global using Escape = StringEnricher.Helpers.Html.EscapeHtml;
 ```
 
 To switch to MarkdownV2, simply update the aliases:
 ```csharp
 // GlobalUsings.cs
 
-global using Bold = StringEnricher.Nodes.MarkdownV2.Formatting.BoldMarkdownV2;
-global using Italic = StringEnricher.Nodes.MarkdownV2.Formatting.ItalicMarkdownV2;
-global using Underline = StringEnricher.Nodes.MarkdownV2.Formatting.UnderlineMarkdownV2;
-global using Strikethrough = StringEnricher.Nodes.MarkdownV2.Formatting.StrikethroughMarkdownV2;
-global using Spoiler = StringEnricher.Nodes.MarkdownV2.Formatting.SpoilerMarkdownV2;
-global using InlineLink = StringEnricher.Nodes.MarkdownV2.Formatting.InlineLinkMarkdownV2;
-global using Blockquote = StringEnricher.Nodes.MarkdownV2.Formatting.BlockquoteMarkdownV2;
-global using ExpandableBlockquote = StringEnricher.Nodes.MarkdownV2.Formatting.ExpandableBlockquoteMarkdownV2;
-global using CodeBlock = StringEnricher.Nodes.MarkdownV2.Formatting.CodeBlockMarkdownV2;
-global using SpecificCodeBlock = StringEnricher.Nodes.MarkdownV2.Formatting.SpecificCodeBlockMarkdownV2;
-global using InlineCode = StringEnricher.Nodes.MarkdownV2.Formatting.InlineCodeMarkdownV2;
-global using TgEmoji = StringEnricher.Nodes.MarkdownV2.Formatting.TgEmojiMarkdownV2;
-global using Escape = StringEnricher.Nodes.MarkdownV2.EscapeMarkdownV2;
+global using Bold = StringEnricher.Helpers.MarkdownV2.BoldMarkdownV2;
+global using Italic = StringEnricher.Helpers.MarkdownV2.ItalicMarkdownV2;
+global using Underline = StringEnricher.Helpers.MarkdownV2.UnderlineMarkdownV2;
+global using Strikethrough = StringEnricher.Helpers.MarkdownV2.StrikethroughMarkdownV2;
+global using Spoiler = StringEnricher.Helpers.MarkdownV2.SpoilerMarkdownV2;
+global using InlineLink = StringEnricher.Helpers.MarkdownV2.InlineLinkMarkdownV2;
+global using Blockquote = StringEnricher.Helpers.MarkdownV2.BlockquoteMarkdownV2;
+global using ExpandableBlockquote = StringEnricher.Helpers.MarkdownV2.ExpandableBlockquoteMarkdownV2;
+global using CodeBlock = StringEnricher.Helpers.MarkdownV2.CodeBlockMarkdownV2;
+global using SpecificCodeBlock = StringEnricher.Helpers.MarkdownV2.SpecificCodeBlockMarkdownV2;
+global using InlineCode = StringEnricher.Helpers.MarkdownV2.InlineCodeMarkdownV2;
+global using TgEmoji = StringEnricher.Helpers.MarkdownV2.TgEmojiMarkdownV2;
+global using Escape = StringEnricher.Helpers.MarkdownV2.EscapeMarkdownV2;
 ```
 
 ### Usage in Your Code
