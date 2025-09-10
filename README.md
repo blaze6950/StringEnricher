@@ -102,7 +102,7 @@ var combinedString = combined.ToString(); // 1 final string heap allocation here
 
 #### Another example
 ```csharp
-var combined = "Hello"
+var combined = "Hello".ToNode()
     .CombineWith(',')
     .CombineWith(' ')
     .CombineWith(BoldHtml.Apply("World"))
