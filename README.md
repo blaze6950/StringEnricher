@@ -100,7 +100,7 @@ var combinedString = combined.ToString(); // 1 final string heap allocation here
 // combinedString == "<b>bold text</b><i> and italic text</i>"
 ```
 
-## Another example
+#### Another example
 ```csharp
 var combined = "Hello"
     .CombineWith(',')
