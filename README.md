@@ -33,8 +33,6 @@ dotnet add package StringEnricher
 
 ### Basic Example (HTML Bold)
 ```csharp
-using StringEnricher.Node.Html;
-
 var styledBold = BoldHtml.Apply("bold text"); // 0 heap allocations here
 var styledBoldString = styledBold.ToString(); // 1 final string heap allocation here
 // styledBold == "<b>bold text</b>"
@@ -42,8 +40,6 @@ var styledBoldString = styledBold.ToString(); // 1 final string heap allocation 
 
 ### Applying Multiple Node
 ```csharp
-using StringEnricher.Node.Html;
-
 var styled = BoldHtml.Apply(
     ItalicHtml.Apply("important text") // 0 heap allocations here
 ); // 0 heap allocations here
@@ -53,8 +49,6 @@ var styledString = styled.ToString(); // 1 final string heap allocation here
 
 ### MarkdownV2 Example
 ```csharp
-using StringEnricher.Node.MarkdownV2;
-
 var boldMd = BoldMarkdownV2.Apply("bold text"); // 0 heap allocations here
 var boldMdString = boldMd.ToString(); // 1 final string heap allocation here
 // boldMd == "*bold text*"
@@ -62,8 +56,6 @@ var boldMdString = boldMd.ToString(); // 1 final string heap allocation here
 
 ### The `.CopyTo()` method for Zero Allocations
 ```csharp
-using StringEnricher.Node.Html;
-
 var styled = BoldHtml.Apply("bold text");
 Span<char> buffer = stackalloc char[styled.TotalLength]; // allocate buffer on stack
 int written = styled.CopyTo(buffer); // 0 heap allocations here
@@ -80,7 +72,6 @@ Use it only when you finished building the entire styled string.
 ### `.TryGetChar()` method for Single Character Access
 The `TryGetChar(int index, out char value)` method allows you to access individual characters in the styled string without creating the entire string. It returns `true` if the character at the specified index exists, otherwise `false`.
 ```csharp
-using StringEnricher.Node.Html;
 var styled = BoldHtml.Apply("bold text");
 if (styled.TryGetChar(0, out char character))
 {
@@ -102,18 +93,26 @@ else {
 ### `.CombineWith()` method for Merging Nodes
 The `CombineWith(INode other)` method allows you to merge two nodes into a single node. This is useful for building complex styled strings from multiple parts.
 ```csharp
-using StringEnricher.Node.Html;
 var part1 = BoldHtml.Apply("bold text");
 var part2 = ItalicHtml.Apply(" and italic text");
 var combined = part1.CombineWith(part2); // 0 heap allocations here
 var combinedString = combined.ToString(); // 1 final string heap allocation here
-// combinedString == "<b>bold text</b><i> and italic text</i
+// combinedString == "<b>bold text</b><i> and italic text</i>"
+```
+
+## Another example
+```csharp
+var combined = "Hello"
+    .CombineWith(',')
+    .CombineWith(' ')
+    .CombineWith(BoldHtml.Apply("World"))
+    .CombineWith('!'); // 0 heap allocations here
+var combinedString = combined.ToString(); // 1 final string heap allocation here
+// combinedString == "Hello, <b>World</b>!"
 ```
 
 ### `MessageBuilder` for Fluent API
 ```csharp
-using StringEnricher;
-using StringEnricher.Node.Html;
 // Pre-calculate total length to avoid over-allocation
 var messageBuilder = new MessageBuilder(totalLength);
 var state = ["Hello, ", "World! ", "Every ", "word ", "is ", "in ", "different ", "style&"];
