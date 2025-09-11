@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageId>StringEnricher</PackageId>
-        <Version>0.0.1-rc.6</Version>
+        <Version>0.0.1-rc.7</Version>
         <Authors>blaze6950</Authors>
         <Description>A .NET 9 library that provides high performance string enrichment functionalities with zero heap allocations building MarkdownV2 or HTML styled strings.</Description>
         <PackageReleaseNotes>Added more overload for the CompositeNodeExtensions allowing to fluently build complex strings with rich formatting with simple syntax</PackageReleaseNotes>

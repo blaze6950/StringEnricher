@@ -129,6 +129,28 @@ var string result = messageBuilder.Create(state, static (state, writer) =>
 }); // 1 final string allocated in heap without any intermediate allocations
 ```
 
+### `AutoMessageBuilder` for Fluent API
+This is a variant of `MessageBuilder` that automatically calculates the total length for you. It is less efficient than `MessageBuilder` because it requires two passes over the data: one to calculate the total length and another to build the final string. However, it is more convenient to use when you cannot pre-calculate the total length.
+But less efficient means it will do the execution of the build action twice internally, but with MessageBuilder you have to do it manually and explicitly. So, there is no huge performance difference.
+By using this builder you should be aware that if your build action has side effects, they will be executed twice. So, make sure your build action is idempotent and does not have any side effects. This is very important to avoid unexpected behavior.
+Also, it is required that your build action returns the correct total length of the final string. This is very important to ensure that the final string is built correctly and without any errors.
+```csharp
+var autoMessageBuilder = new AutoMessageBuilder();
+var state = ["Hello, ", "World! ", "Every ", "word ", "is ", "in ", "different ", "style&"];
+var string result = autoMessageBuilder.Create(state, static (state, writer) => 
+{
+    writer.Append(BoldHtml.Apply(state[0])); // "*Hello, *" - 0 heap allocations here
+    writer.Append(ItalicHtml.Apply(state[1])); // "_World! _" - 0 heap allocations here
+    writer.Append(UnderlineHtml.Apply(state[2])); // "__Every __" - 0 heap allocations here
+    writer.Append(StrikethroughHtml.Apply(state[3])); // "~word ~" - 0 heap allocations here
+    writer.Append(CodeHtml.Apply(state[4])); // "`is`" - 0 heap allocations here
+    writer.Append(BlockquoteHtml.Apply(state[5])); // "> different " - 0 heap allocations here
+    writer.Append(SpoilerHtml.Apply(state[6])); // "||style||" - 0 heap allocations here
+    writer.Append(EscapeHtml.Apply(state[7])); // "style&amp;" - 0 heap allocations here
+    return writer.TotalLength; // VERY IMPORTANT: return total length of the final string
+}); // 1 final string allocated in heap without any intermediate allocations
+```
+
 ## Using Aliases for Node via GlobalUsings.cs
 
 To simplify switching between HTML and MarkdownV2 styles across your project, you can use C# `using` aliases in a `GlobalUsings.cs` file. This allows you to reference style helpers (like `Bold`, `Italic`, etc.) generically, and change the underlying format by updating just one file.
@@ -196,7 +218,11 @@ This approach centralizes format selection, making it easy to switch formats for
 - MessageBuilder for fluent API and complex message construction at runtime.
   - Comprehensive support for primitive types and INode - see MessageBuilder.Append() overloads. Means you can append any primitive type directly without converting to string first.
   - Using MessageBuilder requires pre-calculation of the total length for the final string. This allows to build the entire message in a single final string allocation without intermediate allocations.
-  - If you cannot pre-calculate the total length, use StringBuilder or other approaches to build the message in multiple steps. This library is optimized for zero allocations only when the total length is known in advance.
+  - If you cannot pre-calculate the total length for some reason, use StringBuilder or other approaches to build the message in multiple steps. This library is optimized for zero allocations only when the total length is known in advance.
+- AutoMessageBuilder for fluent API when you want to avoid the explicit pre-calculation of the total length.
+  - "Less efficient" than MessageBuilder as it requires two passes over the data: one to calculate the total length and another to build the final string. But in practice, you just avoid the manual pre-calculation step. So, there is no huge performance difference.
+  - Make sure your build action is idempotent and does not have any side effects, as it will be executed twice internally.
+  - VERY IMPORTANT: Your build action must return the correct total length of the final string to ensure correct string construction.
 - Use `using` aliases in a `GlobalUsings.cs` file to easily switch between HTML and MarkdownV2 formats across your project.
 - Escape special characters using EscapeHtml or EscapeMarkdownV2 nodes.
   - Also, available as static methods: `HtmlEscaper.Escape(string)` and `MarkdownV2Escaper.Escape(string)`. But these create returns strings as the result, while nodes provides lazy evaluation and zero allocations until the final string is created. So prefer nodes over static methods when possible.
