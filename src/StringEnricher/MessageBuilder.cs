@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using StringEnricher.Helpers.Shared;
 using StringEnricher.Nodes;
 
 namespace StringEnricher;
@@ -92,29 +93,16 @@ public readonly struct MessageBuilder
         }
 
         /// <summary>
-        /// Appends the specified text to the message.
-        /// This method copies the text to the end.
+        /// Appends the content of the specified StringBuilder to the message.
+        /// This method copies the content of the StringBuilder to the end.
         /// </summary>
-        /// <param name="text">
-        /// The text to append to the message.
+        /// <param name="stringBuilder">
+        /// The StringBuilder whose content will be appended to the message.
         /// </param>
-        public MessageWriter Append(string text)
+        public MessageWriter Append(StringBuilder stringBuilder)
         {
-            text.AsSpan().CopyTo(_destination[_position..]);
-            _position += text.Length;
-            return this;
-        }
-
-        /// <summary>
-        /// Appends a single character to the message.
-        /// This method copies the character to the end.
-        /// </summary>
-        /// <param name="ch">
-        /// The character to append to the message.
-        /// </param>
-        public MessageWriter Append(char ch)
-        {
-            _destination[_position++] = ch;
+            stringBuilder.CopyTo(0, _destination.Slice(_position, stringBuilder.Length), stringBuilder.Length);
+            _position += stringBuilder.Length;
             return this;
         }
 
@@ -149,10 +137,28 @@ public readonly struct MessageBuilder
         }
 
         /// <summary>
+        /// Appends the specified text to the message.
+        /// This method copies the text to the end.
+        /// </summary>
+        /// <param name="value">
+        /// The text to append to the message.
+        /// </param>
+        public MessageWriter Append(string value) => Append(value.ToNode());
+
+        /// <summary>
+        /// Appends a single character to the message.
+        /// This method copies the character to the end.
+        /// </summary>
+        /// <param name="value">
+        /// The character to append to the message.
+        /// </param>
+        public MessageWriter Append(char value) => Append(value.ToNode());
+
+        /// <summary>
         /// Appends the string representation of the specified integer to the message.
         /// This method formats the integer and copies it to the end.
         /// </summary>
-        /// <param name="number">
+        /// <param name="value">
         /// The integer to append to the message.
         /// </param>
         /// <param name="format">
@@ -166,23 +172,14 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the integer could not be formatted into the destination span.
         /// </exception>
-        public MessageWriter Append(int number, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-        {
-            var written = number.TryFormat(_destination[_position..], out var charsWritten, format, provider);
-            if (!written)
-            {
-                throw new InvalidOperationException("Failed to format the number.");
-            }
-
-            _position += charsWritten;
-            return this;
-        }
+        public MessageWriter Append(int value, string? format = null, IFormatProvider? provider = null) =>
+            Append(value.ToNode(format, provider));
 
         /// <summary>
         /// Appends the string representation of the specified long integer to the message.
         /// This method formats the long integer and copies it to the end.
         /// </summary>
-        /// <param name="number">
+        /// <param name="value">
         /// The long integer to append to the message.
         /// </param>
         /// <param name="format">
@@ -196,23 +193,14 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the long integer could not be formatted into the destination span.
         /// </exception>
-        public MessageWriter Append(long number, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-        {
-            var written = number.TryFormat(_destination[_position..], out var charsWritten, format, provider);
-            if (!written)
-            {
-                throw new InvalidOperationException("Failed to format the number.");
-            }
-
-            _position += charsWritten;
-            return this;
-        }
+        public MessageWriter Append(long value, string? format = null, IFormatProvider? provider = null) =>
+            Append(value.ToNode(format, provider));
 
         /// <summary>
         /// Appends the string representation of the specified double to the message.
         /// This method formats the double and copies it to the end.
         /// </summary>
-        /// <param name="number">
+        /// <param name="value">
         /// The double to append to the message.
         /// </param>
         /// <param name="format">
@@ -226,23 +214,14 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the double could not be formatted into the destination span.
         /// </exception>
-        public MessageWriter Append(double number, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-        {
-            var written = number.TryFormat(_destination[_position..], out var charsWritten, format, provider);
-            if (!written)
-            {
-                throw new InvalidOperationException("Failed to format the number.");
-            }
-
-            _position += charsWritten;
-            return this;
-        }
+        public MessageWriter Append(double value, string? format = null, IFormatProvider? provider = null) =>
+            Append(value.ToNode(format, provider));
 
         /// <summary>
         /// Appends the string representation of the specified float to the message.
         /// This method formats the float and copies it to the end.
         /// </summary>
-        /// <param name="number">
+        /// <param name="value">
         /// The float to append to the message.
         /// </param>
         /// <param name="format">
@@ -256,23 +235,14 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the float could not be formatted into the destination span.
         /// </exception>
-        public MessageWriter Append(float number, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-        {
-            var written = number.TryFormat(_destination[_position..], out var charsWritten, format, provider);
-            if (!written)
-            {
-                throw new InvalidOperationException("Failed to format the number.");
-            }
-
-            _position += charsWritten;
-            return this;
-        }
+        public MessageWriter Append(float value, string? format = null, IFormatProvider? provider = null) =>
+            Append(value.ToNode(format, provider));
 
         /// <summary>
         /// Appends the string representation of the specified decimal to the message.
         /// This method formats the decimal and copies it to the end.
         /// </summary>
-        /// <param name="number">
+        /// <param name="value">
         /// The decimal to append to the message.
         /// </param>
         /// <param name="format">
@@ -286,17 +256,8 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the decimal could not be formatted into the destination span.
         /// </exception>
-        public MessageWriter Append(decimal number, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-        {
-            var written = number.TryFormat(_destination[_position..], out var charsWritten, format, provider);
-            if (!written)
-            {
-                throw new InvalidOperationException("Failed to format the number.");
-            }
-
-            _position += charsWritten;
-            return this;
-        }
+        public MessageWriter Append(decimal value, string? format = null, IFormatProvider? provider = null) =>
+            Append(value.ToNode(format, provider));
 
         /// <summary>
         /// Appends the string representation of the specified boolean to the message.
@@ -308,23 +269,13 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the boolean could not be formatted into the destination span.
         /// </exception>
-        public MessageWriter Append(bool value)
-        {
-            var written = value.TryFormat(_destination[_position..], out var charsWritten);
-            if (!written)
-            {
-                throw new InvalidOperationException("Failed to format the boolean value.");
-            }
-
-            _position += charsWritten;
-            return this;
-        }
+        public MessageWriter Append(bool value) => Append(value.ToNode());
 
         /// <summary>
         /// Appends the string representation of the specified DateTime to the message.
         /// This method formats the DateTime and copies it to the end.
         /// </summary>
-        /// <param name="dateTime">
+        /// <param name="value">
         /// The DateTime to append to the message.
         /// </param>
         /// <param name="format">
@@ -338,23 +289,14 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the DateTime could not be formatted into the destination span.
         /// </exception>
-        public MessageWriter Append(DateTime dateTime, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-        {
-            var written = dateTime.TryFormat(_destination[_position..], out var charsWritten, format, provider);
-            if (!written)
-            {
-                throw new InvalidOperationException("Failed to format the DateTime.");
-            }
-
-            _position += charsWritten;
-            return this;
-        }
+        public MessageWriter Append(DateTime value, string? format = null, IFormatProvider? provider = null) =>
+            Append(value.ToNode(format, provider));
 
         /// <summary>
         /// Appends the string representation of the specified DateTimeOffset to the message.
         /// This method formats the DateTimeOffset and copies it to the end.
         /// </summary>
-        /// <param name="dateTimeOffset">
+        /// <param name="value">
         /// The DateTimeOffset to append to the message.
         /// </param>
         /// <param name="format">
@@ -368,24 +310,14 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the DateTimeOffset could not be formatted into the destination span.
         /// </exception>
-        public MessageWriter Append(DateTimeOffset dateTimeOffset, ReadOnlySpan<char> format = default,
-            IFormatProvider? provider = null)
-        {
-            var written = dateTimeOffset.TryFormat(_destination[_position..], out var charsWritten, format, provider);
-            if (!written)
-            {
-                throw new InvalidOperationException("Failed to format the DateTimeOffset.");
-            }
-
-            _position += charsWritten;
-            return this;
-        }
+        public MessageWriter Append(DateTimeOffset value, string? format = null, IFormatProvider? provider = null) =>
+            Append(value.ToNode(format, provider));
 
         /// <summary>
         /// Appends the string representation of the specified Guid to the message.
         /// This method formats the Guid and copies it to the end.
         /// </summary>
-        /// <param name="guid">
+        /// <param name="value">
         /// The Guid to append to the message.
         /// </param>
         /// <param name="format">
@@ -395,23 +327,13 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the Guid could not be formatted into the destination span.
         /// </exception>
-        public MessageWriter Append(Guid guid, ReadOnlySpan<char> format = default)
-        {
-            var written = guid.TryFormat(_destination[_position..], out var charsWritten, format);
-            if (!written)
-            {
-                throw new InvalidOperationException("Failed to format the Guid.");
-            }
-
-            _position += charsWritten;
-            return this;
-        }
+        public MessageWriter Append(Guid value, string? format = null) => Append(value.ToNode(format));
 
         /// <summary>
         /// Appends the string representation of the specified TimeSpan to the message.
         /// This method formats the TimeSpan and copies it to the end.
         /// </summary>
-        /// <param name="timeSpan">
+        /// <param name="value">
         /// The TimeSpan to append to the message.
         /// </param>
         /// <param name="format">
@@ -425,23 +347,14 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the TimeSpan could not be formatted into the destination span.
         /// </exception>
-        public MessageWriter Append(TimeSpan timeSpan, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-        {
-            var written = timeSpan.TryFormat(_destination[_position..], out var charsWritten, format, provider);
-            if (!written)
-            {
-                throw new InvalidOperationException("Failed to format the TimeSpan.");
-            }
-
-            _position += charsWritten;
-            return this;
-        }
+        public MessageWriter Append(TimeSpan value, string? format = null, IFormatProvider? provider = null) =>
+            Append(value.ToNode(format, provider));
 
         /// <summary>
         /// Appends the string representation of the specified DateOnly to the message.
         /// This method formats the DateOnly and copies it to the end.
         /// </summary>
-        /// <param name="dateOnly">
+        /// <param name="value">
         /// The DateOnly to append to the message.
         /// </param>
         /// <param name="format">
@@ -455,23 +368,14 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the DateOnly could not be formatted into the destination span.
         /// </exception>
-        public MessageWriter Append(DateOnly dateOnly, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-        {
-            var written = dateOnly.TryFormat(_destination[_position..], out var charsWritten, format, provider);
-            if (!written)
-            {
-                throw new InvalidOperationException("Failed to format the DateOnly.");
-            }
-
-            _position += charsWritten;
-            return this;
-        }
+        public MessageWriter Append(DateOnly value, string? format = null, IFormatProvider? provider = null) =>
+            Append(value.ToNode(format, provider));
 
         /// <summary>
         /// Appends the string representation of the specified TimeOnly to the message.
         /// This method formats the TimeOnly and copies it to the end.
         /// </summary>
-        /// <param name="timeOnly">
+        /// <param name="value">
         /// The TimeOnly to append to the message.
         /// </param>
         /// <param name="format">
@@ -485,30 +389,7 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the TimeOnly could not be formatted into the destination span.
         /// </exception>
-        public MessageWriter Append(TimeOnly timeOnly, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-        {
-            var written = timeOnly.TryFormat(_destination[_position..], out var charsWritten, format, provider);
-            if (!written)
-            {
-                throw new InvalidOperationException("Failed to format the TimeOnly.");
-            }
-
-            _position += charsWritten;
-            return this;
-        }
-
-        /// <summary>
-        /// Appends the content of the specified StringBuilder to the message.
-        /// This method copies the content of the StringBuilder to the end.
-        /// </summary>
-        /// <param name="stringBuilder">
-        /// The StringBuilder whose content will be appended to the message.
-        /// </param>
-        public MessageWriter Append(StringBuilder stringBuilder)
-        {
-            stringBuilder.CopyTo(0, _destination.Slice(_position, stringBuilder.Length), stringBuilder.Length);
-            _position += stringBuilder.Length;
-            return this;
-        }
+        public MessageWriter Append(TimeOnly value, string? format = null, IFormatProvider? provider = null) =>
+            Append(value.ToNode(format, provider));
     }
 }
