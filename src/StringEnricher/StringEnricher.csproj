@@ -13,6 +13,7 @@
         <PackageTags>string;enrich;dotnet9;formatting;markdown;html;high-performance;zero-allocations</PackageTags>
         <RepositoryUrl>https://github.com/blaze6950/StringEnricher</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     </PropertyGroup>
 
 </Project>
