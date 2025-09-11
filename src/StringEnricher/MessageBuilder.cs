@@ -99,11 +99,10 @@ public readonly struct MessageBuilder
         /// <param name="stringBuilder">
         /// The StringBuilder whose content will be appended to the message.
         /// </param>
-        public MessageWriter Append(StringBuilder stringBuilder)
+        public void Append(StringBuilder stringBuilder)
         {
             stringBuilder.CopyTo(0, _destination.Slice(_position, stringBuilder.Length), stringBuilder.Length);
             _position += stringBuilder.Length;
-            return this;
         }
 
         /// <summary>
@@ -113,11 +112,10 @@ public readonly struct MessageBuilder
         /// <param name="span">
         /// The span of characters to append to the message.
         /// </param>
-        public MessageWriter Append(ReadOnlySpan<char> span)
+        public void Append(ReadOnlySpan<char> span)
         {
             span.CopyTo(_destination.Slice(_position, span.Length));
             _position += span.Length;
-            return this;
         }
 
         /// <summary>
@@ -130,10 +128,9 @@ public readonly struct MessageBuilder
         /// <typeparam name="TNode">
         /// The type of the node to append. Must implement <see cref="INode"/>.
         /// </typeparam>
-        public MessageWriter Append<TNode>(TNode node) where TNode : struct, INode
+        public void Append<TNode>(TNode node) where TNode : struct, INode
         {
             _position += node.CopyTo(_destination[_position..]);
-            return this;
         }
 
         /// <summary>
@@ -143,7 +140,7 @@ public readonly struct MessageBuilder
         /// <param name="value">
         /// The text to append to the message.
         /// </param>
-        public MessageWriter Append(string value) => Append(value.ToNode());
+        public void Append(string value) => Append(value.ToNode());
 
         /// <summary>
         /// Appends a single character to the message.
@@ -152,7 +149,7 @@ public readonly struct MessageBuilder
         /// <param name="value">
         /// The character to append to the message.
         /// </param>
-        public MessageWriter Append(char value) => Append(value.ToNode());
+        public void Append(char value) => Append(value.ToNode());
 
         /// <summary>
         /// Appends the string representation of the specified integer to the message.
@@ -172,7 +169,7 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the integer could not be formatted into the destination span.
         /// </exception>
-        public MessageWriter Append(int value, string? format = null, IFormatProvider? provider = null) =>
+        public void Append(int value, string? format = null, IFormatProvider? provider = null) =>
             Append(value.ToNode(format, provider));
 
         /// <summary>
@@ -193,7 +190,7 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the long integer could not be formatted into the destination span.
         /// </exception>
-        public MessageWriter Append(long value, string? format = null, IFormatProvider? provider = null) =>
+        public void Append(long value, string? format = null, IFormatProvider? provider = null) =>
             Append(value.ToNode(format, provider));
 
         /// <summary>
@@ -214,7 +211,7 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the double could not be formatted into the destination span.
         /// </exception>
-        public MessageWriter Append(double value, string? format = null, IFormatProvider? provider = null) =>
+        public void Append(double value, string? format = null, IFormatProvider? provider = null) =>
             Append(value.ToNode(format, provider));
 
         /// <summary>
@@ -235,7 +232,7 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the float could not be formatted into the destination span.
         /// </exception>
-        public MessageWriter Append(float value, string? format = null, IFormatProvider? provider = null) =>
+        public void Append(float value, string? format = null, IFormatProvider? provider = null) =>
             Append(value.ToNode(format, provider));
 
         /// <summary>
@@ -256,7 +253,7 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the decimal could not be formatted into the destination span.
         /// </exception>
-        public MessageWriter Append(decimal value, string? format = null, IFormatProvider? provider = null) =>
+        public void Append(decimal value, string? format = null, IFormatProvider? provider = null) =>
             Append(value.ToNode(format, provider));
 
         /// <summary>
@@ -269,7 +266,7 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the boolean could not be formatted into the destination span.
         /// </exception>
-        public MessageWriter Append(bool value) => Append(value.ToNode());
+        public void Append(bool value) => Append(value.ToNode());
 
         /// <summary>
         /// Appends the string representation of the specified DateTime to the message.
@@ -289,7 +286,7 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the DateTime could not be formatted into the destination span.
         /// </exception>
-        public MessageWriter Append(DateTime value, string? format = null, IFormatProvider? provider = null) =>
+        public void Append(DateTime value, string? format = null, IFormatProvider? provider = null) =>
             Append(value.ToNode(format, provider));
 
         /// <summary>
@@ -310,7 +307,7 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the DateTimeOffset could not be formatted into the destination span.
         /// </exception>
-        public MessageWriter Append(DateTimeOffset value, string? format = null, IFormatProvider? provider = null) =>
+        public void Append(DateTimeOffset value, string? format = null, IFormatProvider? provider = null) =>
             Append(value.ToNode(format, provider));
 
         /// <summary>
@@ -327,7 +324,7 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the Guid could not be formatted into the destination span.
         /// </exception>
-        public MessageWriter Append(Guid value, string? format = null) => Append(value.ToNode(format));
+        public void Append(Guid value, string? format = null) => Append(value.ToNode(format));
 
         /// <summary>
         /// Appends the string representation of the specified TimeSpan to the message.
@@ -347,7 +344,7 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the TimeSpan could not be formatted into the destination span.
         /// </exception>
-        public MessageWriter Append(TimeSpan value, string? format = null, IFormatProvider? provider = null) =>
+        public void Append(TimeSpan value, string? format = null, IFormatProvider? provider = null) =>
             Append(value.ToNode(format, provider));
 
         /// <summary>
@@ -368,7 +365,7 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the DateOnly could not be formatted into the destination span.
         /// </exception>
-        public MessageWriter Append(DateOnly value, string? format = null, IFormatProvider? provider = null) =>
+        public void Append(DateOnly value, string? format = null, IFormatProvider? provider = null) =>
             Append(value.ToNode(format, provider));
 
         /// <summary>
@@ -389,7 +386,7 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the TimeOnly could not be formatted into the destination span.
         /// </exception>
-        public MessageWriter Append(TimeOnly value, string? format = null, IFormatProvider? provider = null) =>
+        public void Append(TimeOnly value, string? format = null, IFormatProvider? provider = null) =>
             Append(value.ToNode(format, provider));
     }
 }

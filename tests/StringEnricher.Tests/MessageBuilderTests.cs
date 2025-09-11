@@ -31,10 +31,12 @@ public class MessageBuilderTests
         var builder = new MessageBuilder(totalLength);
 
         // Act
-        var result = builder.Create((part1, part2, part3), static (state, writer) => writer
-            .Append(state.part1)
-            .Append(state.part2)
-            .Append(state.part3));
+        var result = builder.Create((part1, part2, part3), static (state, writer) =>
+        {
+            writer.Append(state.part1);
+            writer.Append(state.part2);
+            writer.Append(state.part3);
+        });
 
         // Assert
         Assert.Equal("Hello, World!", result);
@@ -52,10 +54,12 @@ public class MessageBuilderTests
         var builder = new MessageBuilder(totalLength);
 
         // Act
-        var result = builder.Create((prefix, boldNode, suffix), static (state, writer) => writer
-            .Append(state.prefix)
-            .Append(state.boldNode)
-            .Append(state.suffix));
+        var result = builder.Create((prefix, boldNode, suffix), static (state, writer) =>
+        {
+            writer.Append(state.prefix);
+            writer.Append(state.boldNode);
+            writer.Append(state.suffix);
+        });
 
         // Assert
         Assert.Equal("This is *bold* text!", result);
@@ -128,10 +132,12 @@ public class MessageBuilderTests
         var builder = new MessageBuilder(3);
 
         // Act
-        var result = builder.Create(('A', 'B', 'C'), static (chars, writer) => writer
-            .Append(chars.Item1)
-            .Append(chars.Item2)
-            .Append(chars.Item3));
+        var result = builder.Create(('A', 'B', 'C'), static (chars, writer) =>
+        {
+            writer.Append(chars.Item1);
+            writer.Append(chars.Item2);
+            writer.Append(chars.Item3);
+        });
 
         // Assert
         Assert.Equal("ABC", result);
@@ -147,9 +153,11 @@ public class MessageBuilderTests
         var builder = new MessageBuilder(totalLength);
 
         // Act
-        var result = builder.Create((string1, string2), static (spans, writer) => writer
-            .Append(spans.string1.AsSpan())
-            .Append(spans.string2.AsSpan()));
+        var result = builder.Create((string1, string2), static (spans, writer) =>
+        {
+            writer.Append(spans.string1.AsSpan());
+            writer.Append(spans.string2.AsSpan());
+        });
 
         // Assert
         Assert.Equal("Hello, World!", result);
@@ -164,11 +172,13 @@ public class MessageBuilderTests
         var builder = new MessageBuilder(expectedText.Length);
 
         // Act
-        var result = builder.Create(state, static (s, writer) => writer
-            .Append("Name: ")
-            .Append(s.Name)
-            .Append(", Age: ")
-            .Append(s.Age, provider: CultureInfo.InvariantCulture));
+        var result = builder.Create(state, static (s, writer) =>
+        {
+            writer.Append("Name: ");
+            writer.Append(s.Name);
+            writer.Append(", Age: ");
+            writer.Append(s.Age, provider: CultureInfo.InvariantCulture);
+        });
 
         // Assert
         Assert.Equal(expectedText, result);
@@ -549,16 +559,18 @@ public class MessageBuilderTests
         var builder = new MessageBuilder(expectedResult.Length);
 
         // Act
-        var result = builder.Create((intValue, doubleValue, boolValue, guid, date), static (state, writer) => writer
-            .Append(state.intValue, provider: CultureInfo.InvariantCulture)
-            .Append(' ')
-            .Append(state.doubleValue, provider: CultureInfo.InvariantCulture)
-            .Append(' ')
-            .Append(state.boolValue)
-            .Append(' ')
-            .Append(state.guid)
-            .Append(' ')
-            .Append(state.date, "yyyy-MM-dd", CultureInfo.InvariantCulture));
+        var result = builder.Create((intValue, doubleValue, boolValue, guid, date), static (state, writer) =>
+        {
+            writer.Append(state.intValue, provider: CultureInfo.InvariantCulture);
+            writer.Append(' ');
+            writer.Append(state.doubleValue, provider: CultureInfo.InvariantCulture);
+            writer.Append(' ');
+            writer.Append(state.boolValue);
+            writer.Append(' ');
+            writer.Append(state.guid);
+            writer.Append(' ');
+            writer.Append(state.date, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+        });
 
         // Assert
         Assert.Equal(expectedResult, result);
@@ -576,12 +588,14 @@ public class MessageBuilderTests
         var builder = new MessageBuilder(expectedResult.Length);
 
         // Act
-        var result = builder.Create((negInt, negDouble, negLong), static (state, writer) => writer
-            .Append(state.negInt, provider: CultureInfo.InvariantCulture)
-            .Append(' ')
-            .Append(state.negDouble, provider: CultureInfo.InvariantCulture)
-            .Append(' ')
-            .Append(state.negLong, provider: CultureInfo.InvariantCulture));
+        var result = builder.Create((negInt, negDouble, negLong), static (state, writer) =>
+        {
+            writer.Append(state.negInt, provider: CultureInfo.InvariantCulture);
+            writer.Append(' ');
+            writer.Append(state.negDouble, provider: CultureInfo.InvariantCulture);
+            writer.Append(' ');
+            writer.Append(state.negLong, provider: CultureInfo.InvariantCulture);
+        });
 
         // Assert
         Assert.Equal(expectedResult, result);
@@ -633,10 +647,12 @@ public class MessageBuilderTests
         var builder = new MessageBuilder(totalLength);
 
         // Act
-        var result = builder.Create((prefix, stringBuilder, suffix), static (state, writer) => writer
-            .Append(state.prefix)
-            .Append(state.stringBuilder)
-            .Append(state.suffix));
+        var result = builder.Create((prefix, stringBuilder, suffix), static (state, writer) =>
+        {
+            writer.Append(state.prefix);
+            writer.Append(state.stringBuilder);
+            writer.Append(state.suffix);
+        });
 
         // Assert
         Assert.Equal("Prefix: StringBuilder content - Suffix", result);
@@ -673,10 +689,12 @@ public class MessageBuilderTests
         var builder = new MessageBuilder(totalLength);
 
         // Act
-        var result = builder.Create((sb1, sb2, sb3), static (state, writer) => writer
-            .Append(state.sb1)
-            .Append(state.sb2)
-            .Append(state.sb3));
+        var result = builder.Create((sb1, sb2, sb3), static (state, writer) =>
+        {
+            writer.Append(state.sb1);
+            writer.Append(state.sb2);
+            writer.Append(state.sb3);
+        });
 
         // Assert
         Assert.Equal("First Second Third", result);
