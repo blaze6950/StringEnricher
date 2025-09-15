@@ -464,6 +464,24 @@ public readonly struct AutoMessageBuilder
         /// </exception>
         public void Append(TimeOnly value, string? format = null, IFormatProvider? provider = null) =>
             Append(value.ToNode(format, provider));
+
+        /// <summary>
+        /// Appends a sequence of strings to the message, separated by the specified separator.
+        /// This method copies each string and the separator to the end.
+        /// If the separator is empty, the strings are appended without any separation.
+        /// If the values collection is null or empty, no action is taken.
+        /// </summary>
+        /// <param name="values">
+        /// The collection of strings to append to the message.
+        /// If null or empty, no action is taken.
+        /// </param>
+        /// <param name="separator">
+        /// An optional separator string to insert between each value.
+        /// If null or empty, the values are appended without any separation.
+        /// Default is null.
+        /// </param>
+        public void AppendJoin<TCollection>(TCollection values, string? separator = null)
+            where TCollection : IReadOnlyList<string> => Append(values.ToNode(separator));
     }
 }
 
