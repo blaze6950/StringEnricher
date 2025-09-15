@@ -176,6 +176,50 @@ public class CompleteStyledStringBuildingBenchmarks
     }
 
     [Benchmark]
+    public string BuildStringWithNodesAutoMessageBuilderBased()
+    {
+        var autoMessageBuilder = new AutoMessageBuilder();
+
+        // Create string with exact capacity and write directly to span
+        return autoMessageBuilder.Create(Strings, static (strings, context) =>
+        {
+            for (var i = 0; i < strings.Length - 1; i++)
+            {
+                var node = BoldMarkdownV2.Apply(UnderlineMarkdownV2.Apply(strings[i]));
+                context.Append(node);
+                context.Append(' ');
+            }
+
+            // Add last string without space
+            var lastNode = BoldMarkdownV2.Apply(UnderlineMarkdownV2.Apply(strings[^1]));
+            context.Append(lastNode);
+            return context.Length;
+        });
+    }
+
+    [Benchmark]
+    public string BuildStringWithNodesAutoMessageBuilderWithNotStaticLambdaBased()
+    {
+        var autoMessageBuilder = new AutoMessageBuilder();
+
+        // Create string with exact capacity and write directly to span
+        return autoMessageBuilder.Create(Strings, (strings, context) =>
+        {
+            for (var i = 0; i < strings.Length - 1; i++)
+            {
+                var node = BoldMarkdownV2.Apply(UnderlineMarkdownV2.Apply(strings[i]));
+                context.Append(node);
+                context.Append(' ');
+            }
+
+            // Add last string without space
+            var lastNode = BoldMarkdownV2.Apply(UnderlineMarkdownV2.Apply(strings[^1]));
+            context.Append(lastNode);
+            return context.Length;
+        });
+    }
+
+    [Benchmark]
     public string BuildStringWithNodesSpanBasedCustomLengthCalculation()
     {
         // Most allocation-free approach: calculate total length first
