@@ -151,6 +151,46 @@ var string result = autoMessageBuilder.Create(state, static (state, writer) =>
 }); // 1 final string allocated in heap without any intermediate allocations
 ```
 
+### `TextCollectionNode<TCollection>` for Joining Collections of Plain Text
+The `TextCollectionNode<TCollection>` struct enables efficient joining of a collection of plain text strings, optionally separated by a custom separator, with zero intermediate allocations until the final string is created. This is especially useful for scenarios where you need to concatenate multiple strings (such as words, phrases, or values) into a single message.
+
+```csharp
+var words = new[] { "one", "two", "three" };
+var joinedNode = new TextCollectionNode<IReadOnlyList<string>>(words, ", "); // OR words.ToNode(", ") // 0 heap allocations here
+var result = joinedNode.ToString(); // 1 final string heap allocation here
+// result == "one, two, three"
+```
+
+#### Integration with other Nodes
+You can easily integrate TextCollectionNode with other nodes to apply styles to the entire collection of joined strings. For example, you can join a collection of words with a comma separator and then apply bold styling to the entire result:
+```csharp
+var words = new[] { "one", "two", "three" };
+var joinedNode = new TextCollectionNode<IReadOnlyList<string>>(words, ", "); // OR words.ToNode(", ") // 0 heap allocations here
+var styledNode = BoldHtml.Apply(joinedNode); // 0 heap allocations here
+var result = styledNode.ToString(); // 1 final string heap allocation here
+// result == "<b>one, two, three</b>"
+```
+
+#### Integration with `MessageBuilder` and `AutoMessageBuilder`
+You can use the `AppendJoin` method available on the `MessageWriter` of both `MessageBuilder` and `AutoMessageBuilder` to append a collection of strings in a single pass:
+
+```csharp
+var words = new[] { "one", "two", "three" };
+var builder = new MessageBuilder(13); // "one, two, three" length
+var result = builder.Create(words, static (state, writer) =>
+{
+    writer.AppendJoin(state, ", ");
+});
+// result == "one, two, three"
+```
+
+- No intermediate allocations: The joining is performed directly into the destination buffer.
+- Works with any IReadOnlyList<string>: Arrays, lists, etc.
+- Separator is optional: If omitted or empty, strings are joined without separation.
+- Zero allocations until final string: Only the final result is allocated.
+
+> Note: You do not need to instantiate TextCollectionNode directly. Just use writer.AppendJoin(values, separator).
+
 ## Using Aliases for Node via GlobalUsings.cs
 
 To simplify switching between HTML and MarkdownV2 styles across your project, you can use C# `using` aliases in a `GlobalUsings.cs` file. This allows you to reference style helpers (like `Bold`, `Italic`, etc.) generically, and change the underlying format by updating just one file.
