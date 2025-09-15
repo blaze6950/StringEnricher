@@ -235,7 +235,7 @@ global using TgEmoji = StringEnricher.Helpers.MarkdownV2.TgEmojiMarkdownV2;
 global using Escape = StringEnricher.Helpers.MarkdownV2.EscapeMarkdownV2;
 ```
 
-### Usage in Your Code
+#### Usage in Your Code
 ```csharp
 var styled = Bold.Apply(
     Italic.Apply("important text") // 0 heap allocations here
@@ -246,6 +246,61 @@ var styledString = styled.ToString(); // 1 final string heap allocation here
 ```
 
 This approach centralizes format selection, making it easy to switch formats for the entire project by editing only `GlobalUsings.cs`.
+
+### Using Nodes with `StringBuilder`
+You can also use the nodes with `StringBuilder` for scenarios where you want to build strings in multiple steps. Here's how you can do it:
+
+```csharp
+var sb = new StringBuilder(); // initial StringBuilder allocation here
+sb.Append("This is ");
+sb.AppendNode(Bold.Apply("bold text")); // 0 heap allocations here
+sb.Append(" and this is ");
+sb.AppendNode(Italic.Apply("italic text")); // 0 heap allocations here
+sb.Append(".");
+var result = sb.ToString(); // 1 final string heap allocation here
+// result == "This is <b>bold text</b> and this is <italic text</i>."
+```
+
+This approach allows you to leverage the power of StringEnricher nodes while still using the familiar `StringBuilder` for string construction.
+From performance perspective, this is less optimal than using `MessageBuilder` or `AutoMessageBuilder` when the total length is known in advance, as it may involve multiple allocations and copies. However, it provides flexibility for scenarios where the string is built in a more dynamic manner.
+Nodes are designed to be zero-allocation until the final string creation, so using them with `StringBuilder` still benefits from that design.
+
+#### ADVANCED: Performance tuning the `StringBuilder` approach
+
+### ADVANCED: StringEnricher performance tuning
+The `StringEnricherSettings` class provides centralized configuration for the StringEnricher library, allowing fine-tuning of performance and memory usage. It is a static class, meaning all settings are global and affect the entire application. The class is designed to be configured at application startup, before any StringEnricher functionality is used.
+
+Key Features:
+- Sealing Mechanism: Once configuration is complete, calling Seal() prevents further modifications. Any attempt to change settings after sealing throws an InvalidOperationException. This ensures runtime safety and prevents accidental misconfiguration.
+- Debug Logging: The EnableDebugLogs property toggles detailed debug output for diagnostic purposes.
+- Extension Settings: The nested Extensions.StringBuilder class exposes advanced options for string building optimizations:
+   - MaxStackAllocLength: Controls the maximum node length for stack allocation, balancing performance and stack usage. Strict validation prevents unsafe values.
+   - MaxPooledArrayLength: Sets the maximum node length for array pooling, reducing heap allocations and GC pressure. Also, strictly validated.
+
+Usage Guidelines:
+- Configure all settings at the start of your application.
+- Call `Seal()` after initial configuration to lock settings.
+- Adjust extension settings only if you understand the performance and memory implications. Default values are recommended for most scenarios.
+- Use debug logging to monitor configuration changes and warnings about potentially suboptimal values.
+
+Example usage:
+```csharp
+// Configure settings at startup
+StringEnricherSettings.EnableDebugLogs = true;
+StringEnricherSettings.Extensions.StringBuilder.MaxStackAllocLength = 1024;
+StringEnricherSettings.Extensions.StringBuilder.MaxPooledArrayLength = 2_000_000;
+
+// Seal settings to prevent further changes
+StringEnricherSettings.Seal();
+```
+
+Best Practices:
+- Do not modify settings after sealing.
+- Avoid extreme values for stack and pooled array lengths to prevent stack overflow or excessive memory usage.
+- Use debug logs to catch configuration warnings early.
+- Always test thoroughly if you change defaults.
+
+This class is intended for advanced users who need to optimize StringEnricher for specific workloads. For most use cases, the default settings provide a safe and efficient balance.
 
 ## Notes
 - Prefer .CopyTo() for zero allocations.
@@ -258,11 +313,20 @@ This approach centralizes format selection, making it easy to switch formats for
 - MessageBuilder for fluent API and complex message construction at runtime.
   - Comprehensive support for primitive types and INode - see MessageBuilder.Append() overloads. Means you can append any primitive type directly without converting to string first.
   - Using MessageBuilder requires pre-calculation of the total length for the final string. This allows to build the entire message in a single final string allocation without intermediate allocations.
-  - If you cannot pre-calculate the total length for some reason, use StringBuilder or other approaches to build the message in multiple steps. This library is optimized for zero allocations only when the total length is known in advance.
 - AutoMessageBuilder for fluent API when you want to avoid the explicit pre-calculation of the total length.
   - "Less efficient" than MessageBuilder as it requires two passes over the data: one to calculate the total length and another to build the final string. But in practice, you just avoid the manual pre-calculation step. So, there is no huge performance difference.
   - Make sure your build action is idempotent and does not have any side effects, as it will be executed twice internally.
   - VERY IMPORTANT: Your build action must return the correct total length of the final string to ensure correct string construction.
+- Utilize the System.Text.StringBuilder integration for scenarios where you need to build strings in multiple steps.
+  - Less optimal than MessageBuilder or AutoMessageBuilder when total length is known in advance, as it may involve multiple allocations and copies.
+  - Provides flexibility for dynamic string construction.
+  - Nodes are designed to be zero-allocation until the final string creation, so using them with StringBuilder still benefits from that design.
+- ADVANCED: Use `StringEnricherSettings` for performance tuning and configuration.
+  - Configure settings at application startup before using any StringEnricher functionality.
+  - Call `Seal()` after initial configuration to lock settings and prevent further changes.
+  - Adjust extension settings only if you understand the performance and memory implications. Default values are recommended for most scenarios.
+  - Use debug logging to monitor configuration changes and warnings about potentially suboptimal values.
+  - WARNING: If you don't know what you are doing, do not change the default values. If you change them, make sure to test thoroughly.
 - Use `using` aliases in a `GlobalUsings.cs` file to easily switch between HTML and MarkdownV2 formats across your project.
 - Escape special characters using EscapeHtml or EscapeMarkdownV2 nodes.
   - Also, available as static methods: `HtmlEscaper.Escape(string)` and `MarkdownV2Escaper.Escape(string)`. But these create returns strings as the result, while nodes provides lazy evaluation and zero allocations until the final string is created. So prefer nodes over static methods when possible.
