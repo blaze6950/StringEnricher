@@ -718,4 +718,363 @@ public class MessageBuilderTests
         // Assert
         Assert.Equal("Hello 🌍 World! Japanese: こんにちは Emoji: 🚀✨💫", result);
     }
+
+    #region AppendJoin Tests
+
+    [Fact]
+    public void AppendJoin_WithMultipleStringsAndNoSeparator_ConcatenatesStrings()
+    {
+        // Arrange
+        var strings = new[] { "Hello", "World", "Test" };
+        var expectedResult = "HelloWorldTest";
+        var builder = new MessageBuilder(expectedResult.Length);
+
+        // Act
+        var result = builder.Create(strings, static (stringArray, writer) =>
+        {
+            writer.AppendJoin(stringArray);
+        });
+
+        // Assert
+        Assert.Equal(expectedResult, result);
+    }
+
+    [Fact]
+    public void AppendJoin_WithMultipleStringsAndSeparator_ConcatenatesWithSeparator()
+    {
+        // Arrange
+        var strings = new[] { "Apple", "Banana", "Cherry" };
+        var expectedResult = "Apple, Banana, Cherry";
+        var builder = new MessageBuilder(expectedResult.Length);
+
+        // Act
+        var result = builder.Create(strings, static (stringArray, writer) =>
+        {
+            writer.AppendJoin(stringArray, ", ");
+        });
+
+        // Assert
+        Assert.Equal(expectedResult, result);
+    }
+
+    [Fact]
+    public void AppendJoin_WithSingleString_AppendsStringWithoutSeparator()
+    {
+        // Arrange
+        var strings = new[] { "OnlyOne" };
+        var expectedResult = "OnlyOne";
+        var builder = new MessageBuilder(expectedResult.Length);
+
+        // Act
+        var result = builder.Create(strings, static (stringArray, writer) =>
+        {
+            writer.AppendJoin(stringArray, ", ");
+        });
+
+        // Assert
+        Assert.Equal(expectedResult, result);
+    }
+
+    [Fact]
+    public void AppendJoin_WithEmptyCollection_AppendsNothing()
+    {
+        // Arrange
+        var strings = Array.Empty<string>();
+        var expectedResult = "BeforeAfter";
+        var builder = new MessageBuilder(expectedResult.Length);
+
+        // Act
+        var result = builder.Create(strings, static (stringArray, writer) =>
+        {
+            writer.Append("Before");
+            writer.AppendJoin(stringArray, ", ");
+            writer.Append("After");
+        });
+
+        // Assert
+        Assert.Equal(expectedResult, result);
+    }
+
+    [Fact]
+    public void AppendJoin_WithEmptyStringSeparator_ConcatenatesWithoutSeparation()
+    {
+        // Arrange
+        var strings = new[] { "A", "B", "C" };
+        var expectedResult = "ABC";
+        var builder = new MessageBuilder(expectedResult.Length);
+
+        // Act
+        var result = builder.Create(strings, static (stringArray, writer) =>
+        {
+            writer.AppendJoin(stringArray, "");
+        });
+
+        // Assert
+        Assert.Equal(expectedResult, result);
+    }
+
+    [Fact]
+    public void AppendJoin_WithNullSeparator_ConcatenatesWithoutSeparation()
+    {
+        // Arrange
+        var strings = new[] { "X", "Y", "Z" };
+        var expectedResult = "XYZ";
+        var builder = new MessageBuilder(expectedResult.Length);
+
+        // Act
+        var result = builder.Create(strings, static (stringArray, writer) =>
+        {
+            writer.AppendJoin(stringArray, null);
+        });
+
+        // Assert
+        Assert.Equal(expectedResult, result);
+    }
+
+    [Fact]
+    public void AppendJoin_WithComplexSeparator_ConcatenatesCorrectly()
+    {
+        // Arrange
+        var strings = new[] { "First", "Second", "Third" };
+        var expectedResult = "First -> Second -> Third";
+        var builder = new MessageBuilder(expectedResult.Length);
+
+        // Act
+        var result = builder.Create(strings, static (stringArray, writer) =>
+        {
+            writer.AppendJoin(stringArray, " -> ");
+        });
+
+        // Assert
+        Assert.Equal(expectedResult, result);
+    }
+
+    [Fact]
+    public void AppendJoin_WithEmptyStringsInCollection_IncludesEmptyStrings()
+    {
+        // Arrange
+        var strings = new[] { "Start", "", "End" };
+        var expectedResult = "Start||End";
+        var builder = new MessageBuilder(expectedResult.Length);
+
+        // Act
+        var result = builder.Create(strings, static (stringArray, writer) =>
+        {
+            writer.AppendJoin(stringArray, "|");
+        });
+
+        // Assert
+        Assert.Equal(expectedResult, result);
+    }
+
+    [Fact]
+    public void AppendJoin_WithList_WorksCorrectly()
+    {
+        // Arrange
+        var strings = new List<string> { "Item1", "Item2", "Item3" };
+        var expectedResult = "Item1 - Item2 - Item3";
+        var builder = new MessageBuilder(expectedResult.Length);
+
+        // Act
+        var result = builder.Create(strings, static (stringList, writer) =>
+        {
+            writer.AppendJoin(stringList, " - ");
+        });
+
+        // Assert
+        Assert.Equal(expectedResult, result);
+    }
+
+    [Fact]
+    public void AppendJoin_WithReadOnlyList_WorksCorrectly()
+    {
+        // Arrange
+        IReadOnlyList<string> strings = new[] { "Alpha", "Beta", "Gamma" }.AsReadOnly();
+        var expectedResult = "Alpha / Beta / Gamma";
+        var builder = new MessageBuilder(expectedResult.Length);
+
+        // Act
+        var result = builder.Create(strings, static (stringList, writer) =>
+        {
+            writer.AppendJoin(stringList, " / ");
+        });
+
+        // Assert
+        Assert.Equal(expectedResult, result);
+    }
+
+    [Fact]
+    public void AppendJoin_InMixedContent_WorksCorrectly()
+    {
+        // Arrange
+        var strings = new[] { "Middle1", "Middle2" };
+        var expectedResult = "Start Middle1 and Middle2 End";
+        var builder = new MessageBuilder(expectedResult.Length);
+
+        // Act
+        var result = builder.Create(strings, static (stringArray, writer) =>
+        {
+            writer.Append("Start ");
+            writer.AppendJoin(stringArray, " and ");
+            writer.Append(" End");
+        });
+
+        // Assert
+        Assert.Equal(expectedResult, result);
+    }
+
+    [Fact] 
+    public void AppendJoin_WithLongSeparator_WorksCorrectly()
+    {
+        // Arrange
+        var strings = new[] { "A", "B" };
+        var longSeparator = " <-- separator --> ";
+        var expectedResult = "A <-- separator --> B";
+        var builder = new MessageBuilder(expectedResult.Length);
+
+        // Act
+        var result = builder.Create((strings, longSeparator), static (state, writer) =>
+        {
+            writer.AppendJoin(state.strings, state.longSeparator);
+        });
+
+        // Assert
+        Assert.Equal(expectedResult, result);
+    }
+
+    [Fact]
+    public void AppendJoin_WithUnicodeStrings_WorksCorrectly()
+    {
+        // Arrange
+        var strings = new[] { "Hello 🌍", "World 🚀", "Test ✨" };
+        var expectedResult = "Hello 🌍, World 🚀, Test ✨";
+        var builder = new MessageBuilder(expectedResult.Length);
+
+        // Act
+        var result = builder.Create(strings, static (stringArray, writer) =>
+        {
+            writer.AppendJoin(stringArray, ", ");
+        });
+
+        // Assert
+        Assert.Equal(expectedResult, result);
+    }
+
+    [Fact]
+    public void AppendJoin_WithSpecialCharacters_WorksCorrectly()
+    {
+        // Arrange
+        var strings = new[] { "Line1\n", "Line2\t", "Special@#$" };
+        var expectedResult = "Line1\n|Line2\t|Special@#$";
+        var builder = new MessageBuilder(expectedResult.Length);
+
+        // Act
+        var result = builder.Create(strings, static (stringArray, writer) =>
+        {
+            writer.AppendJoin(stringArray, "|");
+        });
+
+        // Assert
+        Assert.Equal(expectedResult, result);
+    }
+
+    [Fact]
+    public void AppendJoin_WithLargeCollection_WorksCorrectly()
+    {
+        // Arrange
+        var strings = Enumerable.Range(1, 100).Select(i => $"Item{i}").ToArray();
+        var expectedResult = string.Join(", ", strings);
+        var builder = new MessageBuilder(expectedResult.Length);
+
+        // Act
+        var result = builder.Create(strings, static (stringArray, writer) =>
+        {
+            writer.AppendJoin(stringArray, ", ");
+        });
+
+        // Assert
+        Assert.Equal(expectedResult, result);
+    }
+
+    [Fact]
+    public void AppendJoin_WithMixedLengthStrings_WorksCorrectly()
+    {
+        // Arrange
+        var strings = new[] { "A", "Medium", "VeryLongStringHere", "B" };
+        var expectedResult = "A -> Medium -> VeryLongStringHere -> B";
+        var builder = new MessageBuilder(expectedResult.Length);
+
+        // Act
+        var result = builder.Create(strings, static (stringArray, writer) =>
+        {
+            writer.AppendJoin(stringArray, " -> ");
+        });
+
+        // Assert
+        Assert.Equal(expectedResult, result);
+    }
+
+    [Fact]
+    public void AppendJoin_WithOnlyEmptyStrings_WorksCorrectly()
+    {
+        // Arrange
+        var strings = new[] { "", "", "" };
+        var expectedResult = "||";
+        var builder = new MessageBuilder(expectedResult.Length);
+
+        // Act
+        var result = builder.Create(strings, static (stringArray, writer) =>
+        {
+            writer.AppendJoin(stringArray, "|");
+        });
+
+        // Assert
+        Assert.Equal(expectedResult, result);
+    }
+
+    [Fact]
+    public void AppendJoin_WithEmptyStringsAndEmptySeparator_WorksCorrectly()
+    {
+        // Arrange
+        var strings = new[] { "", "", "" };
+        var expectedResult = "";
+        var builder = new MessageBuilder(expectedResult.Length);
+
+        // Act
+        var result = builder.Create(strings, static (stringArray, writer) =>
+        {
+            writer.AppendJoin(stringArray, "");
+        });
+
+        // Assert
+        Assert.Equal(expectedResult, result);
+    }
+
+    [Fact]
+    public void AppendJoin_WithComplexState_WorksCorrectly()
+    {
+        // Arrange
+        var state = new
+        {
+            Items = new[] { "Task1", "Task2", "Task3" },
+            Separator = " | ",
+            Prefix = "Tasks: ",
+            Suffix = " (Complete)"
+        };
+        var expectedResult = "Tasks: Task1 | Task2 | Task3 (Complete)";
+        var builder = new MessageBuilder(expectedResult.Length);
+
+        // Act
+        var result = builder.Create(state, static (s, writer) =>
+        {
+            writer.Append(s.Prefix);
+            writer.AppendJoin(s.Items, s.Separator);
+            writer.Append(s.Suffix);
+        });
+
+        // Assert
+        Assert.Equal(expectedResult, result);
+    }
+
+    #endregion
 }
