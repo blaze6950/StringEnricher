@@ -48,6 +48,21 @@ public static class ToNodeExtensions
     public static PlainTextNode ToNode(this string value) => new(value);
 
     /// <summary>
+    /// Converts a string value to a PlainTextNode.
+    /// </summary>
+    /// <param name="value">
+    /// The string value to convert.
+    /// </param>
+    /// <param name="separator">
+    /// An optional separator to use between elements if the collection contains multiple strings.
+    /// </param>
+    /// <returns>
+    /// A PlainTextNode representing the string value.
+    /// </returns>
+    public static TextCollectionNode<TCollection> ToNode<TCollection>(this TCollection value, string? separator = null)
+        where TCollection : IReadOnlyList<string> => new(value, separator);
+
+    /// <summary>
     /// Converts a double value to a DoubleNode.
     /// </summary>
     /// <param name="value">
