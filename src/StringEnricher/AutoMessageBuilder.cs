@@ -85,17 +85,24 @@ public readonly struct AutoMessageBuilder
     /// A function that takes the state and a <see cref="MessageWriter"/> to build the message content.
     /// This function should append text and nodes to the <see cref="MessageWriter"/> to construct the final message.
     /// This function must return the length property value of the <see cref="MessageWriter"/> after all appends are done.
-    /// Example:
+    /// <example>
     /// <code>
-    /// (s, writer) =>
+    /// var builder = new AutoMessageBuilder();
+    /// var message = builder.Create(new { UserName = "John" }, static (s, writer) =>
     /// {
     ///     writer.Append("Hello, ");
     ///     writer.Append(s.UserName);
     ///     writer.Append("! Here is your styled message: ");
-    ///     writer.Append(new BoldNode("This is bold text"));
-    ///     return writer.Length; // VERY IMPORTANT: return the length of the message
-    /// }
+    ///     writer.Append(BoldMarkdownV2.Apply("This is bold text"));
+    ///     return writer.Length; // VERY IMPORTANT: Always return writer.Length
+    /// });
     /// </code>
+    /// </example>
+    /// <remarks>
+    /// <para>⚠️ IMPORTANT: The build action must be idempotent (no side effects) as it executes twice.</para>
+    /// <para>✅ TIP: Always end your build action with "return writer.Length;"</para>
+    /// <para>🚀 PERFORMANCE: Use writer.Append(value.ToNode()) for primitive types</para>
+    /// </remarks>
     /// </param>
     /// <typeparam name="TState">
     /// The type of the state object passed to the build action.
@@ -459,3 +466,4 @@ public readonly struct AutoMessageBuilder
             Append(value.ToNode(format, provider));
     }
 }
+
