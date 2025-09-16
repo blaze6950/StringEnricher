@@ -72,7 +72,7 @@ Use it only when you finished building the entire styled string.
 ### `.TryGetChar()` method for Single Character Access
 The `TryGetChar(int index, out char value)` method allows you to access individual characters in the styled string without creating the entire string. It returns `true` if the character at the specified index exists, otherwise `false`.
 ```csharp
-var styled = BoldHtml.Apply("bold text");
+var styled = BoldMarkdownV2.Apply("bold text");
 if (styled.TryGetChar(0, out char character))
 {
     // character == '*'
@@ -118,14 +118,14 @@ var messageBuilder = new MessageBuilder(totalLength);
 var state = ["Hello, ", "World! ", "Every ", "word ", "is ", "in ", "different ", "style&"];
 var string result = messageBuilder.Create(state, static (state, writer) => 
 {
-    writer.Append(BoldHtml.Apply(state[0])); // "*Hello, *" - 0 heap allocations here
-    writer.Append(ItalicHtml.Apply(state[1])); // "_World! _" - 0 heap allocations here
-    writer.Append(UnderlineHtml.Apply(state[2])); // "__Every __" - 0 heap allocations here
-    writer.Append(StrikethroughHtml.Apply(state[3])); // "~word ~" - 0 heap allocations here
-    writer.Append(CodeHtml.Apply(state[4])); // "`is`" - 0 heap allocations here
-    writer.Append(BlockquoteHtml.Apply(state[5])); // "> different " - 0 heap allocations here
-    writer.Append(SpoilerHtml.Apply(state[6])); // "||style||" - 0 heap allocations here
-    writer.Append(EscapeHtml.Apply(state[7])); // "style&amp;" - 0 heap allocations here
+    writer.Append(BoldMarkdownV2.Apply(state[0])); // "*Hello, *" - 0 heap allocations here
+    writer.Append(ItalicMarkdownV2.Apply(state[1])); // "_World! _" - 0 heap allocations here
+    writer.Append(UnderlineMarkdownV2.Apply(state[2])); // "__Every __" - 0 heap allocations here
+    writer.Append(StrikethroughMarkdownV2.Apply(state[3])); // "~word ~" - 0 heap allocations here
+    writer.Append(CodeMarkdownV2.Apply(state[4])); // "`is`" - 0 heap allocations here
+    writer.Append(BlockquoteMarkdownV2.Apply(state[5])); // "> different " - 0 heap allocations here
+    writer.Append(SpoilerMarkdownV2.Apply(state[6])); // "||style||" - 0 heap allocations here
+    writer.Append(EscapeMarkdownV2.Apply(state[7])); // "style&amp;" - 0 heap allocations here
 }); // 1 final string allocated in heap without any intermediate allocations
 ```
 
@@ -139,14 +139,14 @@ var autoMessageBuilder = new AutoMessageBuilder();
 var state = ["Hello, ", "World! ", "Every ", "word ", "is ", "in ", "different ", "style&"];
 var string result = autoMessageBuilder.Create(state, static (state, writer) => 
 {
-    writer.Append(BoldHtml.Apply(state[0])); // "*Hello, *" - 0 heap allocations here
-    writer.Append(ItalicHtml.Apply(state[1])); // "_World! _" - 0 heap allocations here
-    writer.Append(UnderlineHtml.Apply(state[2])); // "__Every __" - 0 heap allocations here
-    writer.Append(StrikethroughHtml.Apply(state[3])); // "~word ~" - 0 heap allocations here
-    writer.Append(CodeHtml.Apply(state[4])); // "`is`" - 0 heap allocations here
-    writer.Append(BlockquoteHtml.Apply(state[5])); // "> different " - 0 heap allocations here
-    writer.Append(SpoilerHtml.Apply(state[6])); // "||style||" - 0 heap allocations here
-    writer.Append(EscapeHtml.Apply(state[7])); // "style&amp;" - 0 heap allocations here
+    writer.Append(BoldMarkdownV2.Apply(state[0])); // "*Hello, *" - 0 heap allocations here
+    writer.Append(ItalicMarkdownV2.Apply(state[1])); // "_World! _" - 0 heap allocations here
+    writer.Append(UnderlineMarkdownV2.Apply(state[2])); // "__Every __" - 0 heap allocations here
+    writer.Append(StrikethroughMarkdownV2.Apply(state[3])); // "~word ~" - 0 heap allocations here
+    writer.Append(CodeMarkdownV2.Apply(state[4])); // "`is`" - 0 heap allocations here
+    writer.Append(BlockquoteMarkdownV2.Apply(state[5])); // "> different " - 0 heap allocations here
+    writer.Append(SpoilerMarkdownV2.Apply(state[6])); // "||style||" - 0 heap allocations here
+    writer.Append(EscapeMarkdownV2.Apply(state[7])); // "style&amp;" - 0 heap allocations here
     return writer.TotalLength; // VERY IMPORTANT: return total length of the final string
 }); // 1 final string allocated in heap without any intermediate allocations
 ```
