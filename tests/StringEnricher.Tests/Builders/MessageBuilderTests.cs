@@ -1,8 +1,9 @@
 using System.Globalization;
 using System.Text;
+using StringEnricher.Builders;
 using StringEnricher.Helpers.MarkdownV2;
 
-namespace StringEnricher.Tests;
+namespace StringEnricher.Tests.Builders;
 
 public class MessageBuilderTests
 {

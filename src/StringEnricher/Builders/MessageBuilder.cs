@@ -2,52 +2,50 @@
 using StringEnricher.Helpers.Shared;
 using StringEnricher.Nodes;
 
-namespace StringEnricher;
+namespace StringEnricher.Builders;
 
 /// <summary>
-/// A helper for building messages.
-/// It differs from <see cref="MessageBuilder"/> taht there is no need to explicitly specify the final length of the result string.
-/// This builder calculates the final string length internally using the provided build action.
-/// WARNING! In order to use this type of builder you have to be one hundred percent sure that the build action is idempotent because it is executed twice:
-/// 1. The first time it is executed for the length calculation.
-/// 2. The second time it is executed to actually append all parts to the destination string with the length that is calculated on the previous step.
+/// A helper for building messages with a known total length.
 /// This struct uses <see cref="string.Create{TState}"/> internally to avoid unnecessary allocations.
 /// It provides a <see cref="MessageWriter"/> to append text and nodes to the message.
 /// The <see cref="MessageWriter"/> is a ref struct that allows appending text and nodes
 /// directly to the provided span without additional allocations.
 /// Example usage:
 /// <code>
-/// var builder = new AutoMessageBuilder();
+/// var builder = new MessageBuilder(totalLength);
 /// var message = builder.Create(state, static (s, writer) =>
 /// {
 ///     writer.Append("Hello, ");
 ///     writer.Append(s.UserName);
 ///     writer.Append("! Here is your styled message: ");
 ///     writer.Append(BoldMarkdownV2.Apply("This is bold text"));
-///     return writer.Length; // VERY IMPORTANT: return the length of the message
 /// });
 /// </code>
 /// </summary>
-public readonly struct AutoMessageBuilder
+public readonly struct MessageBuilder
 {
+    private readonly int _totalLength;
+
     /// <summary>
-    /// Initializes a new instance of the <see cref="AutoMessageBuilder"/> struct.
+    /// Initializes a new instance of the <see cref="MessageBuilder"/> struct with the specified total length.
     /// </summary>
-    public AutoMessageBuilder()
+    /// <param name="totalLength"></param>
+    public MessageBuilder(int totalLength)
     {
+        _totalLength = totalLength;
     }
 
     /// <summary>
-    /// Calculates the message length by executing the buildAction with a measuring writer.
-    /// This is useful if caller wants the length explicitly.
+    /// Creates a message by invoking the provided build action with the given state and a <see cref="MessageWriter"/>.
+    /// The build action is responsible for appending text and nodes to the message using the <see cref="MessageWriter"/>.
+    /// The resulting message will have the exact length specified during the initialization of the <see cref="MessageBuilder"/>.
     /// </summary>
     /// <param name="state">
     /// An arbitrary state object that can be used within the build action to customize the message content.
     /// </param>
     /// <param name="buildAction">
-    /// A function that takes the state and a <see cref="MessageWriter"/> to build the message content.
-    /// This function should append text and nodes to the <see cref="MessageWriter"/> to construct the final message.
-    /// This function must return the length property value of the <see cref="MessageWriter"/> after all appends are done.
+    /// An action that takes the state and a <see cref="MessageWriter"/> to build the message content.
+    /// This action should append text and nodes to the <see cref="MessageWriter"/> to construct the final message.
     /// Example:
     /// <code>
     /// (s, writer) =>
@@ -56,53 +54,8 @@ public readonly struct AutoMessageBuilder
     ///     writer.Append(s.UserName);
     ///     writer.Append("! Here is your styled message: ");
     ///     writer.Append(new BoldNode("This is bold text"));
-    ///     return writer.Length; // VERY IMPORTANT: return the length of the message
     /// }
     /// </code>
-    /// </param>
-    /// <typeparam name="TState">
-    /// The type of the state object passed to the build action.
-    /// </typeparam>
-    /// <returns>
-    /// The calculated length of the message that would be created by the build action.
-    /// </returns>
-    public int CalculateLength<TState>(TState state, Func<TState, MessageWriter, int> buildAction)
-    {
-        // Use a measuring writer that does not write to any destination but only counts the length.
-        var measuringMessageWriter = new MessageWriter(Span<char>.Empty, measuring: true);
-        return buildAction(state, measuringMessageWriter);
-    }
-
-    /// <summary>
-    /// Creates a message by invoking the provided build action with the given state and a <see cref="MessageWriter"/>.
-    /// The build action is responsible for appending text and nodes to the message using the <see cref="MessageWriter"/>.
-    /// WARNING: the buildAction will be executed twice (measure + write). It must be deterministic and side-effect-free.
-    /// </summary>
-    /// <param name="state">
-    /// An arbitrary state object that can be used within the build action to customize the message content.
-    /// </param>
-    /// <param name="buildAction">
-    /// A function that takes the state and a <see cref="MessageWriter"/> to build the message content.
-    /// This function should append text and nodes to the <see cref="MessageWriter"/> to construct the final message.
-    /// This function must return the length property value of the <see cref="MessageWriter"/> after all appends are done.
-    /// <example>
-    /// <code>
-    /// var builder = new AutoMessageBuilder();
-    /// var message = builder.Create(new { UserName = "John" }, static (s, writer) =>
-    /// {
-    ///     writer.Append("Hello, ");
-    ///     writer.Append(s.UserName);
-    ///     writer.Append("! Here is your styled message: ");
-    ///     writer.Append(BoldMarkdownV2.Apply("This is bold text"));
-    ///     return writer.Length; // VERY IMPORTANT: Always return writer.Length
-    /// });
-    /// </code>
-    /// </example>
-    /// <remarks>
-    /// <para>⚠️ IMPORTANT: The build action must be idempotent (no side effects) as it executes twice.</para>
-    /// <para>✅ TIP: Always end your build action with "return writer.Length;"</para>
-    /// <para>🚀 PERFORMANCE: Use writer.Append(value.ToNode()) for primitive types</para>
-    /// </remarks>
     /// </param>
     /// <typeparam name="TState">
     /// The type of the state object passed to the build action.
@@ -111,16 +64,12 @@ public readonly struct AutoMessageBuilder
     /// The constructed message as a string with the exact length specified during initialization.
     /// The returned string is the only object that was allocated on the heap during this process, except for any allocations made within the build action itself.
     /// </returns>
-    public string Create<TState>(TState state, Func<TState, MessageWriter, int> buildAction)
-    {
-        var totalLength = CalculateLength(state, buildAction);
-
-        return string.Create(totalLength, ValueTuple.Create(state, buildAction), static (span, s) =>
+    public string Create<TState>(TState state, Action<TState, MessageWriter> buildAction) =>
+        string.Create(_totalLength, ValueTuple.Create(state, buildAction), static (span, s) =>
         {
             var context = new MessageWriter(span);
             s.Item2(s.Item1, context);
         });
-    }
 
     /// <summary>
     /// A writer for building messages with a known total length.
@@ -129,29 +78,19 @@ public readonly struct AutoMessageBuilder
     {
         private int _position = 0;
         private readonly Span<char> _destination;
-        private readonly bool _measuring;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageWriter"/> struct with the specified destination span.
         /// </summary>
         /// <param name="destination">
         /// The destination span where the message content will be written.
-        /// This span should have a length equal to the total length specified during the initialization of the <see cref="AutoMessageBuilder"/>.
+        /// This span should have a length equal to the total length specified during the initialization of the <see cref="MessageBuilder"/>.
         /// The <see cref="MessageWriter"/> will append text and nodes directly to this span.
         /// </param>
-        /// <param name="measuring">
-        /// 
-        /// </param>
-        internal MessageWriter(Span<char> destination, bool measuring = false)
+        internal MessageWriter(Span<char> destination)
         {
             _destination = destination;
-            _measuring = measuring;
         }
-
-        /// <summary>
-        /// The total length of the appended parts.
-        /// </summary>
-        public int Length => _position;
 
         /// <summary>
         /// Appends the content of the specified StringBuilder to the message.
@@ -162,11 +101,7 @@ public readonly struct AutoMessageBuilder
         /// </param>
         public void Append(StringBuilder stringBuilder)
         {
-            if (!_measuring)
-            {
-                stringBuilder.CopyTo(0, _destination.Slice(_position, stringBuilder.Length), stringBuilder.Length);
-            }
-
+            stringBuilder.CopyTo(0, _destination.Slice(_position, stringBuilder.Length), stringBuilder.Length);
             _position += stringBuilder.Length;
         }
 
@@ -179,11 +114,7 @@ public readonly struct AutoMessageBuilder
         /// </param>
         public void Append(ReadOnlySpan<char> span)
         {
-            if (!_measuring)
-            {
-                span.CopyTo(_destination.Slice(_position, span.Length));
-            }
-
+            span.CopyTo(_destination.Slice(_position, span.Length));
             _position += span.Length;
         }
 
@@ -199,14 +130,7 @@ public readonly struct AutoMessageBuilder
         /// </typeparam>
         public void Append<TNode>(TNode node) where TNode : struct, INode
         {
-            if (!_measuring)
-            {
-                _position += node.CopyTo(_destination[_position..]);
-            }
-            else
-            {
-                _position += node.TotalLength;
-            }
+            _position += node.CopyTo(_destination[_position..]);
         }
 
         /// <summary>

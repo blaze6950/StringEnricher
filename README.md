@@ -344,6 +344,7 @@ This class is intended for advanced users who need to optimize StringEnricher fo
 
 ## Project Structure
 - `src/StringEnricher`: Core library with nodes, builders, and helpers.
+   - `Builders`: Contains `MessageBuilder` and `AutoMessageBuilder`.
    - `Configuration`: Contains `StringEnricherSettings` for performance tuning.
    - `Extensions`: Contains extensions for `StringBuilder` integration.
    - `Helpers`: Contains style helpers for HTML and MarkdownV2.

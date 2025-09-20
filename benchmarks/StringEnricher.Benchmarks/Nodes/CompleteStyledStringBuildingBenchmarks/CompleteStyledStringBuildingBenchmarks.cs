@@ -1,5 +1,6 @@
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
+using StringEnricher.Builders;
 using StringEnricher.Helpers.MarkdownV2;
 
 namespace StringEnricher.Benchmarks.Nodes.CompleteStyledStringBuildingBenchmarks;
