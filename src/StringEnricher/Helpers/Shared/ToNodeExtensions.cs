@@ -269,4 +269,112 @@ public static class ToNodeExtensions
     /// A GuidNode representing the Guid value.
     /// </returns>
     public static GuidNode ToNode(this Guid value, string? format = null) => new(value, format);
+
+    /// <summary>
+    /// Converts a byte value to a ByteNode.
+    /// </summary>
+    /// <param name="value">
+    /// The byte value to convert.
+    /// </param>
+    /// <param name="format">
+    /// The format string to use when converting the byte to a string.
+    /// </param>
+    /// <param name="provider">
+    /// The format provider to use when converting the byte to a string.
+    /// </param>
+    /// <returns>
+    /// A ByteNode representing the byte value.
+    /// </returns>
+    public static ByteNode ToNode(this byte value, string? format = null, IFormatProvider? provider = null) =>
+        new(value, format, provider);
+
+    /// <summary>
+    /// Converts a sbyte value to a SByteNode.
+    /// </summary>
+    /// <param name="value">
+    /// The sbyte value to convert.
+    /// </param>
+    /// <param name="format">
+    /// The format string to use when converting the sbyte to a string.
+    /// </param>
+    /// <param name="provider">
+    /// The format provider to use when converting the sbyte to a string.
+    /// </param>
+    /// <returns>
+    /// A SByteNode representing the sbyte value.
+    /// </returns>
+    public static SByteNode ToNode(this sbyte value, string? format = null, IFormatProvider? provider = null) =>
+        new(value, format, provider);
+
+    /// <summary>
+    /// Converts a short value to a ShortNode.
+    /// </summary>
+    /// <param name="value">
+    /// The short value to convert.
+    /// </param>
+    /// <param name="format">
+    /// An optional format string that defines how the short should be formatted.
+    /// </param>
+    /// <param name="provider">
+    /// An optional format provider that supplies culture-specific formatting information.
+    /// </param>
+    /// <returns>
+    /// A ShortNode representing the short value.
+    /// </returns>
+    public static ShortNode ToNode(this short value, string? format = null, IFormatProvider? provider = null) =>
+        new(value, format, provider);
+
+    /// <summary>
+    /// Converts a ushort value to a UShortNode.
+    /// </summary>
+    /// <param name="value">
+    /// The ushort value to convert.
+    /// </param>
+    /// <param name="format">
+    /// An optional format string that defines how the ushort should be formatted.
+    /// </param>
+    /// <param name="provider">
+    /// An optional format provider that supplies culture-specific formatting information.
+    /// </param>
+    /// <returns>
+    /// A UShortNode representing the ushort value.
+    /// </returns>
+    public static UShortNode ToNode(this ushort value, string? format = null, IFormatProvider? provider = null) =>
+        new(value, format, provider);
+
+    /// <summary>
+    /// Converts a uint value to a UIntegerNode.
+    /// </summary>
+    /// <param name="value">
+    /// The uint value to convert.
+    /// </param>
+    /// <param name="format">
+    /// An optional format string that defines how the uint should be formatted.
+    /// </param>
+    /// <param name="provider">
+    /// An optional format provider that supplies culture-specific formatting information.
+    /// </param>
+    /// <returns>
+    /// A UIntegerNode representing the uint value.
+    /// </returns>
+    public static UIntegerNode ToNode(this uint value, string? format = null, IFormatProvider? provider = null) =>
+        new(value, format, provider);
+
+    /// <summary>
+    /// Converts a ulong value to a ULongNode.
+    /// </summary>
+    /// <param name="value">
+    /// The ulong value to convert.
+    /// </param>
+    /// <param name="format">
+    /// An optional format string that defines how the ulong should be formatted.
+    /// </param>
+    /// <param name="provider">
+    /// An optional format provider that supplies culture-specific formatting information.
+    /// </param>
+    /// <returns>
+    /// A ULongNode representing the ulong value.
+    /// </returns>
+    public static ULongNode ToNode(this ulong value, string? format = null, IFormatProvider? provider = null) =>
+        new(value, format, provider);
 }

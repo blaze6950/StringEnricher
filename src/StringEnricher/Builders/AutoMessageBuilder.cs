@@ -466,6 +466,114 @@ public readonly struct AutoMessageBuilder
             Append(value.ToNode(format, provider));
 
         /// <summary>
+        /// Appends the string representation of the specified byte to the message.
+        /// This method formats the byte and copies it to the end.
+        /// </summary>
+        /// <param name="value">
+        /// The byte to append to the message.
+        /// </param>
+        /// <param name="format">
+        /// An optional format string to customize the byte representation.
+        /// If not provided, the default format will be used.
+        /// </param>
+        /// <param name="provider">
+        /// An optional format provider to customize the byte representation.
+        /// If not provided, the current culture's format provider will be used.
+        /// </param>
+        public void Append(byte value, string? format = null, IFormatProvider? provider = null) =>
+            Append(value.ToNode(format, provider));
+
+        /// <summary>
+        /// Appends the string representation of the specified signed byte to the message.
+        /// This method formats the signed byte and copies it to the end.
+        /// </summary>
+        /// <param name="value">
+        /// The signed byte to append to the message.
+        /// </param>
+        /// <param name="format">
+        /// An optional format string to customize the signed byte representation.
+        /// If not provided, the default format will be used.
+        /// </param>
+        /// <param name="provider">
+        /// An optional format provider to customize the signed byte representation.
+        /// If not provided, the current culture's format provider will be used.
+        /// </param>
+        public void Append(sbyte value, string? format = null, IFormatProvider? provider = null) =>
+            Append(value.ToNode(format, provider));
+
+        /// <summary>
+        /// Appends the string representation of the specified short integer to the message.
+        /// This method formats the short integer and copies it to the end.
+        /// </summary>
+        /// <param name="value">
+        /// The short integer to append to the message.
+        /// </param>
+        /// <param name="format">
+        /// An optional format string to customize the short integer representation.
+        /// If not provided, the default format will be used.
+        /// </param>
+        /// <param name="provider">
+        /// An optional format provider to customize the short integer representation.
+        /// If not provided, the current culture's format provider will be used.
+        /// </param>
+        public void Append(short value, string? format = null, IFormatProvider? provider = null) =>
+            Append(value.ToNode(format, provider));
+
+        /// <summary>
+        /// Appends the string representation of the specified unsigned integer to the message.
+        /// This method formats the unsigned integer and copies it to the end.
+        /// </summary>
+        /// <param name="value">
+        /// The unsigned integer to append to the message.
+        /// </param>
+        /// <param name="format">
+        /// An optional format string to customize the unsigned integer representation.
+        /// If not provided, the default format will be used.
+        /// </param>
+        /// <param name="provider">
+        /// An optional format provider to customize the unsigned integer representation.
+        /// If not provided, the current culture's format provider will be used.
+        /// </param>
+        public void Append(uint value, string? format = null, IFormatProvider? provider = null) =>
+            Append(value.ToNode(format, provider));
+
+        /// <summary>
+        /// Appends the string representation of the specified unsigned long integer to the message.
+        /// This method formats the unsigned long integer and copies it to the end.
+        /// </summary>
+        /// <param name="value">
+        /// The unsigned long integer to append to the message.
+        /// </param>
+        /// <param name="format">
+        /// An optional format string to customize the unsigned long integer representation.
+        /// If not provided, the default format will be used.
+        /// </param>
+        /// <param name="provider">
+        /// An optional format provider to customize the unsigned long integer representation.
+        /// If not provided, the current culture's format provider will be used.
+        /// </param>
+        public void Append(ulong value, string? format = null, IFormatProvider? provider = null) =>
+            Append(value.ToNode(format, provider));
+
+        /// <summary>
+        /// Appends the string representation of the specified unsigned short integer to the message.
+        /// This method formats the unsigned short integer and copies it to the end.
+        /// </summary>
+        /// <param name="value">
+        /// The unsigned short integer to append to the message.
+        /// </param>
+        /// <param name="format">
+        /// An optional format string to customize the unsigned short integer representation.
+        /// If not provided, the default format will be used.
+        /// </param>
+        /// <param name="provider">
+        /// An optional format provider to customize the unsigned short integer representation.
+        /// If not provided, the current culture's format provider will be used.
+        /// </param>
+        public void Append(ushort value, string? format = null, IFormatProvider? provider = null) =>
+            Append(value.ToNode(format, provider));
+
+        /// <summary>
         /// Appends a sequence of strings to the message, separated by the specified separator.
         /// This method copies each string and the separator to the end.
         /// If the separator is empty, the strings are appended without any separation.

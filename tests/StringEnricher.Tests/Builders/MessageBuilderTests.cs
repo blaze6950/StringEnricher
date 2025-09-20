@@ -1079,6 +1079,646 @@ public class MessageBuilderTests
 
     #endregion
 
+    #region New Numeric Type Tests
+
+    [Fact]
+    public void MessageWriter_AppendByte_WorksCorrectly()
+    {
+        // Arrange
+        const byte value = 123;
+        var valueString = value.ToString(CultureInfo.InvariantCulture);
+        var builder = new MessageBuilder(valueString.Length);
+
+        // Act
+        var result = builder.Create(value,
+            static (val, writer) => writer.Append(val, provider: CultureInfo.InvariantCulture));
+
+        // Assert
+        Assert.Equal(valueString, result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendByte_WithFormat_WorksCorrectly()
+    {
+        // Arrange
+        const byte value = 255;
+        const string format = "X2";
+        var expectedString = value.ToString(format);
+        var builder = new MessageBuilder(expectedString.Length);
+
+        // Act
+        var result = builder.Create((value, format),
+            static (state, writer) => writer.Append(state.value, state.format));
+
+        // Assert
+        Assert.Equal("FF", result);
+    }
+
+    [Theory]
+    [InlineData((byte)0, "0")]
+    [InlineData((byte)1, "1")]
+    [InlineData((byte)255, "255")]
+    public void MessageWriter_AppendByte_WithDifferentValues_WorksCorrectly(byte value, string expected)
+    {
+        // Arrange
+        var builder = new MessageBuilder(expected.Length);
+
+        // Act
+        var result = builder.Create(value,
+            static (val, writer) => writer.Append(val, provider: CultureInfo.InvariantCulture));
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendSByte_WorksCorrectly()
+    {
+        // Arrange
+        const sbyte value = 123;
+        var valueString = value.ToString(CultureInfo.InvariantCulture);
+        var builder = new MessageBuilder(valueString.Length);
+
+        // Act
+        var result = builder.Create(value,
+            static (val, writer) => writer.Append(val, provider: CultureInfo.InvariantCulture));
+
+        // Assert
+        Assert.Equal(valueString, result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendSByte_WithFormat_WorksCorrectly()
+    {
+        // Arrange
+        const sbyte value = -42;
+        const string format = "D3";
+        var expectedString = value.ToString(format);
+        var builder = new MessageBuilder(expectedString.Length);
+
+        // Act
+        var result = builder.Create((value, format),
+            static (state, writer) => writer.Append(state.value, state.format));
+
+        // Assert
+        Assert.Equal("-042", result);
+    }
+
+    [Theory]
+    [InlineData((sbyte)-128, "-128")]
+    [InlineData((sbyte)0, "0")]
+    [InlineData((sbyte)127, "127")]
+    public void MessageWriter_AppendSByte_WithDifferentValues_WorksCorrectly(sbyte value, string expected)
+    {
+        // Arrange
+        var builder = new MessageBuilder(expected.Length);
+
+        // Act
+        var result = builder.Create(value,
+            static (val, writer) => writer.Append(val, provider: CultureInfo.InvariantCulture));
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendSByte_WithNegativeValue_WorksCorrectly()
+    {
+        // Arrange
+        const sbyte value = -123;
+        var valueString = value.ToString(CultureInfo.InvariantCulture);
+        var builder = new MessageBuilder(valueString.Length);
+
+        // Act
+        var result = builder.Create(value,
+            static (val, writer) => writer.Append(val, provider: CultureInfo.InvariantCulture));
+
+        // Assert
+        Assert.Equal("-123", result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendShort_WorksCorrectly()
+    {
+        // Arrange
+        const short value = 12345;
+        var valueString = value.ToString(CultureInfo.InvariantCulture);
+        var builder = new MessageBuilder(valueString.Length);
+
+        // Act
+        var result = builder.Create(value,
+            static (val, writer) => writer.Append(val, provider: CultureInfo.InvariantCulture));
+
+        // Assert
+        Assert.Equal(valueString, result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendShort_WithFormat_WorksCorrectly()
+    {
+        // Arrange
+        const short value = -32768;
+        const string format = "N0";
+        var expectedString = value.ToString(format);
+        var builder = new MessageBuilder(expectedString.Length);
+
+        // Act
+        var result = builder.Create((value, format),
+            static (state, writer) => writer.Append(state.value, state.format));
+
+        // Assert
+        Assert.Equal(expectedString, result);
+    }
+
+    [Theory]
+    [InlineData((short)-32768, "-32768")]
+    [InlineData((short)0, "0")]
+    [InlineData((short)32767, "32767")]
+    public void MessageWriter_AppendShort_WithDifferentValues_WorksCorrectly(short value, string expected)
+    {
+        // Arrange
+        var builder = new MessageBuilder(expected.Length);
+
+        // Act
+        var result = builder.Create(value,
+            static (val, writer) => writer.Append(val, provider: CultureInfo.InvariantCulture));
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendUShort_WorksCorrectly()
+    {
+        // Arrange
+        const ushort value = 65535;
+        var valueString = value.ToString(CultureInfo.InvariantCulture);
+        var builder = new MessageBuilder(valueString.Length);
+
+        // Act
+        var result = builder.Create(value,
+            static (val, writer) => writer.Append(val, provider: CultureInfo.InvariantCulture));
+
+        // Assert
+        Assert.Equal(valueString, result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendUShort_WithFormat_WorksCorrectly()
+    {
+        // Arrange
+        const ushort value = 12345;
+        const string format = "X4";
+        var expectedString = value.ToString(format);
+        var builder = new MessageBuilder(expectedString.Length);
+
+        // Act
+        var result = builder.Create((value, format),
+            static (state, writer) => writer.Append(state.value, state.format));
+
+        // Assert
+        Assert.Equal("3039", result);
+    }
+
+    [Theory]
+    [InlineData((ushort)0, "0")]
+    [InlineData((ushort)32768, "32768")]
+    [InlineData((ushort)65535, "65535")]
+    public void MessageWriter_AppendUShort_WithDifferentValues_WorksCorrectly(ushort value, string expected)
+    {
+        // Arrange
+        var builder = new MessageBuilder(expected.Length);
+
+        // Act
+        var result = builder.Create(value,
+            static (val, writer) => writer.Append(val, provider: CultureInfo.InvariantCulture));
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendUInt_WorksCorrectly()
+    {
+        // Arrange
+        const uint value = 4294967295U;
+        var valueString = value.ToString(CultureInfo.InvariantCulture);
+        var builder = new MessageBuilder(valueString.Length);
+
+        // Act
+        var result = builder.Create(value,
+            static (val, writer) => writer.Append(val, provider: CultureInfo.InvariantCulture));
+
+        // Assert
+        Assert.Equal(valueString, result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendUInt_WithFormat_WorksCorrectly()
+    {
+        // Arrange
+        const uint value = 1234567890U;
+        const string format = "N0";
+        var expectedString = value.ToString(format);
+        var builder = new MessageBuilder(expectedString.Length);
+
+        // Act
+        var result = builder.Create((value, format),
+            static (state, writer) => writer.Append(state.value, state.format));
+
+        // Assert
+        Assert.Equal(expectedString, result);
+    }
+
+    [Theory]
+    [InlineData(0U, "0")]
+    [InlineData(2147483648U, "2147483648")]
+    [InlineData(4294967295U, "4294967295")]
+    public void MessageWriter_AppendUInt_WithDifferentValues_WorksCorrectly(uint value, string expected)
+    {
+        // Arrange
+        var builder = new MessageBuilder(expected.Length);
+
+        // Act
+        var result = builder.Create(value,
+            static (val, writer) => writer.Append(val, provider: CultureInfo.InvariantCulture));
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendULong_WorksCorrectly()
+    {
+        // Arrange
+        const ulong value = 18446744073709551615UL;
+        var valueString = value.ToString(CultureInfo.InvariantCulture);
+        var builder = new MessageBuilder(valueString.Length);
+
+        // Act
+        var result = builder.Create(value,
+            static (val, writer) => writer.Append(val, provider: CultureInfo.InvariantCulture));
+
+        // Assert
+        Assert.Equal(valueString, result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendULong_WithFormat_WorksCorrectly()
+    {
+        // Arrange
+        const ulong value = 12345678901234567890UL;
+        const string format = "X16";
+        var expectedString = value.ToString(format);
+        var builder = new MessageBuilder(expectedString.Length);
+
+        // Act
+        var result = builder.Create((value, format),
+            static (state, writer) => writer.Append(state.value, state.format));
+
+        // Assert
+        Assert.Equal(expectedString, result);
+    }
+
+    [Theory]
+    [InlineData(0UL, "0")]
+    [InlineData(9223372036854775808UL, "9223372036854775808")]
+    [InlineData(18446744073709551615UL, "18446744073709551615")]
+    public void MessageWriter_AppendULong_WithDifferentValues_WorksCorrectly(ulong value, string expected)
+    {
+        // Arrange
+        var builder = new MessageBuilder(expected.Length);
+
+        // Act
+        var result = builder.Create(value,
+            static (val, writer) => writer.Append(val, provider: CultureInfo.InvariantCulture));
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendNewNumericTypes_WithMixedContent_WorksCorrectly()
+    {
+        // Arrange
+        const byte byteValue = 255;
+        const sbyte sbyteValue = -128;
+        const short shortValue = 32767;
+        const ushort ushortValue = 65535;
+        const uint uintValue = 4294967295U;
+        const ulong ulongValue = 18446744073709551615UL;
+
+        var expectedResult = $"{byteValue} {sbyteValue} {shortValue} {ushortValue} {uintValue} {ulongValue}";
+        var builder = new MessageBuilder(expectedResult.Length);
+
+        // Act
+        var result = builder.Create((byteValue, sbyteValue, shortValue, ushortValue, uintValue, ulongValue), 
+            static (state, writer) =>
+        {
+            writer.Append(state.byteValue, provider: CultureInfo.InvariantCulture);
+            writer.Append(' ');
+            writer.Append(state.sbyteValue, provider: CultureInfo.InvariantCulture);
+            writer.Append(' ');
+            writer.Append(state.shortValue, provider: CultureInfo.InvariantCulture);
+            writer.Append(' ');
+            writer.Append(state.ushortValue, provider: CultureInfo.InvariantCulture);
+            writer.Append(' ');
+            writer.Append(state.uintValue, provider: CultureInfo.InvariantCulture);
+            writer.Append(' ');
+            writer.Append(state.ulongValue, provider: CultureInfo.InvariantCulture);
+        });
+
+        // Assert
+        Assert.Equal(expectedResult, result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendNewNumericTypes_WithDifferentFormats_WorksCorrectly()
+    {
+        // Arrange
+        const byte byteValue = 15;
+        const ushort ushortValue = 255;
+        const uint uintValue = 4095;
+
+        var expectedResult = $"{byteValue:X} {ushortValue:D5} {uintValue:N0}";
+        var builder = new MessageBuilder(expectedResult.Length);
+
+        // Act
+        var result = builder.Create((byteValue, ushortValue, uintValue), static (state, writer) =>
+        {
+            writer.Append(state.byteValue, "X");
+            writer.Append(' ');
+            writer.Append(state.ushortValue, "D5");
+            writer.Append(' ');
+            writer.Append(state.uintValue, "N0");
+        });
+
+        // Assert
+        Assert.Equal("F 00255 4,095", result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendNewNumericTypes_WithProviders_WorksCorrectly()
+    {
+        // Arrange
+        const short shortValue = 1234;
+        const uint uintValue = 5678;
+        var provider = CultureInfo.GetCultureInfo("en-US");
+
+        var expectedResult = $"{shortValue.ToString(provider)} {uintValue.ToString("N0", provider)}";
+        var builder = new MessageBuilder(expectedResult.Length);
+
+        // Act
+        var result = builder.Create((shortValue, uintValue, provider), static (state, writer) =>
+        {
+            writer.Append(state.shortValue, provider: state.provider);
+            writer.Append(' ');
+            writer.Append(state.uintValue, "N0", state.provider);
+        });
+
+        // Assert
+        Assert.Equal("1234 5,678", result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendByte_WithHexFormat_WorksCorrectly()
+    {
+        // Arrange
+        const byte value = 171; // 0xAB
+        const string format = "x2";
+        var expectedString = value.ToString(format);
+        var builder = new MessageBuilder(expectedString.Length);
+
+        // Act
+        var result = builder.Create((value, format),
+            static (state, writer) => writer.Append(state.value, state.format));
+
+        // Assert
+        Assert.Equal("ab", result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendSByte_WithNegativeAndFormat_WorksCorrectly()
+    {
+        // Arrange
+        const sbyte value = -1;
+        const string format = "X2";
+        var expectedString = value.ToString(format);
+        var builder = new MessageBuilder(expectedString.Length);
+
+        // Act
+        var result = builder.Create((value, format),
+            static (state, writer) => writer.Append(state.value, state.format));
+
+        // Assert
+        Assert.Equal("FF", result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendShort_WithNegativeAndFormat_WorksCorrectly()
+    {
+        // Arrange
+        const short value = -1;
+        const string format = "X4";
+        var expectedString = value.ToString(format);
+        var builder = new MessageBuilder(expectedString.Length);
+
+        // Act
+        var result = builder.Create((value, format),
+            static (state, writer) => writer.Append(state.value, state.format));
+
+        // Assert
+        Assert.Equal("FFFF", result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendUShort_WithHexFormat_WorksCorrectly()
+    {
+        // Arrange
+        const ushort value = 43981; // 0xABCD
+        const string format = "x";
+        var expectedString = value.ToString(format);
+        var builder = new MessageBuilder(expectedString.Length);
+
+        // Act
+        var result = builder.Create((value, format),
+            static (state, writer) => writer.Append(state.value, state.format));
+
+        // Assert
+        Assert.Equal("abcd", result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendUInt_WithHexFormat_WorksCorrectly()
+    {
+        // Arrange
+        const uint value = 2882400018U; // 0xABCDEF12
+        const string format = "X8";
+        var expectedString = value.ToString(format);
+        var builder = new MessageBuilder(expectedString.Length);
+
+        // Act
+        var result = builder.Create((value, format),
+            static (state, writer) => writer.Append(state.value, state.format));
+
+        // Assert
+        Assert.Equal("ABCDEF12", result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendULong_WithLargeValue_WorksCorrectly()
+    {
+        // Arrange
+        const ulong value = 12345678901234567890UL;
+        var valueString = value.ToString(CultureInfo.InvariantCulture);
+        var builder = new MessageBuilder(valueString.Length);
+
+        // Act
+        var result = builder.Create(value,
+            static (val, writer) => writer.Append(val, provider: CultureInfo.InvariantCulture));
+
+        // Assert
+        Assert.Equal("12345678901234567890", result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendNewNumericTypes_EdgeCases_WorksCorrectly()
+    {
+        // Arrange
+        const byte byteMin = byte.MinValue;
+        const byte byteMax = byte.MaxValue;
+        const sbyte sbyteMin = sbyte.MinValue;
+        const sbyte sbyteMax = sbyte.MaxValue;
+
+        var expectedResult = $"{byteMin} {byteMax} {sbyteMin} {sbyteMax}";
+        var builder = new MessageBuilder(expectedResult.Length);
+
+        // Act
+        var result = builder.Create((byteMin, byteMax, sbyteMin, sbyteMax), static (state, writer) =>
+        {
+            writer.Append(state.byteMin, provider: CultureInfo.InvariantCulture);
+            writer.Append(' ');
+            writer.Append(state.byteMax, provider: CultureInfo.InvariantCulture);
+            writer.Append(' ');
+            writer.Append(state.sbyteMin, provider: CultureInfo.InvariantCulture);
+            writer.Append(' ');
+            writer.Append(state.sbyteMax, provider: CultureInfo.InvariantCulture);
+        });
+
+        // Assert
+        Assert.Equal("0 255 -128 127", result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendNewNumericTypes_MinMaxValues_WorksCorrectly()
+    {
+        // Arrange
+        const short shortMin = short.MinValue;
+        const short shortMax = short.MaxValue;
+        const ushort ushortMin = ushort.MinValue;
+        const ushort ushortMax = ushort.MaxValue;
+
+        var expectedResult = $"{shortMin} {shortMax} {ushortMin} {ushortMax}";
+        var builder = new MessageBuilder(expectedResult.Length);
+
+        // Act
+        var result = builder.Create((shortMin, shortMax, ushortMin, ushortMax), static (state, writer) =>
+        {
+            writer.Append(state.shortMin, provider: CultureInfo.InvariantCulture);
+            writer.Append(' ');
+            writer.Append(state.shortMax, provider: CultureInfo.InvariantCulture);
+            writer.Append(' ');
+            writer.Append(state.ushortMin, provider: CultureInfo.InvariantCulture);
+            writer.Append(' ');
+            writer.Append(state.ushortMax, provider: CultureInfo.InvariantCulture);
+        });
+
+        // Assert
+        Assert.Equal("-32768 32767 0 65535", result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendNewNumericTypes_LargeMinMaxValues_WorksCorrectly()
+    {
+        // Arrange
+        const uint uintMin = uint.MinValue;
+        const uint uintMax = uint.MaxValue;
+        const ulong ulongMin = ulong.MinValue;
+        const ulong ulongMax = ulong.MaxValue;
+
+        var expectedResult = $"{uintMin} {uintMax} {ulongMin} {ulongMax}";
+        var builder = new MessageBuilder(expectedResult.Length);
+
+        // Act
+        var result = builder.Create((uintMin, uintMax, ulongMin, ulongMax), static (state, writer) =>
+        {
+            writer.Append(state.uintMin, provider: CultureInfo.InvariantCulture);
+            writer.Append(' ');
+            writer.Append(state.uintMax, provider: CultureInfo.InvariantCulture);
+            writer.Append(' ');
+            writer.Append(state.ulongMin, provider: CultureInfo.InvariantCulture);
+            writer.Append(' ');
+            writer.Append(state.ulongMax, provider: CultureInfo.InvariantCulture);
+        });
+
+        // Assert
+        Assert.Equal("0 4294967295 0 18446744073709551615", result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendNewNumericTypes_InComplexScenario_WorksCorrectly()
+    {
+        // Arrange
+        var data = new
+        {
+            ByteValue = (byte)42,
+            SByteValue = (sbyte)-13,
+            ShortValue = (short)1024,
+            UShortValue = (ushort)8192,
+            UIntValue = 1000000U,
+            ULongValue = 9876543210UL
+        };
+
+        const string prefix = "Data: ";
+        const string separator = ", ";
+        const string suffix = " - End";
+
+        // Calculate total length
+        var totalLength = prefix.Length + suffix.Length +
+                         data.ByteValue.ToString().Length +
+                         data.SByteValue.ToString().Length +
+                         data.ShortValue.ToString().Length +
+                         data.UShortValue.ToString().Length +
+                         data.UIntValue.ToString().Length +
+                         data.ULongValue.ToString().Length +
+                         (separator.Length * 5); // 5 separators between 6 values
+
+        var builder = new MessageBuilder(totalLength);
+
+        // Act
+        var result = builder.Create((data, prefix, separator, suffix), static (state, writer) =>
+        {
+            writer.Append(state.prefix);
+            writer.Append(state.data.ByteValue, provider: CultureInfo.InvariantCulture);
+            writer.Append(state.separator);
+            writer.Append(state.data.SByteValue, provider: CultureInfo.InvariantCulture);
+            writer.Append(state.separator);
+            writer.Append(state.data.ShortValue, provider: CultureInfo.InvariantCulture);
+            writer.Append(state.separator);
+            writer.Append(state.data.UShortValue, provider: CultureInfo.InvariantCulture);
+            writer.Append(state.separator);
+            writer.Append(state.data.UIntValue, provider: CultureInfo.InvariantCulture);
+            writer.Append(state.separator);
+            writer.Append(state.data.ULongValue, provider: CultureInfo.InvariantCulture);
+            writer.Append(state.suffix);
+        });
+
+        // Assert
+        Assert.Equal("Data: 42, -13, 1024, 8192, 1000000, 9876543210 - End", result);
+    }
+
+    #endregion
+
     #region Enum Tests
 
     public enum TestEnum
