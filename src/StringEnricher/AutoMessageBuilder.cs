@@ -482,6 +482,22 @@ public readonly struct AutoMessageBuilder
         /// </param>
         public void AppendJoin<TCollection>(TCollection values, string? separator = null)
             where TCollection : IReadOnlyList<string> => Append(values.ToNode(separator));
+
+        /// <summary>
+        /// Appends the string representation of the specified enum value to the message.
+        /// This method formats the enum value and copies it to the end.
+        /// </summary>
+        /// <param name="value">
+        /// The enum value to append to the message.
+        /// </param>
+        /// <param name="format">
+        /// An optional format string to customize the enum representation.
+        /// If not provided, the default format will be used.
+        /// </param>
+        /// <typeparam name="TEnum">
+        /// The type of the enum to append. Must be a struct and an Enum.
+        /// </typeparam>
+        public void Append<TEnum>(TEnum value, string? format = null)
+            where TEnum : struct, Enum => Append(value.ToNode(format));
     }
 }
-

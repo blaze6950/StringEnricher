@@ -1213,4 +1213,407 @@ public class AutoMessageBuilderTests
     }
 
     #endregion
+
+    #region Enum Tests
+
+    public enum TestEnum
+    {
+        First,
+        Second,
+        Third
+    }
+
+    public enum TestEnumWithValues
+    {
+        Low = 1,
+        Medium = 5,
+        High = 10
+    }
+
+    [Flags]
+    public enum TestFlagsEnum
+    {
+        None = 0,
+        Read = 1,
+        Write = 2,
+        Execute = 4,
+        ReadWrite = Read | Write,
+        All = Read | Write | Execute
+    }
+
+    [Fact]
+    public void MessageWriter_AppendEnum_WorksCorrectly()
+    {
+        // Arrange
+        const TestEnum value = TestEnum.Second;
+        var builder = new AutoMessageBuilder();
+
+        // Act
+        var result = builder.Create(value, static (val, writer) =>
+        {
+            writer.Append(val);
+            return writer.Length;
+        });
+
+        // Assert
+        Assert.Equal("Second", result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendEnum_WithFormat_WorksCorrectly()
+    {
+        // Arrange
+        const TestEnum value = TestEnum.First;
+        const string format = "D";
+        var builder = new AutoMessageBuilder();
+
+        // Act
+        var result = builder.Create((value, format), static (state, writer) =>
+        {
+            writer.Append(state.value, state.format);
+            return writer.Length;
+        });
+
+        // Assert
+        Assert.Equal("0", result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendEnum_WithNumericFormat_WorksCorrectly()
+    {
+        // Arrange
+        const TestEnumWithValues value = TestEnumWithValues.High;
+        const string format = "D";
+        var builder = new AutoMessageBuilder();
+
+        // Act
+        var result = builder.Create((value, format), static (state, writer) =>
+        {
+            writer.Append(state.value, state.format);
+            return writer.Length;
+        });
+
+        // Assert
+        Assert.Equal("10", result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendEnum_WithHexFormat_WorksCorrectly()
+    {
+        // Arrange
+        const TestEnumWithValues value = TestEnumWithValues.Medium;
+        const string format = "X";
+        var builder = new AutoMessageBuilder();
+
+        // Act
+        var result = builder.Create((value, format), static (state, writer) =>
+        {
+            writer.Append(state.value, state.format);
+            return writer.Length;
+        });
+
+        // Assert
+        Assert.Equal("00000005", result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendEnum_WithFlagsEnum_WorksCorrectly()
+    {
+        // Arrange
+        const TestFlagsEnum value = TestFlagsEnum.ReadWrite;
+        var builder = new AutoMessageBuilder();
+
+        // Act
+        var result = builder.Create(value, static (val, writer) =>
+        {
+            writer.Append(val);
+            return writer.Length;
+        });
+
+        // Assert
+        Assert.Equal("ReadWrite", result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendEnum_WithFlagsEnumNumeric_WorksCorrectly()
+    {
+        // Arrange
+        const TestFlagsEnum value = TestFlagsEnum.All;
+        const string format = "D";
+        var builder = new AutoMessageBuilder();
+
+        // Act
+        var result = builder.Create((value, format), static (state, writer) =>
+        {
+            writer.Append(state.value, state.format);
+            return writer.Length;
+        });
+
+        // Assert
+        Assert.Equal("7", result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendEnum_WithGeneralFormat_WorksCorrectly()
+    {
+        // Arrange
+        const TestEnum value = TestEnum.Third;
+        const string format = "G";
+        var builder = new AutoMessageBuilder();
+
+        // Act
+        var result = builder.Create((value, format), static (state, writer) =>
+        {
+            writer.Append(state.value, state.format);
+            return writer.Length;
+        });
+
+        // Assert
+        Assert.Equal("Third", result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendEnum_WithFormatFormat_WorksCorrectly()
+    {
+        // Arrange
+        const TestEnum value = TestEnum.First;
+        const string format = "F";
+        var builder = new AutoMessageBuilder();
+
+        // Act
+        var result = builder.Create((value, format), static (state, writer) =>
+        {
+            writer.Append(state.value, state.format);
+            return writer.Length;
+        });
+
+        // Assert
+        Assert.Equal("First", result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendEnum_InMixedContent_WorksCorrectly()
+    {
+        // Arrange
+        const TestEnum enumValue = TestEnum.Second;
+        const string prefix = "Status: ";
+        const string suffix = " - Active";
+        var builder = new AutoMessageBuilder();
+
+        // Act
+        var result = builder.Create((prefix, enumValue, suffix), static (state, writer) =>
+        {
+            writer.Append(state.prefix);
+            writer.Append(state.enumValue);
+            writer.Append(state.suffix);
+            return writer.Length;
+        });
+
+        // Assert
+        Assert.Equal("Status: Second - Active", result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendEnum_WithMultipleEnums_WorksCorrectly()
+    {
+        // Arrange
+        const TestEnum enum1 = TestEnum.First;
+        const TestEnumWithValues enum2 = TestEnumWithValues.High;
+        const TestFlagsEnum enum3 = TestFlagsEnum.Read;
+
+        var builder = new AutoMessageBuilder();
+
+        // Act
+        var result = builder.Create((enum1, enum2, enum3), static (state, writer) =>
+        {
+            writer.Append(state.enum1);
+            writer.Append(' ');
+            writer.Append(state.enum2);
+            writer.Append(' ');
+            writer.Append(state.enum3);
+            return writer.Length;
+        });
+
+        // Assert
+        Assert.Equal("First High Read", result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendEnum_WithDifferentFormats_WorksCorrectly()
+    {
+        // Arrange
+        const TestEnumWithValues enumValue = TestEnumWithValues.Medium;
+        var builder = new AutoMessageBuilder();
+
+        // Act
+        var result = builder.Create(enumValue, static (val, writer) =>
+        {
+            writer.Append(val, "G");
+            writer.Append(' ');
+            writer.Append(val, "D");
+            writer.Append(' ');
+            writer.Append(val, "X");
+            return writer.Length;
+        });
+
+        // Assert
+        Assert.Equal("Medium 5 00000005", result);
+    }
+
+    [Theory]
+    [InlineData(TestEnum.First, "First")]
+    [InlineData(TestEnum.Second, "Second")]
+    [InlineData(TestEnum.Third, "Third")]
+    public void MessageWriter_AppendEnum_WithDifferentValues_WorksCorrectly(TestEnum value, string expected)
+    {
+        // Arrange
+        var builder = new AutoMessageBuilder();
+
+        // Act
+        var result = builder.Create(value, static (val, writer) =>
+        {
+            writer.Append(val);
+            return writer.Length;
+        });
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Theory]
+    [InlineData(TestEnumWithValues.Low, "D", "1")]
+    [InlineData(TestEnumWithValues.Medium, "D", "5")]
+    [InlineData(TestEnumWithValues.High, "D", "10")]
+    [InlineData(TestEnumWithValues.Low, "X", "00000001")]
+    [InlineData(TestEnumWithValues.Medium, "X", "00000005")]
+    [InlineData(TestEnumWithValues.High, "X", "0000000A")]
+    public void MessageWriter_AppendEnum_WithDifferentFormatsTheory_WorksCorrectly(TestEnumWithValues value, string format, string expected)
+    {
+        // Arrange
+        var builder = new AutoMessageBuilder();
+
+        // Act
+        var result = builder.Create((value, format), static (state, writer) =>
+        {
+            writer.Append(state.value, state.format);
+            return writer.Length;
+        });
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendEnum_WithNullFormat_WorksCorrectly()
+    {
+        // Arrange
+        const TestEnum value = TestEnum.Second;
+        var builder = new AutoMessageBuilder();
+
+        // Act
+        var result = builder.Create(value, static (val, writer) =>
+        {
+            writer.Append(val, null);
+            return writer.Length;
+        });
+
+        // Assert
+        Assert.Equal("Second", result);
+    }
+
+    [Fact]
+    public void CalculateLength_WithEnum_ReturnsCorrectLength()
+    {
+        // Arrange
+        const TestEnum value = TestEnum.Second;
+        var builder = new AutoMessageBuilder();
+
+        // Act
+        var length = builder.CalculateLength(value, static (val, writer) =>
+        {
+            writer.Append(val);
+            return writer.Length;
+        });
+
+        // Assert
+        Assert.Equal("Second".Length, length);
+    }
+
+    [Fact]
+    public void CalculateLength_WithEnumAndFormat_ReturnsCorrectLength()
+    {
+        // Arrange
+        const TestEnumWithValues value = TestEnumWithValues.High;
+        const string format = "D";
+        var builder = new AutoMessageBuilder();
+
+        // Act
+        var length = builder.CalculateLength((value, format), static (state, writer) =>
+        {
+            writer.Append(state.value, state.format);
+            return writer.Length;
+        });
+
+        // Assert
+        Assert.Equal("10".Length, length);
+    }
+
+    [Fact]
+    public void MessageWriter_AppendEnum_WithComplexScenario_WorksCorrectly()
+    {
+        // Arrange
+        var enums = new[] { TestEnum.First, TestEnum.Second, TestEnum.Third };
+        var builder = new AutoMessageBuilder();
+
+        // Act
+        var result = builder.Create(enums, static (enumArray, writer) =>
+        {
+            for (var i = 0; i < enumArray.Length - 1; i++)
+            {
+                writer.Append(enumArray[i]);
+                writer.Append(", ");
+            }
+            writer.Append(enumArray[^1]);
+            return writer.Length;
+        });
+
+        // Assert
+        Assert.Equal("First, Second, Third", result);
+    }
+
+    [Fact]
+    public void CalculateLength_MatchesActualStringLength_WithEnums()
+    {
+        // Arrange
+        var builder = new AutoMessageBuilder();
+        var state = new 
+        { 
+            Enum1 = TestEnum.First, 
+            Enum2 = TestEnumWithValues.Medium, 
+            Format = "D" 
+        };
+
+        // Act
+        var calculatedLength = builder.CalculateLength(state, static (s, writer) =>
+        {
+            writer.Append(s.Enum1);
+            writer.Append(" - ");
+            writer.Append(s.Enum2, s.Format);
+            return writer.Length;
+        });
+
+        var actualString = builder.Create(state, static (s, writer) =>
+        {
+            writer.Append(s.Enum1);
+            writer.Append(" - ");
+            writer.Append(s.Enum2, s.Format);
+            return writer.Length;
+        });
+
+        // Assert
+        Assert.Equal(actualString.Length, calculatedLength);
+        Assert.Equal("First - 5", actualString);
+    }
+
+    #endregion
 }

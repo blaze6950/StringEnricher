@@ -63,6 +63,26 @@ public static class ToNodeExtensions
         where TCollection : IReadOnlyList<string> => new(value, separator);
 
     /// <summary>
+    /// Converts an enum value to an EnumNode.
+    /// </summary>
+    /// <param name="value">
+    /// The enum value to convert.
+    /// </param>
+    /// <param name="format">
+    /// An optional format string that defines how the enum should be formatted.
+    /// If null or empty, the default format will be used.
+    /// </param>
+    /// <param name="_">
+    /// IGNORED: This parameter is only present to differentiate this method from the <see cref="ToNode{TCollection}(TCollection, string)"/> overload.
+    /// This is not ideal, but C# does not support method overloading based solely on generic type constraints. The unified method name is more valueable than the slight inconvenience of an unused parameter.
+    /// </param>
+    /// <returns>
+    /// A GuidNode representing the Guid value.
+    /// </returns>
+    public static EnumNode<TEnum> ToNode<TEnum>(this TEnum value, string? format = null, object? _ = null)
+        where TEnum : struct, Enum => new(value, format);
+
+    /// <summary>
     /// Converts a double value to a DoubleNode.
     /// </summary>
     /// <param name="value">

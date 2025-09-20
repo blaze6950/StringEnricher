@@ -6,10 +6,10 @@
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageId>StringEnricher</PackageId>
-        <Version>0.0.1-rc.9</Version>
+        <Version>0.0.1-rc.10</Version>
         <Authors>blaze6950</Authors>
         <Description>A .NET 9 library that provides high performance string enrichment functionalities with zero heap allocations building MarkdownV2 or HTML styled strings.</Description>
-        <PackageReleaseNotes>Added a way to use StringEnricher nodes with StringBuilder; also, an ability to adjust advance options for StringEnricher library was added.</PackageReleaseNotes>
+        <PackageReleaseNotes>Added a new shared node for any enum value.</PackageReleaseNotes>
         <PackageTags>string;enrich;dotnet9;formatting;markdown;html;high-performance;zero-allocations</PackageTags>
         <RepositoryUrl>https://github.com/blaze6950/StringEnricher</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
