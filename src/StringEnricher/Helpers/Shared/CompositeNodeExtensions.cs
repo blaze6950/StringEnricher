@@ -379,6 +379,168 @@ public static class CompositeNodeExtensions
         IFormatProvider? provider = null)
         where TLeft : INode => new(left, right.ToNode(format, provider));
 
+    /// <summary>
+    /// Combines a node with a byte value into a single composite node.
+    /// </summary>
+    /// <param name="left">
+    /// The left node.
+    /// </param>
+    /// <param name="right">
+    /// The byte value.
+    /// </param>
+    /// <param name="format">
+    /// The format string to use when formatting the byte value. If null, the default format will be used.
+    /// </param>
+    /// <param name="provider">
+    /// The format provider to use when formatting the byte value. If null, the current culture will be used.
+    /// </param>
+    /// <typeparam name="TLeft">
+    /// The type of the left node.
+    /// </typeparam>
+    /// <returns>
+    /// A new composite node that combines the left node and the byte value.
+    /// </returns>
+    public static CompositeNode<TLeft, ByteNode> CombineWith<TLeft>(this TLeft left,
+        byte right,
+        string? format = null,
+        IFormatProvider? provider = null)
+        where TLeft : INode => new(left, right.ToNode(format, provider));
+
+    /// <summary>
+    /// Combines a node with a signed byte value into a single composite node.
+    /// </summary>
+    /// <param name="left">
+    /// The left node.
+    /// </param>
+    /// <param name="right">
+    /// The signed byte value.
+    /// </param>
+    /// <param name="format">
+    /// The format string to use when formatting the signed byte value. If null, the default format will be used.
+    /// </param>
+    /// <param name="provider">
+    /// The format provider to use when formatting the signed byte value. If null, the current culture will be used.
+    /// </param>
+    /// <typeparam name="TLeft">
+    /// The type of the left node.
+    /// </typeparam>
+    /// <returns>
+    /// A new composite node that combines the left node and the signed byte value.
+    /// </returns>
+    public static CompositeNode<TLeft, SByteNode> CombineWith<TLeft>(this TLeft left,
+        sbyte right,
+        string? format = null,
+        IFormatProvider? provider = null)
+        where TLeft : INode => new(left, right.ToNode(format, provider));
+
+    /// <summary>
+    /// Combines a node with a short integer value into a single composite node.
+    /// </summary>
+    /// <param name="left">
+    /// The left node.
+    /// </param>
+    /// <param name="right">
+    /// The short integer value.
+    /// </param>
+    /// <param name="format">
+    /// The format string to use when formatting the short integer value. If null, the default format will be used.
+    /// </param>
+    /// <param name="provider">
+    /// The format provider to use when formatting the short integer value. If null, the current culture will be used.
+    /// </param>
+    /// <typeparam name="TLeft">
+    /// The type of the left node.
+    /// </typeparam>
+    /// <returns>
+    /// A new composite node that combines the left node and the short integer value.
+    /// </returns>
+    public static CompositeNode<TLeft, ShortNode> CombineWith<TLeft>(this TLeft left,
+        short right,
+        string? format = null,
+        IFormatProvider? provider = null)
+        where TLeft : INode => new(left, right.ToNode(format, provider));
+
+    /// <summary>
+    /// Combines a node with an unsigned short integer value into a single composite node.
+    /// </summary>
+    /// <param name="left">
+    /// The left node.
+    /// </param>
+    /// <param name="right">
+    /// The unsigned short integer value.
+    /// </param>
+    /// <param name="format">
+    /// The format string to use when formatting the unsigned short integer value. If null, the default format will be used.
+    /// </param>
+    /// <param name="provider">
+    /// The format provider to use when formatting the unsigned short integer value. If null, the current culture will be used.
+    /// </param>
+    /// <typeparam name="TLeft">
+    /// The type of the left node.
+    /// </typeparam>
+    /// <returns>
+    /// A new composite node that combines the left node and the unsigned short integer value.
+    /// </returns>
+    public static CompositeNode<TLeft, UShortNode> CombineWith<TLeft>(this TLeft left,
+        ushort right,
+        string? format = null,
+        IFormatProvider? provider = null)
+        where TLeft : INode => new(left, right.ToNode(format, provider));
+
+    /// <summary>
+    /// Combines a node with an unsigned integer value into a single composite node.
+    /// </summary>
+    /// <param name="left">
+    /// The left node.
+    /// </param>
+    /// <param name="right">
+    /// The unsigned integer value.
+    /// </param>
+    /// <param name="format">
+    /// The format string to use when formatting the unsigned integer value. If null, the default format will be used.
+    /// </param>
+    /// <param name="provider">
+    /// The format provider to use when formatting the unsigned integer value. If null, the current culture will be used.
+    /// </param>
+    /// <typeparam name="TLeft">
+    /// The type of the left node.
+    /// </typeparam>
+    /// <returns>
+    /// A new composite node that combines the left node and the unsigned integer value.
+    /// </returns>
+    public static CompositeNode<TLeft, UIntegerNode> CombineWith<TLeft>(this TLeft left,
+        uint right,
+        string? format = null,
+        IFormatProvider? provider = null)
+        where TLeft : INode => new(left, right.ToNode(format, provider));
+
+    /// <summary>
+    /// Combines a node with an unsigned long integer value into a single composite node.
+    /// </summary>
+    /// <param name="left">
+    /// The left node.
+    /// </param>
+    /// <param name="right">
+    /// The unsigned long integer value.
+    /// </param>
+    /// <param name="format">
+    /// The format string to use when formatting the unsigned long integer value. If null, the default format will be used.
+    /// </param>
+    /// <param name="provider">
+    /// The format provider to use when formatting the unsigned long integer value. If null, the current culture will be used.
+    /// </param>
+    /// <typeparam name="TLeft">
+    /// The type of the left node.
+    /// </typeparam>
+    /// <returns>
+    /// A new composite node that combines the left node and the unsigned long integer value.
+    /// </returns>
+    public static CompositeNode<TLeft, ULongNode> CombineWith<TLeft>(this TLeft left,
+        ulong right,
+        string? format = null,
+        IFormatProvider? provider = null)
+        where TLeft : INode => new(left, right.ToNode(format, provider));
+
     #endregion
 
     #region Primitive Left Node with Right Node
@@ -725,6 +887,168 @@ public static class CompositeNodeExtensions
     /// A new composite node that combines the TimeSpan value and the right node.
     /// </returns>
     public static CompositeNode<TimeSpanNode, TRight> CombineWith<TRight>(this TimeSpan left,
+        TRight right,
+        string? format = null,
+        IFormatProvider? provider = null)
+        where TRight : INode => new(left.ToNode(format, provider), right);
+
+    /// <summary>
+    /// Combines a node with a byte value into a single composite node.
+    /// </summary>
+    /// <param name="left">
+    /// The byte value.
+    /// </param>
+    /// <param name="right">
+    /// The right node.
+    /// </param>
+    /// <param name="format">
+    /// The format string to use when formatting the byte value. If null, the default format will be used.
+    /// </param>
+    /// <param name="provider">
+    /// The format provider to use when formatting the byte value. If null, the current culture will be used.
+    /// </param>
+    /// <typeparam name="TRight">
+    /// The type of the right node.
+    /// </typeparam>
+    /// <returns>
+    /// A new composite node that combines the byte value and the right node.
+    /// </returns>
+    public static CompositeNode<ByteNode, TRight> CombineWith<TRight>(this byte left,
+        TRight right,
+        string? format = null,
+        IFormatProvider? provider = null)
+        where TRight : INode => new(left.ToNode(format, provider), right);
+
+    /// <summary>
+    /// Combines a node with a signed byte value into a single composite node.
+    /// </summary>
+    /// <param name="left">
+    /// The signed byte value.
+    /// </param>
+    /// <param name="right">
+    /// The right node.
+    /// </param>
+    /// <param name="format">
+    /// The format string to use when formatting the signed byte value. If null, the default format will be used.
+    /// </param>
+    /// <param name="provider">
+    /// The format provider to use when formatting the signed byte value. If null, the current culture will be used.
+    /// </param>
+    /// <typeparam name="TRight">
+    /// The type of the right node.
+    /// </typeparam>
+    /// <returns>
+    /// A new composite node that combines the signed byte value and the right node.
+    /// </returns>
+    public static CompositeNode<SByteNode, TRight> CombineWith<TRight>(this sbyte left,
+        TRight right,
+        string? format = null,
+        IFormatProvider? provider = null)
+        where TRight : INode => new(left.ToNode(format, provider), right);
+
+    /// <summary>
+    /// Combines a node with a short integer value into a single composite node.
+    /// </summary>
+    /// <param name="left">
+    /// The short integer value.
+    /// </param>
+    /// <param name="right">
+    /// The right node.
+    /// </param>
+    /// <param name="format">
+    /// The format string to use when formatting the short integer value. If null, the default format will be used.
+    /// </param>
+    /// <param name="provider">
+    /// The format provider to use when formatting the short integer value. If null, the current culture will be used.
+    /// </param>
+    /// <typeparam name="TRight">
+    /// The type of the right node.
+    /// </typeparam>
+    /// <returns>
+    /// A new composite node that combines the short integer value and the right node.
+    /// </returns>
+    public static CompositeNode<ShortNode, TRight> CombineWith<TRight>(this short left,
+        TRight right,
+        string? format = null,
+        IFormatProvider? provider = null)
+        where TRight : INode => new(left.ToNode(format, provider), right);
+
+    /// <summary>
+    /// Combines a node with an unsigned short integer value into a single composite node.
+    /// </summary>
+    /// <param name="left">
+    /// The unsigned short integer value.
+    /// </param>
+    /// <param name="right">
+    /// The right node.
+    /// </param>
+    /// <param name="format">
+    /// The format string to use when formatting the unsigned short integer value. If null, the default format will be used.
+    /// </param>
+    /// <param name="provider">
+    /// The format provider to use when formatting the unsigned short integer value. If null, the current culture will be used.
+    /// </param>
+    /// <typeparam name="TRight">
+    /// The type of the right node.
+    /// </typeparam>
+    /// <returns>
+    /// A new composite node that combines the unsigned short integer value and the right node.
+    /// </returns>
+    public static CompositeNode<UShortNode, TRight> CombineWith<TRight>(this ushort left,
+        TRight right,
+        string? format = null,
+        IFormatProvider? provider = null)
+        where TRight : INode => new(left.ToNode(format, provider), right);
+
+    /// <summary>
+    /// Combines a node with an unsigned integer value into a single composite node.
+    /// </summary>
+    /// <param name="left">
+    /// The unsigned integer value.
+    /// </param>
+    /// <param name="right">
+    /// The right node.
+    /// </param>
+    /// <param name="format">
+    /// The format string to use when formatting the unsigned integer value. If null, the default format will be used.
+    /// </param>
+    /// <param name="provider">
+    /// The format provider to use when formatting the unsigned integer value. If null, the current culture will be used.
+    /// </param>
+    /// <typeparam name="TRight">
+    /// The type of the right node.
+    /// </typeparam>
+    /// <returns>
+    /// A new composite node that combines the unsigned integer value and the right node.
+    /// </returns>
+    public static CompositeNode<UIntegerNode, TRight> CombineWith<TRight>(this uint left,
+        TRight right,
+        string? format = null,
+        IFormatProvider? provider = null)
+        where TRight : INode => new(left.ToNode(format, provider), right);
+
+    /// <summary>
+    /// Combines a node with an unsigned long integer value into a single composite node.
+    /// </summary>
+    /// <param name="left">
+    /// The unsigned long integer value.
+    /// </param>
+    /// <param name="right">
+    /// The right node.
+    /// </param>
+    /// <param name="format">
+    /// The format string to use when formatting the unsigned long integer value. If null, the default format will be used.
+    /// </param>
+    /// <param name="provider">
+    /// The format provider to use when formatting the unsigned long integer value. If null, the current culture will be used.
+    /// </param>
+    /// <typeparam name="TRight">
+    /// The type of the right node.
+    /// </typeparam>
+    /// <returns>
+    /// A new composite node that combines the unsigned long integer value and the right node.
+    /// </returns>
+    public static CompositeNode<ULongNode, TRight> CombineWith<TRight>(this ulong left,
         TRight right,
         string? format = null,
         IFormatProvider? provider = null)
