@@ -343,9 +343,19 @@ This class is intended for advanced users who need to optimize StringEnricher fo
   - Also, I recommend to check existing unit tests in the `tests/StringEnricher.Tests` folder. They cover all styles and formats and can be a good reference for usage examples.
 
 ## Project Structure
-- `src/StringEnricher/`: Core library
-  - `Nodes/`: Nodes definitions for HTML, MarkdownV2, PlainText, etc.
-- `tests/StringEnricher.Tests/`: Unit tests for all styles and formats
+- `src/StringEnricher`: Core library with nodes, builders, and helpers.
+   - `Configuration`: Contains `StringEnricherSettings` for performance tuning.
+   - `Extensions`: Contains extensions for `StringBuilder` integration.
+   - `Helpers`: Contains style helpers for HTML and MarkdownV2.
+      - `Html`: Contains HTML style helpers.
+      - `MarkdownV2`: Contains MarkdownV2 style helpers.
+      - `Shared`: Contains shared helpers like CompositeNodeExtensions and ToNodeExtensions.
+   - `Nodes`: Contains all node implementations.
+      - `Html`: Contains HTML node implementations.
+      - `MarkdownV2`: Contains MarkdownV2 node implementations.
+      - `Shared`: Contains shared node implementations like PlainTextNode or LongNode.
+- `tests/StringEnricher.Tests`: Unit tests covering all styles and formats.
+- `benchmarks`: Benchmarking projects using BenchmarkDotNet.
 
 ## Facts
 - Designed for high performance and composability
@@ -366,7 +376,6 @@ Feel free to contribute or open issues for feature requests and bug reports!
 # TODOs
 - Consider adding support for more primitive types in MessageBuilder.Append() overloads and Node types if needed.
   - `short`, `byte`, `sbyte`, `ushort`, `uint`, `ulong`, `object`
-  - Add support for enums?
   - Are there any other types that are commonly used and should be supported directly?
 - Think about the possibility to add support for custom user-defined types in MessageBuilder.Append() and Node types.
    - Make a guide on how to implement INode for custom types.
