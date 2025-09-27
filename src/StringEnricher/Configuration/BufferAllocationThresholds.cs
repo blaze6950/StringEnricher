@@ -4,24 +4,24 @@
 /// Settings related to buffer sizes for string operations.
 /// Use this struct to configure and represent buffer size settings for different extensions.
 /// </summary>
-internal struct BufferSizeSettingEntry
+internal struct BufferAllocationThresholds
 {
     private readonly string _name;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="BufferSizeSettingEntry"/> struct.
+    /// Initializes a new instance of the <see cref="BufferAllocationThresholds"/> struct.
     /// Each instance should be uniquely named to identify the extension it configures.
     /// </summary>
     /// <param name="name">
     /// The name of the extension these settings apply to.
     /// </param>
-    private BufferSizeSettingEntry(string name)
+    private BufferAllocationThresholds(string name)
     {
         _name = name;
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="BufferSizeSettingEntry"/> struct with specified settings.
+    /// Initializes a new instance of the <see cref="BufferAllocationThresholds"/> struct with specified settings.
     /// Each instance should be uniquely named to identify the extension it configures.
     /// </summary>
     /// <param name="name">
@@ -49,7 +49,7 @@ internal struct BufferSizeSettingEntry
     /// Values above 10,000,000 are strongly discouraged due to potential excessive memory usage.
     /// Consider your application's typical node sizes and memory usage patterns when configuring this setting.
     /// </param>
-    public BufferSizeSettingEntry(string name, int maxStackAllocLength, int maxPooledArrayLength) : this(name)
+    public BufferAllocationThresholds(string name, int maxStackAllocLength, int maxPooledArrayLength) : this(name)
     {
         MaxStackAllocLength = maxStackAllocLength;
         MaxPooledArrayLength = maxPooledArrayLength;
@@ -80,9 +80,7 @@ internal struct BufferSizeSettingEntry
 
             if (StringEnricherSettings.EnableDebugLogs)
             {
-                Console.WriteLine(
-                    $"[{nameof(StringEnricherSettings)}.{nameof(Extensions)}.{_name}].{nameof(MaxStackAllocLength)} set to {value}." +
-                    $"\n{Environment.StackTrace}");
+                Console.WriteLine($"[{_name}].{nameof(MaxStackAllocLength)} set to {value}.\n{Environment.StackTrace}");
             }
         }
     }
@@ -132,7 +130,7 @@ internal struct BufferSizeSettingEntry
         {
             // warn about very low values
             Console.WriteLine(
-                $"WARNING: [{nameof(StringEnricherSettings)}.{nameof(Extensions)}.{_name}].{nameof(MaxStackAllocLength)} is set to a very low value ({value}). " +
+                $"WARNING: [{_name}].{nameof(MaxStackAllocLength)} is set to a very low value ({value}). " +
                 $"This may lead to increased heap allocations and reduced performance. Consider setting it to at least {softLowerLimit}.");
         }
 
@@ -141,7 +139,7 @@ internal struct BufferSizeSettingEntry
         {
             // warn about high values
             Console.WriteLine(
-                $"WARNING: [{nameof(StringEnricherSettings)}.{nameof(Extensions)}.{_name}].{nameof(MaxStackAllocLength)} is set to a high value ({value}). " +
+                $"WARNING: [{_name}].{nameof(MaxStackAllocLength)} is set to a high value ({value}). " +
                 $"This may lead to increased stack usage and potential stack overflow in deep recursion scenarios. Consider setting it to no more than {softUpperLimit}.");
         }
     }
@@ -176,8 +174,7 @@ internal struct BufferSizeSettingEntry
             if (StringEnricherSettings.EnableDebugLogs)
             {
                 Console.WriteLine(
-                    $"[{nameof(StringEnricherSettings)}.{nameof(Extensions)}.{_name}].{nameof(MaxPooledArrayLength)} set to {value}." +
-                    $"\n{Environment.StackTrace}");
+                    $"[{_name}].{nameof(MaxPooledArrayLength)} set to {value}.\n{Environment.StackTrace}");
             }
         }
     }
@@ -224,7 +221,7 @@ internal struct BufferSizeSettingEntry
         {
             // warn about very low values
             Console.WriteLine(
-                $"WARNING: [{nameof(StringEnricherSettings)}.{nameof(Extensions)}.{_name}].{nameof(MaxPooledArrayLength)} is set to a very low value ({value}). " +
+                $"WARNING: [{_name}].{nameof(MaxPooledArrayLength)} is set to a very low value ({value}). " +
                 $"This may lead to increased heap allocations and reduced performance. Consider setting it to at least {softLowerLimit}.");
         }
 
@@ -234,7 +231,7 @@ internal struct BufferSizeSettingEntry
         {
             // warn about high values
             Console.WriteLine(
-                $"WARNING: [{nameof(StringEnricherSettings)}.{nameof(Extensions)}.{_name}].{nameof(MaxPooledArrayLength)} is set to a high value ({value}). " +
+                $"WARNING: [{_name}].{nameof(MaxPooledArrayLength)} is set to a high value ({value}). " +
                 $"This may lead to increased memory usage and pressure on the garbage collector. Consider setting it to no more than {softUpperLimit}.");
         }
     }

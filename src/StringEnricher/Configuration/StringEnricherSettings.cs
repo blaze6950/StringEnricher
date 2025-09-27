@@ -13,6 +13,8 @@
 /// </summary>
 public static class StringEnricherSettings
 {
+    private const string Name = nameof(StringEnricherSettings);
+
     #region Sealed State
 
     /// <summary>
@@ -51,6 +53,8 @@ public static class StringEnricherSettings
     /// </summary>
     public static class Extensions
     {
+        private const string Name = $"{StringEnricherSettings.Name}.{nameof(Extensions)}";
+
         /// <summary>
         /// Configuration settings for StringBuilder-related optimizations.
         /// These settings help balance performance and memory usage when appending StringEnricher nodes to StringBuilder.
@@ -61,7 +65,9 @@ public static class StringEnricherSettings
         /// </summary>
         public static class StringBuilder
         {
-            private static BufferSizeSettingEntry _bufferSizeSettingEntry = new(nameof(StringBuilder), 512, 1_000_000);
+            private const string Name = $"{Extensions.Name}.{nameof(StringBuilder)}";
+
+            private static BufferAllocationThresholds _bufferAllocationThresholds = new(Name, 512, 1_000_000);
 
             /// <summary>
             /// The maximum length of a node that can be allocated on the stack.
@@ -75,8 +81,8 @@ public static class StringEnricherSettings
             /// </summary>
             public static int MaxStackAllocLength
             {
-                get => _bufferSizeSettingEntry.MaxStackAllocLength;
-                set => _bufferSizeSettingEntry.MaxStackAllocLength = value;
+                get => _bufferAllocationThresholds.MaxStackAllocLength;
+                set => _bufferAllocationThresholds.MaxStackAllocLength = value;
             }
 
             /// <summary>
@@ -93,8 +99,8 @@ public static class StringEnricherSettings
             /// </summary>
             public static int MaxPooledArrayLength
             {
-                get => _bufferSizeSettingEntry.MaxPooledArrayLength;
-                set => _bufferSizeSettingEntry.MaxPooledArrayLength = value;
+                get => _bufferAllocationThresholds.MaxPooledArrayLength;
+                set => _bufferAllocationThresholds.MaxPooledArrayLength = value;
             }
         }
     }
