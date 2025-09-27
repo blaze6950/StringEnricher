@@ -29,7 +29,7 @@ public static class StringEnricherSettings
     /// <exception cref="InvalidOperationException">
     /// Thrown if the settings are sealed.
     /// </exception>
-    private static void EnsureNotSealed()
+    internal static void EnsureNotSealed()
     {
         if (_isSealed)
         {
@@ -61,7 +61,7 @@ public static class StringEnricherSettings
         /// </summary>
         public static class StringBuilder
         {
-            #region MaxStackAllocLength
+            private static BufferSizeSettings _bufferSizeSettings = new(nameof(StringBuilder));
 
             /// <summary>
             /// The maximum length of a node that can be allocated on the stack.
@@ -75,86 +75,9 @@ public static class StringEnricherSettings
             /// </summary>
             public static int MaxStackAllocLength
             {
-                get => _maxStackAllocLength;
-                set
-                {
-                    EnsureNotSealed();
-
-                    ValidateMaxStackAllocLengthNewValue(value);
-
-                    _maxStackAllocLength = value;
-
-                    if (EnableDebugLogs)
-                    {
-                        Console.WriteLine(
-                            $"[{nameof(StringEnricherSettings)}.{nameof(Extensions)}.{nameof(StringBuilder)}].{nameof(MaxStackAllocLength)} set to {value}." +
-                            $"\n{Environment.StackTrace}");
-                    }
-                }
+                get => _bufferSizeSettings.MaxStackAllocLength;
+                set => _bufferSizeSettings.MaxStackAllocLength = value;
             }
-
-            private static int _maxStackAllocLength = 512;
-
-            /// <summary>
-            /// Validates the new value for MaxStackAllocLength.
-            /// </summary>
-            /// <param name="value">New MaxStackAllocLength value.</param>
-            private static void ValidateMaxStackAllocLengthNewValue(int value)
-            {
-                // strict validation to prevent misconfiguration
-
-                if (value <= 0)
-                {
-                    // must be positive
-                    throw new ArgumentOutOfRangeException(
-                        nameof(value),
-                        value,
-                        $"{nameof(MaxStackAllocLength)} must be greater than zero.");
-                }
-
-                const int hardLimit = 2048; // Arbitrary hard limit to prevent excessive stack usage.
-                if (value > hardLimit)
-                {
-                    // strongly discourage values above this limit
-                    throw new ArgumentOutOfRangeException(
-                        nameof(value),
-                        value,
-                        $"{nameof(MaxStackAllocLength)} cannot be greater than {nameof(MaxPooledArrayLength)} ({_maxPooledArrayLength}).");
-                }
-
-                if (value > _maxPooledArrayLength)
-                {
-                    // must not exceed MaxPooledArrayLength
-                    throw new ArgumentOutOfRangeException(
-                        nameof(value),
-                        value,
-                        $"{nameof(MaxStackAllocLength)} cannot be greater than {nameof(MaxPooledArrayLength)} ({_maxPooledArrayLength}).");
-                }
-
-                // soft warnings to help with sensible configuration
-
-                const int softLowerLimit = 32; // Arbitrary soft lower limit to prevent too small stack allocations.
-                if (EnableDebugLogs && value < softLowerLimit)
-                {
-                    // warn about very low values
-                    Console.WriteLine(
-                        $"WARNING: [{nameof(StringEnricherSettings)}.{nameof(Extensions)}.{nameof(StringBuilder)}].{nameof(MaxStackAllocLength)} is set to a very low value ({value}). " +
-                        $"This may lead to increased heap allocations and reduced performance. Consider setting it to at least {softLowerLimit}.");
-                }
-
-                const int softUpperLimit = 1024; // Arbitrary soft upper limit to prevent excessive stack allocations.
-                if (EnableDebugLogs && value > softUpperLimit)
-                {
-                    // warn about high values
-                    Console.WriteLine(
-                        $"WARNING: [{nameof(StringEnricherSettings)}.{nameof(Extensions)}.{nameof(StringBuilder)}].{nameof(MaxStackAllocLength)} is set to a high value ({value}). " +
-                        $"This may lead to increased stack usage and potential stack overflow in deep recursion scenarios. Consider setting it to no more than {softUpperLimit}.");
-                }
-            }
-
-            #endregion
-
-            #region MaxPooledArrayLength
 
             /// <summary>
             /// The maximum length of a node that can use array pooling.
@@ -170,82 +93,9 @@ public static class StringEnricherSettings
             /// </summary>
             public static int MaxPooledArrayLength
             {
-                get => _maxPooledArrayLength;
-                set
-                {
-                    EnsureNotSealed();
-
-                    ValidateMaxPooledArrayLengthNewValue(value);
-
-                    _maxPooledArrayLength = value;
-
-                    if (EnableDebugLogs)
-                    {
-                        Console.WriteLine(
-                            $"[{nameof(StringEnricherSettings)}.{nameof(Extensions)}.{nameof(StringBuilder)}].{nameof(MaxPooledArrayLength)} set to {value}." +
-                            $"\n{Environment.StackTrace}");
-                    }
-                }
+                get => _bufferSizeSettings.MaxPooledArrayLength;
+                set => _bufferSizeSettings.MaxPooledArrayLength = value;
             }
-
-            private static int _maxPooledArrayLength = 1_000_000;
-
-            private static void ValidateMaxPooledArrayLengthNewValue(int value)
-            {
-                // strict validation to prevent misconfiguration
-
-                if (value <= 0)
-                {
-                    // must be positive
-                    throw new ArgumentOutOfRangeException(
-                        nameof(value),
-                        value,
-                        $"{nameof(MaxPooledArrayLength)} must be greater than zero.");
-                }
-
-                if (value < _maxStackAllocLength)
-                {
-                    // must not be less than MaxStackAllocLength
-                    throw new ArgumentOutOfRangeException(
-                        nameof(value),
-                        value,
-                        $"{nameof(MaxPooledArrayLength)} cannot be less than {nameof(MaxStackAllocLength)} ({_maxStackAllocLength}).");
-                }
-
-                const int hardLimit = 10_485_760; // Arbitrary hard limit to prevent excessive memory usage (10 MB).
-                if (value > hardLimit)
-                {
-                    // strongly discourage values above this limit
-                    throw new ArgumentOutOfRangeException(
-                        nameof(value),
-                        value,
-                        $"{nameof(MaxPooledArrayLength)} cannot be greater than {hardLimit}.");
-                }
-
-                // soft warnings to help with sensible configuration
-
-                const int
-                    softLowerLimit = 500_000; // Arbitrary soft lower limit to prevent too small pooled arrays (500 KB).
-                if (EnableDebugLogs && value < softLowerLimit)
-                {
-                    // warn about very low values
-                    Console.WriteLine(
-                        $"WARNING: [{nameof(StringEnricherSettings)}.{nameof(Extensions)}.{nameof(StringBuilder)}].{nameof(MaxPooledArrayLength)} is set to a very low value ({value}). " +
-                        $"This may lead to increased heap allocations and reduced performance. Consider setting it to at least {softLowerLimit}.");
-                }
-
-                const int
-                    softUpperLimit = 5_242_880; // Arbitrary soft upper limit to prevent excessive pooled arrays (5 MB).
-                if (EnableDebugLogs && value > softUpperLimit)
-                {
-                    // warn about high values
-                    Console.WriteLine(
-                        $"WARNING: [{nameof(StringEnricherSettings)}.{nameof(Extensions)}.{nameof(StringBuilder)}].{nameof(MaxPooledArrayLength)} is set to a high value ({value}). " +
-                        $"This may lead to increased memory usage and pressure on the garbage collector. Consider setting it to no more than {softUpperLimit}.");
-                }
-            }
-
-            #endregion
         }
     }
 }
