@@ -49,7 +49,7 @@ internal struct BufferAllocationThresholds
     /// Values above 10,000,000 are strongly discouraged due to potential excessive memory usage.
     /// Consider your application's typical node sizes and memory usage patterns when configuring this setting.
     /// </param>
-    public BufferAllocationThresholds(string name, int maxStackAllocLength, int maxPooledArrayLength) : this(name)
+    internal BufferAllocationThresholds(string name, int maxStackAllocLength, int maxPooledArrayLength) : this(name)
     {
         MaxStackAllocLength = maxStackAllocLength;
         MaxPooledArrayLength = maxPooledArrayLength;
@@ -67,7 +67,7 @@ internal struct BufferAllocationThresholds
     /// Values above 2048 are strongly discouraged due to potential stack overflow risks.
     /// Consider your application's typical node sizes and stack usage patterns when configuring this setting.
     /// </summary>
-    public int MaxStackAllocLength
+    internal int MaxStackAllocLength
     {
         get => _maxStackAllocLength;
         set
@@ -160,7 +160,7 @@ internal struct BufferAllocationThresholds
     /// Values above 10,000,000 are strongly discouraged due to potential excessive memory usage.
     /// Consider your application's typical node sizes and memory usage patterns when configuring this setting.
     /// </summary>
-    public int MaxPooledArrayLength
+    internal int MaxPooledArrayLength
     {
         get => _maxPooledArrayLength;
         set
