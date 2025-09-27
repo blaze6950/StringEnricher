@@ -15,9 +15,44 @@ internal struct BufferSizeSettingEntry
     /// <param name="name">
     /// The name of the extension these settings apply to.
     /// </param>
-    public BufferSizeSettingEntry(string name)
+    private BufferSizeSettingEntry(string name)
     {
         _name = name;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BufferSizeSettingEntry"/> struct with specified settings.
+    /// Each instance should be uniquely named to identify the extension it configures.
+    /// </summary>
+    /// <param name="name">
+    /// The name of the extension these settings apply to.
+    /// </param>
+    /// <param name="maxStackAllocLength">
+    /// The maximum length of a node that can be allocated on the stack.
+    /// Nodes with a length less than or equal to this value will use stack allocation for optimal performance.
+    /// Default is 512 characters.
+    /// Note: Increasing this value may improve performance for larger nodes but also increases stack usage,
+    /// which can lead to stack overflow in deep recursion scenarios. Adjust with caution.
+    /// Recommended range is between 128 and 1024 characters.
+    /// Values above 2048 are strongly discouraged due to potential stack overflow risks.
+    /// Consider your application's typical node sizes and stack usage patterns when configuring this setting.
+    /// </param>
+    /// <param name="maxPooledArrayLength">
+    /// The maximum length of a node that can use array pooling.
+    /// Nodes with a length greater than MaxStackAllocLength and less than or equal to this value
+    /// will use array pooling to reduce memory allocations and pressure on the garbage collector.
+    /// Nodes larger than this will use direct heap allocation.
+    /// Default is 1,000,000 characters.
+    /// Note: Increasing this value may reduce heap allocations for larger nodes but also increases memory usage
+    /// and pressure on the garbage collector. Adjust with caution.
+    /// Recommended range is between 100,000 and 5,000,000 characters.
+    /// Values above 10,000,000 are strongly discouraged due to potential excessive memory usage.
+    /// Consider your application's typical node sizes and memory usage patterns when configuring this setting.
+    /// </param>
+    public BufferSizeSettingEntry(string name, int maxStackAllocLength, int maxPooledArrayLength) : this(name)
+    {
+        MaxStackAllocLength = maxStackAllocLength;
+        MaxPooledArrayLength = maxPooledArrayLength;
     }
 
     #region MaxStackAllocLength

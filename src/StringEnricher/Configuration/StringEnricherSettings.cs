@@ -61,7 +61,7 @@ public static class StringEnricherSettings
         /// </summary>
         public static class StringBuilder
         {
-            private static BufferSizeSettingEntry _bufferSizeSettingEntry = new(nameof(StringBuilder));
+            private static BufferSizeSettingEntry _bufferSizeSettingEntry = new(nameof(StringBuilder), 512, 1_000_000);
 
             /// <summary>
             /// The maximum length of a node that can be allocated on the stack.
