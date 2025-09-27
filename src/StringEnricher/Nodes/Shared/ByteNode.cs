@@ -26,7 +26,7 @@ public readonly struct ByteNode : INode
         _byte = @byte;
         _format = format;
         _provider = provider;
-        TotalLength = GetLongLength(@byte, _format, _provider);
+        TotalLength = GetByteLength(@byte, _format, _provider);
     }
 
     /// <inheritdoc />
@@ -89,7 +89,7 @@ public readonly struct ByteNode : INode
     /// <returns>
     /// The length of the byte when represented as a string.
     /// </returns>
-    private static int GetLongLength(byte value, string? format = null, IFormatProvider? provider = null)
+    private static int GetByteLength(byte value, string? format = null, IFormatProvider? provider = null)
     {
         var bufferSize = 4;
         while (true)
