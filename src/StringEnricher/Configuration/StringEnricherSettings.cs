@@ -61,7 +61,7 @@ public static class StringEnricherSettings
         /// </summary>
         public static class StringBuilder
         {
-            private static BufferSizeSettings _bufferSizeSettings = new(nameof(StringBuilder));
+            private static BufferSizeSettingEntry _bufferSizeSettingEntry = new(nameof(StringBuilder));
 
             /// <summary>
             /// The maximum length of a node that can be allocated on the stack.
@@ -75,8 +75,8 @@ public static class StringEnricherSettings
             /// </summary>
             public static int MaxStackAllocLength
             {
-                get => _bufferSizeSettings.MaxStackAllocLength;
-                set => _bufferSizeSettings.MaxStackAllocLength = value;
+                get => _bufferSizeSettingEntry.MaxStackAllocLength;
+                set => _bufferSizeSettingEntry.MaxStackAllocLength = value;
             }
 
             /// <summary>
@@ -93,8 +93,8 @@ public static class StringEnricherSettings
             /// </summary>
             public static int MaxPooledArrayLength
             {
-                get => _bufferSizeSettings.MaxPooledArrayLength;
-                set => _bufferSizeSettings.MaxPooledArrayLength = value;
+                get => _bufferSizeSettingEntry.MaxPooledArrayLength;
+                set => _bufferSizeSettingEntry.MaxPooledArrayLength = value;
             }
         }
     }

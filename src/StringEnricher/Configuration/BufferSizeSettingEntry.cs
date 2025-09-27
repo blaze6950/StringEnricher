@@ -4,18 +4,18 @@
 /// Settings related to buffer sizes for string operations.
 /// Use this struct to configure and represent buffer size settings for different extensions.
 /// </summary>
-internal struct BufferSizeSettings
+internal struct BufferSizeSettingEntry
 {
     private readonly string _name;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="BufferSizeSettings"/> struct.
+    /// Initializes a new instance of the <see cref="BufferSizeSettingEntry"/> struct.
     /// Each instance should be uniquely named to identify the extension it configures.
     /// </summary>
     /// <param name="name">
     /// The name of the extension these settings apply to.
     /// </param>
-    public BufferSizeSettings(string name)
+    public BufferSizeSettingEntry(string name)
     {
         _name = name;
     }
