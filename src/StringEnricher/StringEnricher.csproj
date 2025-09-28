@@ -16,4 +16,16 @@
         <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Compile Update="Configuration\StringEnricherSettings.Extensions.StringBuilder.cs">
+        <DependentUpon>StringEnricherSettings.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Configuration\StringEnricherSettings.Nodes.Shared.ByteNode.cs">
+        <DependentUpon>StringEnricherSettings.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Configuration\StringEnricherSettings.Nodes.Shared.DateOnlyNode.cs">
+        <DependentUpon>StringEnricherSettings.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
 </Project>
