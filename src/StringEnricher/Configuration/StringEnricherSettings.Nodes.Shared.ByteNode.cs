@@ -15,7 +15,7 @@ public static partial class StringEnricherSettings
 
                 #region BufferSizes
 
-                private static BufferSizes _bufferSizes = new(Name, 16, 256);
+                private static BufferSizes _bufferSizes = new(Name, 4, 64);
 
                 /// <summary>
                 /// The growth factor to use when increasing buffer sizes for formatting a <see cref="ByteNode"/>.
@@ -31,7 +31,7 @@ public static partial class StringEnricherSettings
                 /// <summary>
                 /// The initial buffer length to use when formatting a <see cref="ByteNode"/>.
                 /// This buffer is used to attempt formatting the node before falling back to larger buffers.
-                /// Default is 16 characters.
+                /// Default is 4 characters.
                 /// </summary>
                 public static int InitialBufferSize
                 {
@@ -42,7 +42,7 @@ public static partial class StringEnricherSettings
                 /// <summary>
                 /// The maximum buffer length to use when formatting a <see cref="ByteNode"/>.
                 /// If formatting requires a buffer larger than this, an exception will be thrown.
-                /// Default is 256 characters.
+                /// Default is 64 characters.
                 /// </summary>
                 public static int MaxBufferSize
                 {

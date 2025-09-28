@@ -108,7 +108,7 @@ public readonly struct ULongNode : INode
 
             if (bufferSize > StringEnricherSettings.Nodes.Shared.ULongNode.MaxBufferSize)
             {
-                throw new InvalidOperationException("ulong format string is too ulong.");
+                                throw new InvalidOperationException("ulong format string is too long.");
             }
         }
     }

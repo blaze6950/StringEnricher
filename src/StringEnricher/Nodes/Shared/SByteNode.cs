@@ -108,7 +108,7 @@ public readonly struct SByteNode : INode
 
             if (bufferSize > StringEnricherSettings.Nodes.Shared.SByteNode.MaxBufferSize)
             {
-                throw new InvalidOperationException("sbyte format string is too sbyte.");
+                                throw new InvalidOperationException("sbyte format string is too long.");
             }
         }
     }

@@ -201,15 +201,13 @@ internal struct BufferSizes
 
         // soft warnings to help with sensible configuration
 
-        // soft warnings to help with sensible configuration
-
-        const int softUpperLimit = 1024; // Arbitrary soft upper limit to prevent excessive stack allocations.
+        const int softUpperLimit = 1024; // Arbitrary soft upper limit to prevent excessive memory usage due to large buffer sizes.
         if (StringEnricherSettings.EnableDebugLogs && value > softUpperLimit)
         {
             // warn about high values
             Console.WriteLine(
                 $"WARNING: [{_name}].{nameof(MaxBufferLength)} is set to a high value ({value}). " +
-                $"This may lead to increased stack usage and potential stack overflow in deep recursion scenarios. Consider setting it to no more than {softUpperLimit}.");
+                $"This may lead to increased memory usage and potential performance issues. Consider setting it to no more than {softUpperLimit}.");
         }
     }
 

@@ -108,7 +108,7 @@ public readonly struct ByteNode : INode
 
             if (bufferSize > StringEnricherSettings.Nodes.Shared.ByteNode.MaxBufferSize)
             {
-                throw new InvalidOperationException("byte format string is too byte.");
+                                throw new InvalidOperationException("byte format string is too long.");
             }
         }
     }
