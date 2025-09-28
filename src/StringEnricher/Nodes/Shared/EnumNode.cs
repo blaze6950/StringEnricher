@@ -1,3 +1,7 @@
+using System.Buffers;
+using StringEnricher.Configuration;
+using StringEnricher.Utils;
+
 namespace StringEnricher.Nodes.Shared;
 
 /// <summary>
@@ -77,7 +81,7 @@ public readonly struct EnumNode<TEnum> : INode where TEnum : struct, Enum
     /// </returns>
     private static int GetEnumLength(TEnum value, string? format = null)
     {
-        var bufferSize = 16;
+        var bufferSize = StringEnricherSettings.Nodes.Shared.EnumNode.InitialBufferSize;
         while (true)
         {
             if (TryGetFormattedLength(value, format, bufferSize, out var enumLength))
@@ -85,8 +89,10 @@ public readonly struct EnumNode<TEnum> : INode where TEnum : struct, Enum
                 return enumLength;
             }
 
-            bufferSize *= 2;
-            if (bufferSize > 512)
+            bufferSize = BufferSizeUtils.CalculateBufferGrowth(bufferSize,
+                StringEnricherSettings.Nodes.Shared.EnumNode.GrowthFactor);
+
+            if (bufferSize > StringEnricherSettings.Nodes.Shared.EnumNode.MaxBufferSize)
             {
                 throw new InvalidOperationException("enum format string is too long.");
             }
@@ -115,14 +121,48 @@ public readonly struct EnumNode<TEnum> : INode where TEnum : struct, Enum
         out int length)
     {
         length = 0;
-        Span<char> buffer = stackalloc char[bufferSize];
 
-        if (!Enum.TryFormat(value, buffer, out var charsWritten, format))
+        if (bufferSize <= StringEnricherSettings.Nodes.Shared.EnumNode.MaxStackAllocLength)
         {
-            return false;
+            // stackalloc for small sizes (fastest)
+            Span<char> buffer = stackalloc char[bufferSize];
+            if (!Enum.TryFormat(value, buffer, out var charsWritten, format))
+            {
+                return false;
+            }
+
+            length = charsWritten;
+        }
+        else if (bufferSize <= StringEnricherSettings.Nodes.Shared.EnumNode.MaxPooledArrayLength)
+        {
+            // array pool for medium sizes (less pressure on the GC)
+            var buffer = ArrayPool<char>.Shared.Rent(bufferSize);
+            try
+            {
+                if (!Enum.TryFormat(value, buffer, out var charsWritten, format))
+                {
+                    return false;
+                }
+
+                length = charsWritten;
+            }
+            finally
+            {
+                ArrayPool<char>.Shared.Return(buffer);
+            }
+        }
+        else
+        {
+            // fallback: direct heap allocation (rare but safe)
+            var buffer = new char[bufferSize];
+            if (!Enum.TryFormat(value, buffer, out var charsWritten, format))
+            {
+                return false;
+            }
+
+            length = charsWritten;
         }
 
-        length = charsWritten;
         return true;
     }
 }

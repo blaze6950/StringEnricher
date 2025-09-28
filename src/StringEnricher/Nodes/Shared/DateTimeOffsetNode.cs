@@ -1,3 +1,7 @@
+using System.Buffers;
+using StringEnricher.Configuration;
+using StringEnricher.Utils;
+
 namespace StringEnricher.Nodes.Shared;
 
 /// <summary>
@@ -92,7 +96,7 @@ public readonly struct DateTimeOffsetNode : INode
     private static int GetDateTimeOffsetLength(DateTimeOffset value, string? format = null,
         IFormatProvider? provider = null)
     {
-        var bufferSize = 32;
+        var bufferSize = StringEnricherSettings.Nodes.Shared.DateTimeOffsetNode.InitialBufferSize;
         while (true)
         {
             if (TryGetFormattedLength(value, format, provider, bufferSize, out var dateOnlyLength))
@@ -100,8 +104,10 @@ public readonly struct DateTimeOffsetNode : INode
                 return dateOnlyLength;
             }
 
-            bufferSize *= 2;
-            if (bufferSize > 512)
+            bufferSize = BufferSizeUtils.CalculateBufferGrowth(bufferSize,
+                StringEnricherSettings.Nodes.Shared.DateTimeOffsetNode.GrowthFactor);
+
+            if (bufferSize > StringEnricherSettings.Nodes.Shared.DateTimeOffsetNode.MaxBufferSize)
             {
                 throw new InvalidOperationException("DateTimeOffset format string is too long.");
             }
@@ -129,18 +135,53 @@ public readonly struct DateTimeOffsetNode : INode
     /// <returns>
     /// True if the length was successfully obtained; otherwise, false.
     /// </returns>
-    private static bool TryGetFormattedLength(DateTimeOffset value, string? format, IFormatProvider? provider, int bufferSize,
+    private static bool TryGetFormattedLength(DateTimeOffset value, string? format, IFormatProvider? provider,
+        int bufferSize,
         out int length)
     {
         length = 0;
-        Span<char> buffer = stackalloc char[bufferSize];
 
-        if (!value.TryFormat(buffer, out var charsWritten, format, provider))
+        if (bufferSize <= StringEnricherSettings.Nodes.Shared.DateTimeOffsetNode.MaxStackAllocLength)
         {
-            return false;
+            // stackalloc for small sizes (fastest)
+            Span<char> buffer = stackalloc char[bufferSize];
+            if (!value.TryFormat(buffer, out var charsWritten, format, provider))
+            {
+                return false;
+            }
+
+            length = charsWritten;
+        }
+        else if (bufferSize <= StringEnricherSettings.Nodes.Shared.DateTimeOffsetNode.MaxPooledArrayLength)
+        {
+            // array pool for medium sizes (less pressure on the GC)
+            var buffer = ArrayPool<char>.Shared.Rent(bufferSize);
+            try
+            {
+                if (!value.TryFormat(buffer, out var charsWritten, format, provider))
+                {
+                    return false;
+                }
+
+                length = charsWritten;
+            }
+            finally
+            {
+                ArrayPool<char>.Shared.Return(buffer);
+            }
+        }
+        else
+        {
+            // fallback: direct heap allocation (rare but safe)
+            var buffer = new char[bufferSize];
+            if (!value.TryFormat(buffer, out var charsWritten, format, provider))
+            {
+                return false;
+            }
+
+            length = charsWritten;
         }
 
-        length = charsWritten;
         return true;
     }
 }

@@ -1,3 +1,7 @@
+using System.Buffers;
+using StringEnricher.Configuration;
+using StringEnricher.Utils;
+
 namespace StringEnricher.Nodes.Shared;
 
 /// <summary>
@@ -91,7 +95,7 @@ public readonly struct UShortNode : INode
     /// </returns>
     private static int GetFloatLength(ushort value, string? format = null, IFormatProvider? provider = null)
     {
-        var bufferSize = 8;
+        var bufferSize = StringEnricherSettings.Nodes.Shared.UShortNode.InitialBufferSize;
         while (true)
         {
             if (TryGetFormattedLength(value, format, provider, bufferSize, out var ushortLength))
@@ -99,8 +103,10 @@ public readonly struct UShortNode : INode
                 return ushortLength;
             }
 
-            bufferSize *= 2;
-            if (bufferSize > 64)
+            bufferSize = BufferSizeUtils.CalculateBufferGrowth(bufferSize,
+                StringEnricherSettings.Nodes.Shared.UShortNode.GrowthFactor);
+
+            if (bufferSize > StringEnricherSettings.Nodes.Shared.UShortNode.MaxBufferSize)
             {
                 throw new InvalidOperationException("ushort format string is too long.");
             }
@@ -132,14 +138,48 @@ public readonly struct UShortNode : INode
         out int length)
     {
         length = 0;
-        Span<char> buffer = stackalloc char[bufferSize];
 
-        if (!value.TryFormat(buffer, out var charsWritten, format, provider))
+        if (bufferSize <= StringEnricherSettings.Nodes.Shared.UShortNode.MaxStackAllocLength)
         {
-            return false;
+            // stackalloc for small sizes (fastest)
+            Span<char> buffer = stackalloc char[bufferSize];
+            if (!value.TryFormat(buffer, out var charsWritten, format, provider))
+            {
+                return false;
+            }
+
+            length = charsWritten;
+        }
+        else if (bufferSize <= StringEnricherSettings.Nodes.Shared.UShortNode.MaxPooledArrayLength)
+        {
+            // array pool for medium sizes (less pressure on the GC)
+            var buffer = ArrayPool<char>.Shared.Rent(bufferSize);
+            try
+            {
+                if (!value.TryFormat(buffer, out var charsWritten, format, provider))
+                {
+                    return false;
+                }
+
+                length = charsWritten;
+            }
+            finally
+            {
+                ArrayPool<char>.Shared.Return(buffer);
+            }
+        }
+        else
+        {
+            // fallback: direct heap allocation (rare but safe)
+            var buffer = new char[bufferSize];
+            if (!value.TryFormat(buffer, out var charsWritten, format, provider))
+            {
+                return false;
+            }
+
+            length = charsWritten;
         }
 
-        length = charsWritten;
         return true;
     }
 }
