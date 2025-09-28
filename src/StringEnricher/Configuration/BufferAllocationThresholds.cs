@@ -11,13 +11,21 @@ internal struct BufferAllocationThresholds
     /// <summary>
     /// Initializes a new instance of the <see cref="BufferAllocationThresholds"/> struct.
     /// Each instance should be uniquely named to identify the extension it configures.
+    /// NOTE: This constructor sets default values for MaxStackAllocLength and MaxPooledArrayLength.
+    /// These defaults are chosen to balance performance and memory usage for most scenarios.
+    /// Adjust these values based on your application's specific needs and typical node sizes.
+    /// Max pooled array length default is set to 1,000,000 characters to minimize heap allocations for larger nodes.
+    /// Max stack allocation length default is set to 512 characters to optimize performance for small to medium nodes
+    /// while avoiding excessive stack usage that could lead to stack overflow in deep recursion scenarios.
     /// </summary>
     /// <param name="name">
     /// The name of the extension these settings apply to.
     /// </param>
-    private BufferAllocationThresholds(string name)
+    internal BufferAllocationThresholds(string name)
     {
         _name = name;
+        _maxPooledArrayLength = 1_000_000;
+        _maxStackAllocLength = 512;
     }
 
     /// <summary>
@@ -85,7 +93,7 @@ internal struct BufferAllocationThresholds
         }
     }
 
-    private int _maxStackAllocLength = 512;
+    private int _maxStackAllocLength;
 
     /// <summary>
     /// Validates the new value for MaxStackAllocLength.
@@ -179,7 +187,7 @@ internal struct BufferAllocationThresholds
         }
     }
 
-    private int _maxPooledArrayLength = 1_000_000;
+    private int _maxPooledArrayLength;
 
     private void ValidateMaxPooledArrayLengthNewValue(int value)
     {
