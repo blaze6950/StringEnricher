@@ -22,4 +22,10 @@
       <ProjectReference Include="..\..\src\StringEnricher\StringEnricher.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="Configuration\StringEnricherSettingsTests.Extensions.StringBuilder.cs">
+        <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
 </Project>
