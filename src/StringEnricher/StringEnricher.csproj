@@ -26,6 +26,54 @@
       <Compile Update="Configuration\StringEnricherSettings.Nodes.Shared.DateOnlyNode.cs">
         <DependentUpon>StringEnricherSettings.cs</DependentUpon>
       </Compile>
+      <Compile Update="Configuration\StringEnricherSettings.Nodes.Shared.DateTimeNode.cs">
+        <DependentUpon>StringEnricherSettings.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Configuration\StringEnricherSettings.Nodes.Shared.DateTimeOffsetNode.cs">
+        <DependentUpon>StringEnricherSettings.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Configuration\StringEnricherSettings.Nodes.Shared.DecimalNode.cs">
+        <DependentUpon>StringEnricherSettings.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Configuration\StringEnricherSettings.Nodes.Shared.DoubleNode.cs">
+        <DependentUpon>StringEnricherSettings.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Configuration\StringEnricherSettings.Nodes.Shared.EnumNode.cs">
+        <DependentUpon>StringEnricherSettings.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Configuration\StringEnricherSettings.Nodes.Shared.FloatNode.cs">
+        <DependentUpon>StringEnricherSettings.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Configuration\StringEnricherSettings.Nodes.Shared.GuidNode.cs">
+        <DependentUpon>StringEnricherSettings.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Configuration\StringEnricherSettings.Nodes.Shared.IntegerNode.cs">
+        <DependentUpon>StringEnricherSettings.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Configuration\StringEnricherSettings.Nodes.Shared.LongNode.cs">
+        <DependentUpon>StringEnricherSettings.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Configuration\StringEnricherSettings.Nodes.Shared.SByteNode.cs">
+        <DependentUpon>StringEnricherSettings.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Configuration\StringEnricherSettings.Nodes.Shared.ShortNode.cs">
+        <DependentUpon>StringEnricherSettings.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Configuration\StringEnricherSettings.Nodes.Shared.TimeOnlyNode.cs">
+        <DependentUpon>StringEnricherSettings.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Configuration\StringEnricherSettings.Nodes.Shared.TimeSpanNode.cs">
+        <DependentUpon>StringEnricherSettings.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Configuration\StringEnricherSettings.Nodes.Shared.UIntegerNode.cs">
+        <DependentUpon>StringEnricherSettings.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Configuration\StringEnricherSettings.Nodes.Shared.ULongNode.cs">
+        <DependentUpon>StringEnricherSettings.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Configuration\StringEnricherSettings.Nodes.Shared.UShortNode.cs">
+        <DependentUpon>StringEnricherSettings.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>
