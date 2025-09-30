@@ -73,7 +73,44 @@ internal struct BufferSizes
 
     #region GrowthFactor
 
-    internal float GrowthFactor { get; set; }
+    internal float GrowthFactor
+    {
+        readonly get => _growthFactor;
+        set
+        {
+            StringEnricherSettings.EnsureNotSealed();
+
+            ValidateGrowthFactorNewValue(value);
+
+            _growthFactor = value;
+
+            if (StringEnricherSettings.EnableDebugLogs)
+            {
+                Console.WriteLine($"[{_name}].{nameof(GrowthFactor)} set to {value}.\n{Environment.StackTrace}");
+            }
+        }
+    }
+
+    private static void ValidateGrowthFactorNewValue(float value)
+    {
+        if (value <= 1.0f)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(value),
+                value,
+                $"{nameof(GrowthFactor)} must be greater than 1.0.");
+        }
+
+        if (value > 10.0f && StringEnricherSettings.EnableDebugLogs)
+        {
+            // warn about very high values
+            Console.WriteLine(
+                $"WARNING: {nameof(GrowthFactor)} is set to a very high value ({value}). " +
+                $"This may lead to excessive memory allocations and performance issues. Consider setting it to no more than 10.0.");
+        }
+    }
+
+    private float _growthFactor;
 
     #endregion
 
