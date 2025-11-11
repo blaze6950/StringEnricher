@@ -6,11 +6,11 @@
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageId>StringEnricher</PackageId>
-        <Version>1.0.0</Version>
+        <Version>1.0.1</Version>
         <Authors>blaze6950</Authors>
-        <Description>A .NET 9 library that provides high performance string enrichment functionalities with zero heap allocations building MarkdownV2 or HTML styled strings.</Description>
+        <Description>Core library for StringEnricher. Provides foundational APIs for building platform-specific implementations (e.g., StringEnricher.Telegram). Install only if you need to create custom platform integrations; otherwise, use a platform-specific package.</Description>
         <PackageReleaseNotes>Primitive node settings were defined for advance tuning primitive nodes behavior, namely tune the allocation behavior</PackageReleaseNotes>
-        <PackageTags>string;enrich;dotnet9;formatting;markdown;html;high-performance;zero-allocations</PackageTags>
+        <PackageTags>string;enrich;dotnet9;formatting;markdown;html;high-performance;zero-allocations;core;stack</PackageTags>
         <RepositoryUrl>https://github.com/blaze6950/StringEnricher</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
