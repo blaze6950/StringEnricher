@@ -3,7 +3,7 @@
 /// <summary>
 /// Configuration for buffer sizes used in various operations.
 /// </summary>
-internal struct BufferSizes
+public struct BufferSizes
 {
     private readonly string _name;
 
@@ -19,7 +19,7 @@ internal struct BufferSizes
         _name = name;
         _initialBufferLength = 1;
         _maxBufferLength = 1_000_000;
-        GrowthFactor = 2;
+        _growthFactor = 2;
     }
 
     /// <summary>
@@ -40,8 +40,10 @@ internal struct BufferSizes
     /// </param>
     internal BufferSizes(string name, int initialBufferLength, int maxBufferLength) : this(name)
     {
-        InitialBufferLength = initialBufferLength;
-        MaxBufferLength = maxBufferLength;
+        _initialBufferLength = initialBufferLength;
+        _maxBufferLength = maxBufferLength;
+        ValidateInitialBufferLengthNewValue(_initialBufferLength);
+        ValidateMaxBufferLengthNewValue(_maxBufferLength);
     }
 
     /// <summary>
@@ -68,7 +70,8 @@ internal struct BufferSizes
     internal BufferSizes(string name, int initialBufferLength, int maxBufferLength, float growthFactor)
         : this(name, initialBufferLength, maxBufferLength)
     {
-        GrowthFactor = growthFactor;
+        _growthFactor = growthFactor;
+        ValidateGrowthFactorNewValue(_growthFactor);
     }
 
     #region GrowthFactor
@@ -91,7 +94,7 @@ internal struct BufferSizes
         }
     }
 
-    private static void ValidateGrowthFactorNewValue(float value)
+    private void ValidateGrowthFactorNewValue(float value)
     {
         if (value <= 1.0f)
         {
@@ -99,6 +102,15 @@ internal struct BufferSizes
                 nameof(value),
                 value,
                 $"{nameof(GrowthFactor)} must be greater than 1.0.");
+        }
+
+        if ((int)(_initialBufferLength * value) == _initialBufferLength)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(value),
+                value,
+                $"{nameof(GrowthFactor)} is too small to cause any increase in buffer size from the current {nameof(InitialBufferLength)} ({_initialBufferLength}). " +
+                $"Consider setting it to at least {(float)(_initialBufferLength + 1) / _initialBufferLength}.");
         }
 
         if (value > 10.0f && StringEnricherSettings.EnableDebugLogs)

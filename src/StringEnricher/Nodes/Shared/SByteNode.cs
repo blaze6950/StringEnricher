@@ -103,7 +103,7 @@ public readonly struct SByteNode : INode
                 return sbyteLength;
             }
 
-            bufferSize = BufferSizeUtils.CalculateBufferGrowth(bufferSize,
+            bufferSize = BufferSizeUtils.GetNewBufferSize(bufferSize,
                 StringEnricherSettings.Nodes.Shared.SByteNode.GrowthFactor);
 
             if (bufferSize > StringEnricherSettings.Nodes.Shared.SByteNode.MaxBufferSize)

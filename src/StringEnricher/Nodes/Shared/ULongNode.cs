@@ -103,7 +103,7 @@ public readonly struct ULongNode : INode
                 return ulongLength;
             }
 
-            bufferSize = BufferSizeUtils.CalculateBufferGrowth(bufferSize,
+            bufferSize = BufferSizeUtils.GetNewBufferSize(bufferSize,
                 StringEnricherSettings.Nodes.Shared.ULongNode.GrowthFactor);
 
             if (bufferSize > StringEnricherSettings.Nodes.Shared.ULongNode.MaxBufferSize)

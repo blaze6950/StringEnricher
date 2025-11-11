@@ -103,7 +103,7 @@ public readonly struct UShortNode : INode
                 return ushortLength;
             }
 
-            bufferSize = BufferSizeUtils.CalculateBufferGrowth(bufferSize,
+            bufferSize = BufferSizeUtils.GetNewBufferSize(bufferSize,
                 StringEnricherSettings.Nodes.Shared.UShortNode.GrowthFactor);
 
             if (bufferSize > StringEnricherSettings.Nodes.Shared.UShortNode.MaxBufferSize)

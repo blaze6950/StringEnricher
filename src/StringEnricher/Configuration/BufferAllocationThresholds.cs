@@ -4,7 +4,7 @@
 /// Settings related to buffer sizes for string operations.
 /// Use this struct to configure and represent buffer size settings for different extensions.
 /// </summary>
-internal struct BufferAllocationThresholds
+public struct BufferAllocationThresholds
 {
     private readonly string _name;
 
@@ -59,8 +59,10 @@ internal struct BufferAllocationThresholds
     /// </param>
     internal BufferAllocationThresholds(string name, int maxStackAllocLength, int maxPooledArrayLength) : this(name)
     {
-        MaxStackAllocLength = maxStackAllocLength;
-        MaxPooledArrayLength = maxPooledArrayLength;
+        _maxStackAllocLength = maxStackAllocLength;
+        _maxPooledArrayLength = maxPooledArrayLength;
+        ValidateMaxStackAllocLengthNewValue(_maxStackAllocLength);
+        ValidateMaxPooledArrayLengthNewValue(_maxPooledArrayLength);
     }
 
     #region MaxStackAllocLength
@@ -103,13 +105,14 @@ internal struct BufferAllocationThresholds
     {
         // strict validation to prevent misconfiguration
 
-        if (value <= 0)
+        // zero is allowed here to effectively disable stack allocation
+        if (value < 0)
         {
             // must be positive
             throw new ArgumentOutOfRangeException(
                 nameof(value),
                 value,
-                $"{nameof(MaxStackAllocLength)} must be greater than zero.");
+                $"{nameof(MaxStackAllocLength)} must be positive.");
         }
 
         const int hardLimit = 2048; // Arbitrary hard limit to prevent excessive stack usage.
@@ -193,13 +196,14 @@ internal struct BufferAllocationThresholds
     {
         // strict validation to prevent misconfiguration
 
-        if (value <= 0)
+        // zero is allowed here to effectively disable pooling
+        if (value < 0)
         {
             // must be positive
             throw new ArgumentOutOfRangeException(
                 nameof(value),
                 value,
-                $"{nameof(MaxPooledArrayLength)} must be greater than zero.");
+                $"{nameof(MaxPooledArrayLength)} must be positive.");
         }
 
         if (value < _maxStackAllocLength)

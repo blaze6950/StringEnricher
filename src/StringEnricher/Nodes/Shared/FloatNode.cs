@@ -103,7 +103,7 @@ public readonly struct FloatNode : INode
                 return dateOnlyLength;
             }
 
-            bufferSize = BufferSizeUtils.CalculateBufferGrowth(bufferSize,
+            bufferSize = BufferSizeUtils.GetNewBufferSize(bufferSize,
                 StringEnricherSettings.Nodes.Shared.FloatNode.GrowthFactor);
 
             if (bufferSize > StringEnricherSettings.Nodes.Shared.FloatNode.MaxBufferSize)

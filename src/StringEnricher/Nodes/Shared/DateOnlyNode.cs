@@ -103,7 +103,7 @@ public readonly struct DateOnlyNode : INode
                 return dateOnlyLength;
             }
 
-            bufferSize = BufferSizeUtils.CalculateBufferGrowth(bufferSize,
+            bufferSize = BufferSizeUtils.GetNewBufferSize(bufferSize,
                 StringEnricherSettings.Nodes.Shared.DateOnlyNode.GrowthFactor);
 
             if (bufferSize > StringEnricherSettings.Nodes.Shared.DateOnlyNode.MaxBufferSize)

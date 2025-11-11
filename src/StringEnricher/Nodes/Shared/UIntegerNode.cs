@@ -103,7 +103,7 @@ public readonly struct UIntegerNode : INode
                 return uintLength;
             }
 
-            bufferSize = BufferSizeUtils.CalculateBufferGrowth(bufferSize,
+            bufferSize = BufferSizeUtils.GetNewBufferSize(bufferSize,
                 StringEnricherSettings.Nodes.Shared.UIntegerNode.GrowthFactor);
 
             if (bufferSize > StringEnricherSettings.Nodes.Shared.UIntegerNode.MaxBufferSize)

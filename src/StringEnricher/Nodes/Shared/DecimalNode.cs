@@ -103,7 +103,7 @@ public readonly struct DecimalNode : INode
                 return dateOnlyLength;
             }
 
-            bufferSize = BufferSizeUtils.CalculateBufferGrowth(bufferSize,
+            bufferSize = BufferSizeUtils.GetNewBufferSize(bufferSize,
                 StringEnricherSettings.Nodes.Shared.DecimalNode.GrowthFactor);
 
             if (bufferSize > StringEnricherSettings.Nodes.Shared.DecimalNode.MaxBufferSize)

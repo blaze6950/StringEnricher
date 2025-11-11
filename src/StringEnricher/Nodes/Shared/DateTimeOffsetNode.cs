@@ -104,7 +104,7 @@ public readonly struct DateTimeOffsetNode : INode
                 return dateOnlyLength;
             }
 
-            bufferSize = BufferSizeUtils.CalculateBufferGrowth(bufferSize,
+            bufferSize = BufferSizeUtils.GetNewBufferSize(bufferSize,
                 StringEnricherSettings.Nodes.Shared.DateTimeOffsetNode.GrowthFactor);
 
             if (bufferSize > StringEnricherSettings.Nodes.Shared.DateTimeOffsetNode.MaxBufferSize)

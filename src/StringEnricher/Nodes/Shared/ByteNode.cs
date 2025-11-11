@@ -96,6 +96,7 @@ public readonly struct ByteNode : INode
     private static int GetByteLength(byte value, string? format = null, IFormatProvider? provider = null)
     {
         var bufferSize = StringEnricherSettings.Nodes.Shared.ByteNode.InitialBufferSize;
+
         while (true)
         {
             if (TryGetFormattedLength(value, format, provider, bufferSize, out var byteLength))
@@ -103,12 +104,12 @@ public readonly struct ByteNode : INode
                 return byteLength;
             }
 
-            bufferSize = BufferSizeUtils.CalculateBufferGrowth(bufferSize,
+            bufferSize = BufferSizeUtils.GetNewBufferSize(bufferSize,
                 StringEnricherSettings.Nodes.Shared.ByteNode.GrowthFactor);
 
             if (bufferSize > StringEnricherSettings.Nodes.Shared.ByteNode.MaxBufferSize)
             {
-                                throw new InvalidOperationException("byte format string is too long.");
+                throw new InvalidOperationException("byte format string is too long.");
             }
         }
     }

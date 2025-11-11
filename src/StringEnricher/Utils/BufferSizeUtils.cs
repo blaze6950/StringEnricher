@@ -22,6 +22,6 @@ public static class BufferSizeUtils
     /// </returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int CalculateBufferGrowth(int currentSize, float growthFactor) =>
+    public static int GetNewBufferSize(int currentSize, float growthFactor) =>
         (int)Math.Round(currentSize * growthFactor, MidpointRounding.ToPositiveInfinity);
 }

@@ -89,7 +89,7 @@ public readonly struct EnumNode<TEnum> : INode where TEnum : struct, Enum
                 return enumLength;
             }
 
-            bufferSize = BufferSizeUtils.CalculateBufferGrowth(bufferSize,
+            bufferSize = BufferSizeUtils.GetNewBufferSize(bufferSize,
                 StringEnricherSettings.Nodes.Shared.EnumNode.GrowthFactor);
 
             if (bufferSize > StringEnricherSettings.Nodes.Shared.EnumNode.MaxBufferSize)

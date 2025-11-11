@@ -94,7 +94,7 @@ public readonly struct GuidNode : INode
                 return dateOnlyLength;
             }
 
-            bufferSize = BufferSizeUtils.CalculateBufferGrowth(bufferSize,
+            bufferSize = BufferSizeUtils.GetNewBufferSize(bufferSize,
                 StringEnricherSettings.Nodes.Shared.GuidNode.GrowthFactor);
 
             if (bufferSize > StringEnricherSettings.Nodes.Shared.GuidNode.MaxBufferSize)

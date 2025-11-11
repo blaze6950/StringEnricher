@@ -7,82 +7,24 @@ public static partial class StringEnricherSettings
         public static partial class Shared
         {
             /// <summary>
+            /// The allocation settings are optimized for small byte arrays - the allocation is done on stack.
+            /// The allocation using array pool and heap disabled by default.
+            /// </summary>
+            private static NodeSettings GetDefaultDateOnlyNodeSettings() => new(
+                name: $"{Name}.{nameof(DateOnlyNode)}",
+                initialBufferLength: 16, maxBufferLength: 256, growthFactor: 2,
+                maxStackAllocLength: 256, maxPooledArrayLength: 256
+            );
+
+            /// <summary>
             /// Configuration settings for <see cref="DateOnlyNode"/>.
             /// </summary>
-            public static class DateOnlyNode
-            {
-                private const string Name = $"{Shared.Name}.{nameof(DateOnlyNode)}";
+            public static NodeSettings DateOnlyNode = GetDefaultDateOnlyNodeSettings();
 
-                #region BufferSizes
-
-                private static BufferSizes _bufferSizes = new(Name, 16, 256);
-
-                /// <summary>
-                /// The multiplier to use when resizing the buffer for formatting a <see cref="DateOnlyNode"/>.
-                /// When the current buffer is insufficient, it will be resized by multiplying its size by this factor.
-                /// Default is 2.0 (doubling the buffer size).
-                /// Note: A higher multiplier reduces the number of resizing operations but may lead to increased memory usage.
-                /// A lower multiplier minimizes memory usage but may increase the number of resizing operations, impacting performance.
-                /// Recommended range is between 1.5 and 3.0.
-                /// </summary>
-                public static float GrowthFactor
-                {
-                    get => _bufferSizes.GrowthFactor;
-                    set => _bufferSizes.GrowthFactor = value;
-                }
-
-                /// <summary>
-                /// The initial buffer length to use when formatting a <see cref="DateOnlyNode"/>.
-                /// This buffer is used to attempt formatting the node before falling back to larger buffers.
-                /// Default is 16 characters.
-                /// </summary>
-                public static int InitialBufferSize
-                {
-                    get => _bufferSizes.InitialBufferLength;
-                    set => _bufferSizes.InitialBufferLength = value;
-                }
-
-                /// <summary>
-                /// The maximum buffer length to use when formatting a <see cref="DateOnlyNode"/>.
-                /// If formatting requires a buffer larger than this, an exception will be thrown.
-                /// Default is 256 characters.
-                /// </summary>
-                public static int MaxBufferSize
-                {
-                    get => _bufferSizes.MaxBufferLength;
-                    set => _bufferSizes.MaxBufferLength = value;
-                }
-
-                #endregion
-
-                #region BufferAllocationThresholds
-
-                private static BufferAllocationThresholds _bufferAllocationThresholds = new(Name);
-
-                /// <summary>
-                /// The maximum length of a buffer that can be allocated on the stack when formatting a <see cref="DateOnlyNode"/>.
-                /// Buffers larger than this will be allocated on the heap.
-                /// Default is 256 characters.
-                /// </summary>
-                public static int MaxStackAllocLength
-                {
-                    get => _bufferAllocationThresholds.MaxStackAllocLength;
-                    set => _bufferAllocationThresholds.MaxStackAllocLength = value;
-                }
-
-                /// <summary>
-                /// The maximum length of a buffer that can be rented from the array pool when formatting a <see cref="DateOnlyNode"/>.
-                /// Buffers larger than this will be allocated on the heap.
-                /// Default is 8192 characters.
-                /// </summary>
-                public static int MaxPooledArrayLength
-                {
-                    get => _bufferAllocationThresholds.MaxPooledArrayLength;
-                    set => _bufferAllocationThresholds.MaxPooledArrayLength = value;
-                }
-
-                #endregion
-            }
+            /// <summary>
+            /// Resets the <see cref="DateOnlyNode"/> settings to their default values.
+            /// </summary>
+            public static void ResetDateOnlyNodeSettings() => DateOnlyNode = GetDefaultDateOnlyNodeSettings();
         }
     }
 }

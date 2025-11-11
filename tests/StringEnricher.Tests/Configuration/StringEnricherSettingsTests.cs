@@ -28,8 +28,6 @@ public partial class StringEnricherSettingsTests
 
         // Reset to default values
         StringEnricherSettings.EnableDebugLogs = true;
-        StringEnricherSettings.Extensions.StringBuilder.MaxStackAllocLength = 512;
-        StringEnricherSettings.Extensions.StringBuilder.MaxPooledArrayLength = 1_000_000;
     }
 
     [Collection("NonParallelTests")]
@@ -85,6 +83,45 @@ public partial class StringEnricherSettingsTests
             Assert.False(StringEnricherSettings.EnableDebugLogs);
             Assert.Equal(256, StringEnricherSettings.Extensions.StringBuilder.MaxStackAllocLength);
             Assert.Equal(500_000, StringEnricherSettings.Extensions.StringBuilder.MaxPooledArrayLength);
+        }
+    }
+
+    [Collection("NonParallelTests")]
+    public class EnableDebugLogsTests
+    {
+        public EnableDebugLogsTests()
+        {
+            ResetSettings();
+        }
+
+        [Fact]
+        public void EnableDebugLogs_DefaultValue_ShouldBeTrue()
+        {
+            // Assert
+            Assert.True(StringEnricherSettings.EnableDebugLogs);
+        }
+
+        [Fact]
+        public void EnableDebugLogs_CanBeSetToFalse()
+        {
+            // Act
+            StringEnricherSettings.EnableDebugLogs = false;
+
+            // Assert
+            Assert.False(StringEnricherSettings.EnableDebugLogs);
+        }
+
+        [Fact]
+        public void EnableDebugLogs_CanBeSetToTrue()
+        {
+            // Arrange
+            StringEnricherSettings.EnableDebugLogs = false;
+
+            // Act
+            StringEnricherSettings.EnableDebugLogs = true;
+
+            // Assert
+            Assert.True(StringEnricherSettings.EnableDebugLogs);
         }
     }
 }
