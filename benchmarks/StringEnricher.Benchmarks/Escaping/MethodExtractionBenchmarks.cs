@@ -1,7 +1,7 @@
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
 using StringEnricher.Benchmarks.AnalogueImplementations;
-using StringEnricher.Helpers.MarkdownV2;
+using StringEnricher.Telegram.Helpers.MarkdownV2;
 
 namespace StringEnricher.Benchmarks.Escaping;
 

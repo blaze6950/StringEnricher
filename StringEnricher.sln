@@ -11,12 +11,18 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{7A3EBFED-6AE5-4435-88C1-68C3A80BDCFB}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
-		.github\workflows\ci-cd.yml = .github\workflows\ci-cd.yml
+		.github\workflows\ci-cd-core.yml = .github\workflows\ci-cd-core.yml
+		.github\workflows\ci-cd-telegram.yml = .github\workflows\ci-cd-telegram.yml
+		.github\workflows\TEMPLATE-ci-cd-platform.yml = .github\workflows\TEMPLATE-ci-cd-platform.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", "{2E5AD94F-C7E0-4DBB-89B5-204FF3A7D04F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringEnricher.Benchmarks", "benchmarks\StringEnricher.Benchmarks\StringEnricher.Benchmarks.csproj", "{0241A64E-E6D8-4AC2-B0E4-5ED11FEB6341}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringEnricher.Telegram", "src\StringEnricher.Telegram\StringEnricher.Telegram.csproj", "{EDF7B2A5-2C4B-4C7B-A2E9-86D294797D2A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringEnricher.Telegram.Tests", "tests\StringEnricher.Telegram.Tests\StringEnricher.Telegram.Tests.csproj", "{F01E2EF6-F83B-4DE8-AF94-88EAC59B1CC5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,10 +42,20 @@ Global
 		{0241A64E-E6D8-4AC2-B0E4-5ED11FEB6341}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0241A64E-E6D8-4AC2-B0E4-5ED11FEB6341}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0241A64E-E6D8-4AC2-B0E4-5ED11FEB6341}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDF7B2A5-2C4B-4C7B-A2E9-86D294797D2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDF7B2A5-2C4B-4C7B-A2E9-86D294797D2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDF7B2A5-2C4B-4C7B-A2E9-86D294797D2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDF7B2A5-2C4B-4C7B-A2E9-86D294797D2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F01E2EF6-F83B-4DE8-AF94-88EAC59B1CC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F01E2EF6-F83B-4DE8-AF94-88EAC59B1CC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F01E2EF6-F83B-4DE8-AF94-88EAC59B1CC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F01E2EF6-F83B-4DE8-AF94-88EAC59B1CC5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{567BAA0C-2B0A-4C4E-A04A-FFA680422B77} = {93388C7A-C54C-4804-8B12-ADF2715DAD11}
 		{3811BAFB-ED2F-440E-AAC3-D0F58D831575} = {F4432770-D04F-4DD2-AEB1-5C7308C19D04}
 		{0241A64E-E6D8-4AC2-B0E4-5ED11FEB6341} = {2E5AD94F-C7E0-4DBB-89B5-204FF3A7D04F}
+		{EDF7B2A5-2C4B-4C7B-A2E9-86D294797D2A} = {93388C7A-C54C-4804-8B12-ADF2715DAD11}
+		{F01E2EF6-F83B-4DE8-AF94-88EAC59B1CC5} = {F4432770-D04F-4DD2-AEB1-5C7308C19D04}
 	EndGlobalSection
 EndGlobal

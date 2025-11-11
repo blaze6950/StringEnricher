@@ -2,7 +2,7 @@ using System.Text;
 using StringEnricher.Configuration;
 using StringEnricher.Extensions;
 using StringEnricher.Nodes.Shared;
-using StringEnricher.Nodes.Html.Formatting;
+using StringEnricher.Telegram.Nodes.Html.Formatting;
 
 namespace StringEnricher.Tests.Extensions;
 

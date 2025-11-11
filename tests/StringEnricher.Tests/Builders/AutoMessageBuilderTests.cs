@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Text;
 using StringEnricher.Builders;
-using StringEnricher.Helpers.MarkdownV2;
+using StringEnricher.Telegram.Helpers.MarkdownV2;
 
 namespace StringEnricher.Tests.Builders;
 

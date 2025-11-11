@@ -1,5 +1,5 @@
-﻿using StringEnricher.Helpers.MarkdownV2;
-using StringEnricher.Helpers.Shared;
+﻿using StringEnricher.Helpers.Shared;
+using StringEnricher.Telegram.Helpers.MarkdownV2;
 
 namespace StringEnricher.Tests.Nodes;
 

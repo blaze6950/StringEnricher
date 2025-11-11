@@ -1,0 +1,77 @@
+﻿name: CI/CD - StringEnricher.Telegram
+
+on:
+  push:
+    branches: [ master, main ]
+    paths:
+      - 'src/StringEnricher.Telegram/**'
+      - 'tests/StringEnricher.Telegram.Tests/**'
+      - 'src/StringEnricher/**' # Also trigger if core changes (dependency)
+      - '*.sln'
+  pull_request:
+    branches: [ master, main ]
+    paths:
+      - 'src/StringEnricher.Telegram/**'
+      - 'tests/StringEnricher.Telegram.Tests/**'
+      - 'src/StringEnricher/**'
+      - '*.sln'
+  workflow_dispatch: # Allow manual trigger
+
+env:
+  DOTNET_VERSION: '9.x.x'
+  PROJECT_PATH: 'src/StringEnricher.Telegram/StringEnricher.Telegram.csproj'
+  TEST_PATH: 'tests/StringEnricher.Telegram.Tests/StringEnricher.Telegram.Tests.csproj'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build StringEnricher.Telegram
+        run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
+
+      - name: Run StringEnricher.Telegram tests
+        run: dotnet test ${{ env.TEST_PATH }} --configuration Release --no-build --verbosity normal
+
+  publish-nuget:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build StringEnricher.Telegram
+        run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
+
+      - name: Pack StringEnricher.Telegram
+        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration Release --no-build --output ./artifacts
+
+      - name: Publish StringEnricher.Telegram to NuGet
+        run: dotnet nuget push ./artifacts/StringEnricher.Telegram.*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+      - name: Upload package artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: stringenricher-telegram-package
+          path: ./artifacts/*.nupkg

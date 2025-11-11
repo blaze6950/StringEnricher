@@ -19,6 +19,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\src\StringEnricher.Telegram\StringEnricher.Telegram.csproj" />
       <ProjectReference Include="..\..\src\StringEnricher\StringEnricher.csproj" />
     </ItemGroup>
 
