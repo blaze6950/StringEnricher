@@ -265,7 +265,52 @@ This approach allows you to leverage the power of StringEnricher nodes while sti
 From performance perspective, this is less optimal than using `MessageBuilder` or `AutoMessageBuilder` when the total length is known in advance, as it may involve multiple allocations and copies. However, it provides flexibility for scenarios where the string is built in a more dynamic manner.
 Nodes are designed to be zero-allocation until the final string creation, so using them with `StringBuilder` still benefits from that design.
 
-#### ADVANCED: Performance tuning the `StringBuilder` approach
+### Primitive Types Support
+The library defines nodes for all common primitive types, allowing you to append them directly without converting to string first. This is supported in `MessageBuilder`, `AutoMessageBuilder`, and `StringBuilder` extensions.
+This is needed to avoid intermediate string allocations when appending primitive types.
+```csharp
+var builder = new MessageBuilder(50);
+var result = builder.Create(static writer =>
+{
+    writer.Append(123); // int - 0 heap allocations here
+    writer.Append(' '); // char - 0 heap allocations here
+    writer.Append(45.67); // double - 0 heap allocations here
+    writer.Append(' '); // char - 0 heap allocations here
+    writer.Append(true); // bool - 0 heap allocations here
+}); // 1 final string heap allocation here
+// result == "123 45.67 True"
+```
+
+#### ADVANCED: Custom Formatting for Primitive Types Support
+You can specify custom formatting for primitive types when appending them to the `MessageWriter`. This allows you to control how values like numbers and dates are represented in the final string.
+This may increase the total length of the final string, so make sure to account for that when pre-calculating the total length for `MessageBuilder`.
+Also, due to increased final string length, it may overflow the stack allocation limit. In such cases you are able to make fine-tuning using `StringEnricherSettings` to adjust allocation logic.
+Do this only if you really need it and understand the implications. Because you can break performance and memory usage if you set extreme values. Default values cover 99.9% of use cases.
+
+Every primitive node type has its own settings class under `StringEnricherSettings.Extensions.Nodes.Shared` namespace.
+For example: `StringEnricherSettings.Nodes.Shared.DateTimeNode`.
+It contains settings for DateTimeNode:
+- `InitialBufferSize` - initial buffer size for formatting DateTime.
+- `MaxBufferSize` - maximum buffer size for formatting DateTime.
+- `GrowthFactor` - growth factor for buffer resizing. Means how much the buffer size will be multiplied when resizing. First allocation is InitialBufferSize, then when more space is needed, buffer size will be multiplied by GrowthFactor until it reaches MaxBufferSize.
+- `MaxStackAllocLength` - maximum length for stack allocation.
+- `MaxPooledArrayLength` - maximum length for pooled array allocation.
+
+I hope you understand how `InitialBufferSize`, `MaxBufferSize` and `GrowthFactor` works.
+Let me explain `MaxStackAllocLength` and `MaxPooledArrayLength` in more details.
+These two properties represents Dual-threshold memory model: two adjustable boundaries define how objects are allocated — to the stack, array pool, or heap. Shifting the thresholds dynamically redistributes memory ranges between these regions for optimal performance and balance.
+
+```
+|-----------|----------------------|--------------------------->
+ ^           ^                      ^
+ 0   MaxStackAllocLength    MaxPooledArrayLength
+
+ [0, MaxStackAllocLength)                    -> Stack allocation  
+ [MaxStackAllocLength, MaxPooledArrayLength) -> Array Pool
+ [MaxPooledArrayLength, ∞)                   -> Heap allocation
+```
+
+Note: default values are set to allocate ONLY on stack. So, if you need to format primitive types that may exceed stack limits, you need to increase these values accordingly.
 
 ### ADVANCED: StringEnricher performance tuning
 The `StringEnricherSettings` class provides centralized configuration for the StringEnricher library, allowing fine-tuning of performance and memory usage. It is a static class, meaning all settings are global and affect the entire application. The class is designed to be configured at application startup, before any StringEnricher functionality is used.
