@@ -1,8 +1,9 @@
 # StringEnricher
 
-[![Build Status](https://github.com/blaze6950/StringEnricher/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/blaze6950/StringEnricher/actions)
-[![NuGet Version](https://img.shields.io/nuget/v/StringEnricher.svg)](https://www.nuget.org/packages/StringEnricher/)
-[![NuGet Downloads](https://img.shields.io/nuget/dt/StringEnricher.svg)](https://www.nuget.org/packages/StringEnricher/)
+[![Core Build](https://github.com/blaze6950/StringEnricher/actions/workflows/ci-cd-core.yml/badge.svg)](https://github.com/blaze6950/StringEnricher/actions)
+[![Telegram Build](https://github.com/blaze6950/StringEnricher/actions/workflows/ci-cd-telegram.yml/badge.svg)](https://github.com/blaze6950/StringEnricher/actions)
+[![Core NuGet](https://img.shields.io/nuget/v/StringEnricher.svg?label=StringEnricher)](https://www.nuget.org/packages/StringEnricher/)
+[![Telegram NuGet](https://img.shields.io/nuget/v/StringEnricher.Telegram.svg?label=StringEnricher.Telegram)](https://www.nuget.org/packages/StringEnricher.Telegram/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![.NET Version](https://img.shields.io/badge/.NET-9.0-purple.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
 [![GitHub Stars](https://img.shields.io/github/stars/blaze6950/StringEnricher.svg)](https://github.com/blaze6950/StringEnricher/stargazers)
@@ -10,6 +11,32 @@
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/blaze6950/StringEnricher.svg)](https://github.com/blaze6950/StringEnricher/commits)
 
 StringEnricher is a powerful and extensible C# library for building and enriching strings with rich text styles, supporting formats such as HTML and MarkdownV2. It is designed for scenarios where you need to dynamically compose styled messages, such as chatbots, messaging apps, or document generators.
+
+## Solution Structure
+
+This repository contains multiple NuGet packages organized as follows:
+
+### Core Package
+- **StringEnricher** - The core library containing shared logic, base node types, builders (`MessageBuilder`, `AutoMessageBuilder`), and extensibility points.
+  - **When to install**: Only needed if you're implementing a new platform-specific package (e.g., for Discord, Slack, WhatsApp, etc.)
+  - **Not required for end users**: If you're just using the library, install a platform-specific package instead
+
+### Platform-Specific Packages
+- **StringEnricher.Telegram** - Contains Telegram-specific formatting nodes and helpers for HTML and MarkdownV2 formats
+  - **Includes all dependencies**: The core package is automatically included, no need to install separately
+  - **Ready to use**: Install this package and start building styled strings for Telegram bots immediately
+
+### Future Packages (Planned)
+- **StringEnricher.Discord** - For Discord bot message formatting
+- **StringEnricher.Slack** - For Slack app message formatting
+- And more platforms as needed...
+
+### Why This Structure?
+
+✅ **Smaller installs** - Only install what you need for your platform  
+✅ **No redundant code** - Work with Discord? No need for Telegram-specific code  
+✅ **Independent versioning** - Core and platform packages can be updated separately  
+✅ **Easy extensibility** - Add new platforms by referencing the core package
 
 ## Features
 - **High performance:** Optimized for minimal allocations and fast execution.
@@ -24,10 +51,20 @@ StringEnricher is a powerful and extensible C# library for building and enrichin
 - .NET 9.0 or later
 
 ### Installation
+
+#### For Telegram Bots
 Execute the following command in your project directory:
+```bash
+dotnet add package StringEnricher.Telegram
+```
+This automatically includes the core `StringEnricher` package as a dependency.
+
+#### For Custom Platform Implementation
+If you want to create a new platform-specific package (e.g., for Discord, Slack):
 ```bash
 dotnet add package StringEnricher
 ```
+Then implement your platform-specific nodes and helpers using the core library's extensibility points.
 
 ## Usage
 
@@ -388,20 +425,44 @@ This class is intended for advanced users who need to optimize StringEnricher fo
   - Also, I recommend to check existing unit tests in the `tests/StringEnricher.Tests` folder. They cover all styles and formats and can be a good reference for usage examples.
 
 ## Project Structure
-- `src/StringEnricher`: Core library with nodes, builders, and helpers.
-   - `Builders`: Contains `MessageBuilder` and `AutoMessageBuilder`.
-   - `Configuration`: Contains `StringEnricherSettings` for performance tuning.
-   - `Extensions`: Contains extensions for `StringBuilder` integration.
-   - `Helpers`: Contains style helpers for HTML and MarkdownV2.
-      - `Html`: Contains HTML style helpers.
-      - `MarkdownV2`: Contains MarkdownV2 style helpers.
-      - `Shared`: Contains shared helpers like CompositeNodeExtensions and ToNodeExtensions.
-   - `Nodes`: Contains all node implementations.
-      - `Html`: Contains HTML node implementations.
-      - `MarkdownV2`: Contains MarkdownV2 node implementations.
-      - `Shared`: Contains shared node implementations like PlainTextNode or LongNode.
-- `tests/StringEnricher.Tests`: Unit tests covering all styles and formats.
-- `benchmarks`: Benchmarking projects using BenchmarkDotNet.
+
+### Source Code
+- **`src/StringEnricher/`** - Core library (base package)
+  - Shared logic, base node types, and extensibility points
+  - `Builders`: Contains `MessageBuilder` and `AutoMessageBuilder`
+  - `Configuration`: Contains `StringEnricherSettings` for performance tuning
+  - `Extensions`: Contains extensions for `StringBuilder` integration
+  - `Nodes/Shared`: Shared node implementations like `PlainTextNode`, primitive type nodes
+  - Core interfaces and abstractions for implementing platform-specific packages
+
+- **`src/StringEnricher.Telegram/`** - Telegram-specific package
+  - References the core package via `ProjectReference` (in this repo)
+  - `Helpers`: Telegram style helpers for HTML and MarkdownV2
+    - `Html`: HTML style helpers (BoldHtml, ItalicHtml, etc.)
+    - `MarkdownV2`: MarkdownV2 style helpers (BoldMarkdownV2, ItalicMarkdownV2, etc.)
+  - `Nodes`: Telegram-specific node implementations
+    - `Html`: HTML nodes for Telegram formatting
+    - `MarkdownV2`: MarkdownV2 nodes for Telegram formatting
+  - Telegram-specific escapers and utilities
+
+- **Future**: `src/StringEnricher.Discord/`, `src/StringEnricher.Slack/`, etc.
+
+### Tests
+- **`tests/StringEnricher.Tests/`** - Core library unit tests
+- **`tests/StringEnricher.Telegram.Tests/`** - Telegram package unit tests
+- Future: Test projects for Discord, Slack, and other platform packages
+
+### Benchmarks
+- **`benchmarks/StringEnricher.Benchmarks/`** - Performance benchmarks using BenchmarkDotNet
+  - Includes comparisons of different string building approaches
+  - Results available in `BenchmarkDotNet.Artifacts/results/`
+
+### CI/CD
+- **`.github/workflows/`** - GitHub Actions workflows
+  - `ci-cd-core.yml` - Build, test, and publish the core package
+  - `ci-cd-telegram.yml` - Build, test, and publish the Telegram package
+  - `TEMPLATE-ci-cd-platform.yml` - Template for future platform packages
+  - Independent workflows allow separate versioning and publishing
 
 ## Facts
 - Designed for high performance and composability
@@ -420,9 +481,18 @@ Feel free to contribute or open issues for feature requests and bug reports!
 
 ---
 # TODOs
+- Implement additional platform-specific packages:
+  - StringEnricher.Discord - for Discord bot message formatting
+  - StringEnricher.Slack - for Slack app message formatting
+  - StringEnricher.WhatsApp - for WhatsApp bot message formatting
+- Create a guide on implementing new platform packages:
+  - How to reference the core package
+  - How to implement platform-specific nodes
+  - How to create platform-specific helpers and escapers
+  - Best practices for naming and organization
 - Think about the possibility to add support for custom user-defined types in MessageBuilder.Append() and Node types.
-   - Make a guide on how to implement INode for custom types.
-   - Make a guide on how to extend MessageBuilder to support custom types.
+  - Make a guide on how to implement INode for custom types.
+  - Make a guide on how to extend MessageBuilder to support custom types.
 - Add more benchmarks for different scenarios and use cases.
   - Consider extending the ci-cd pipeline to run benchmarks and update results.
 - Add more test cases for nodes.
