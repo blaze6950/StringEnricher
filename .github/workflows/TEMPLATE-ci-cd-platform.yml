@@ -41,8 +41,8 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
-      - name: Build StringEnricher.PLATFORM
-        run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
+      - name: Build solution
+        run: dotnet build --configuration Release --no-restore
 
       - name: Run StringEnricher.PLATFORM tests
         run: dotnet test ${{ env.TEST_PATH }} --configuration Release --no-build --verbosity normal

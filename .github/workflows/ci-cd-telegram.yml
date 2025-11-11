@@ -38,8 +38,8 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
-      - name: Build StringEnricher.Telegram
-        run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
+      - name: Build solution
+        run: dotnet build --configuration Release --no-restore
 
       - name: Run StringEnricher.Telegram tests
         run: dotnet test ${{ env.TEST_PATH }} --configuration Release --no-build --verbosity normal
