@@ -64,28 +64,21 @@ public readonly struct TgEmojiNode : INode
     /// <exception cref="ArgumentException">Thrown if the destination span is too small.</exception>
     public int CopyTo(Span<char> destination)
     {
-        var totalLength = TotalLength;
-        if (destination.Length < totalLength)
-        {
-            throw new ArgumentException("The destination span is too small to hold the formatted text.");
-        }
+        var writtenChars = 0;
+        Prefix.AsSpan().CopyTo(destination.Slice(writtenChars, Prefix.Length));
+        writtenChars += Prefix.Length;
 
-        var pos = 0;
-        Prefix.AsSpan().CopyTo(destination.Slice(pos, Prefix.Length));
-        pos += Prefix.Length;
+        writtenChars += _customEmojiId.CopyTo(destination[writtenChars..]);
 
-        _customEmojiId.CopyTo(destination.Slice(pos, _customEmojiId.TotalLength));
-        pos += _customEmojiId.TotalLength;
+        Separator.AsSpan().CopyTo(destination.Slice(writtenChars, Separator.Length));
+        writtenChars += Separator.Length;
 
-        Separator.AsSpan().CopyTo(destination.Slice(pos, Separator.Length));
-        pos += Separator.Length;
+        writtenChars += _defaultEmoji.CopyTo(destination[writtenChars..]);
 
-        _defaultEmoji.CopyTo(destination.Slice(pos, _defaultEmoji.TotalLength));
-        pos += _defaultEmoji.TotalLength;
+        Suffix.AsSpan().CopyTo(destination.Slice(writtenChars, Suffix.Length));
+        writtenChars += Suffix.Length;
 
-        Suffix.AsSpan().CopyTo(destination.Slice(pos, Suffix.Length));
-
-        return totalLength;
+        return writtenChars;
     }
 
     /// <inheritdoc />

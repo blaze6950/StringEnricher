@@ -57,27 +57,21 @@ public readonly struct HeaderNode<TInner> : INode
     /// <inheritdoc />
     public int CopyTo(Span<char> destination)
     {
-        var totalLength = TotalLength;
-        if (destination.Length < totalLength)
-        {
-            throw new ArgumentException("The destination span is too small to hold the formatted text.");
-        }
-
-        var pos = 0;
+        var writtenChars = 0;
 
         // Copy prefix (# characters)
         for (var i = 0; i < _level; i++)
         {
-            destination[pos++] = '#';
+            destination[writtenChars++] = '#';
         }
         
         // Add space
-        destination[pos++] = ' ';
+        destination[writtenChars++] = ' ';
 
         // Copy inner text
-        _innerText.CopyTo(destination.Slice(pos, InnerLength));
+        writtenChars += _innerText.CopyTo(destination[writtenChars..]);;
 
-        return totalLength;
+        return writtenChars;
     }
 
     /// <inheritdoc />

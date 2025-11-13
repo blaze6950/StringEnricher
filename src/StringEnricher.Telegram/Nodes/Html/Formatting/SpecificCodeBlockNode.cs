@@ -64,28 +64,22 @@ public readonly struct SpecificCodeBlockNode<TInner> : INode
     /// <exception cref="ArgumentException">Thrown if the destination span is too small.</exception>
     public int CopyTo(Span<char> destination)
     {
-        var totalLength = TotalLength;
-        if (destination.Length < totalLength)
-        {
-            throw new ArgumentException("The destination span is too small to hold the formatted text.");
-        }
+        var writtenChars = 0;
+        Prefix.AsSpan().CopyTo(destination.Slice(writtenChars, Prefix.Length));
+        writtenChars += Prefix.Length;
 
-        var pos = 0;
-        Prefix.AsSpan().CopyTo(destination.Slice(pos, Prefix.Length));
-        pos += Prefix.Length;
+        _language.CopyTo(destination.Slice(writtenChars, _language.Length));
+        writtenChars += _language.Length;
 
-        _language.CopyTo(destination.Slice(pos, _language.Length));
-        pos += _language.Length;
+        Separator.AsSpan().CopyTo(destination.Slice(writtenChars, Separator.Length));
+        writtenChars += Separator.Length;
 
-        Separator.AsSpan().CopyTo(destination.Slice(pos, Separator.Length));
-        pos += Separator.Length;
+        writtenChars += _innerCodeBlock.CopyTo(destination[writtenChars..]);
 
-        _innerCodeBlock.CopyTo(destination.Slice(pos, _innerCodeBlock.TotalLength));
-        pos += _innerCodeBlock.TotalLength;
+        Suffix.AsSpan().CopyTo(destination.Slice(writtenChars, Suffix.Length));
+        writtenChars += Suffix.Length;
 
-        Suffix.AsSpan().CopyTo(destination.Slice(pos, Suffix.Length));
-
-        return totalLength;
+        return writtenChars;
     }
 
     /// <inheritdoc />

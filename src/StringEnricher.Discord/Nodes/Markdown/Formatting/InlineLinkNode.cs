@@ -67,34 +67,28 @@ public readonly struct InlineLinkNode<TInner> : INode
     /// <inheritdoc />
     public int CopyTo(Span<char> destination)
     {
-        var totalLength = TotalLength;
-        if (destination.Length < totalLength)
-        {
-            throw new ArgumentException("The destination span is too small to hold the formatted text.");
-        }
-
-        var pos = 0;
+        var writtenChars = 0;
 
         // Copy Prefix
-        Prefix.AsSpan().CopyTo(destination.Slice(pos, Prefix.Length));
-        pos += Prefix.Length;
+        Prefix.AsSpan().CopyTo(destination.Slice(writtenChars, Prefix.Length));
+        writtenChars += Prefix.Length;
 
         // Copy Link Title
-        _linkTitle.CopyTo(destination.Slice(pos, _linkTitle.TotalLength));
-        pos += _linkTitle.TotalLength;
+        writtenChars += _linkTitle.CopyTo(destination[writtenChars..]);
 
         // Copy Link Separator
-        LinkSeparator.AsSpan().CopyTo(destination.Slice(pos, LinkSeparator.Length));
-        pos += LinkSeparator.Length;
+        LinkSeparator.AsSpan().CopyTo(destination.Slice(writtenChars, LinkSeparator.Length));
+        writtenChars += LinkSeparator.Length;
 
         // Copy Link URL
-        _linkUrl.CopyTo(destination.Slice(pos, _linkUrl.Length));
-        pos += _linkUrl.Length;
+        _linkUrl.CopyTo(destination.Slice(writtenChars, _linkUrl.Length));
+        writtenChars += _linkUrl.Length;
 
         // Copy Suffix
-        Suffix.AsSpan().CopyTo(destination.Slice(pos, Suffix.Length));
+        Suffix.AsSpan().CopyTo(destination.Slice(writtenChars, Suffix.Length));
+        writtenChars += Suffix.Length;
 
-        return totalLength;
+        return writtenChars;
     }
 
     /// <inheritdoc />

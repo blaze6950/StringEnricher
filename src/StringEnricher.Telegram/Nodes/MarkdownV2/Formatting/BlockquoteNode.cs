@@ -59,22 +59,18 @@ public struct BlockquoteNode<TInner> : INode
     /// <inheritdoc />
     public int CopyTo(Span<char> destination)
     {
-        var totalLength = TotalLength;
-        if (destination.Length < totalLength)
-        {
-            throw new ArgumentException("The destination span is too small to hold the formatted text.");
-        }
+        var writtenChars = 0;
 
+        // the iterator is needed because the inner text is processed on the fly
         var iterator = GetCharacterIterator();
-        var pos = 0;
 
         while (iterator.MoveNext(out var character))
         {
-            destination[pos] = character;
-            pos++;
+            destination[writtenChars] = character;
+            writtenChars++;
         }
 
-        return totalLength;
+        return writtenChars;
     }
 
     /// <inheritdoc />

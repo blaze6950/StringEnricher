@@ -42,6 +42,7 @@ public struct EscapeNode<TInner> : INode
     /// <inheritdoc />
     /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
     public int SyntaxLength => _syntaxLength ??= CalculateSyntaxLength(_innerText);
+
     private int? _syntaxLength;
 
     /// <inheritdoc />
@@ -50,21 +51,17 @@ public struct EscapeNode<TInner> : INode
     /// <inheritdoc />
     public int CopyTo(Span<char> destination)
     {
-        if (destination.Length < TotalLength)
-        {
-            throw new ArgumentException(
-                $"The destination span is too small. Required length: {TotalLength}, actual length: {destination.Length}");
-        }
+        var writtenChars = 0;
 
+        // the iterator is needed because the inner text is processed on the fly
         var iterator = new CharacterIterator(this);
-        var index = 0;
 
         while (iterator.MoveNext(out var character))
         {
-            destination[index++] = character;
+            destination[writtenChars++] = character;
         }
 
-        return TotalLength;
+        return writtenChars;
     }
 
     /// <inheritdoc />
@@ -231,7 +228,8 @@ public struct EscapeNode<TInner> : INode
             // If we're currently at a character to escape position after an escape symbol
             if (_isAtCharToEscape)
             {
-                _escapeNode._innerText.TryGetChar(_currentOriginalIndex, out character); // set character to the actual character to be escaped on a previous call
+                _escapeNode._innerText.TryGetChar(_currentOriginalIndex,
+                    out character); // set character to the actual character to be escaped on a previous call
                 _currentVirtualIndex++;
                 _currentOriginalIndex++;
                 _isAtCharToEscape = false;
@@ -262,7 +260,7 @@ public struct EscapeNode<TInner> : INode
                         _isAtCharToEscape = true;
                         return true;
                 }
-                
+
                 _currentOriginalIndex++;
 
                 return true;

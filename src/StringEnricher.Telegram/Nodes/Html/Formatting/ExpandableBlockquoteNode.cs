@@ -13,6 +13,7 @@ public readonly struct ExpandableBlockquoteNode<TInner> : INode
     /// The opening expandable blockquote tag.
     /// </summary>
     public const string Prefix = "<blockquote expandable>";
+
     /// <summary>
     /// The closing expandable blockquote tag.
     /// </summary>
@@ -36,10 +37,12 @@ public readonly struct ExpandableBlockquoteNode<TInner> : INode
     /// Gets the length of the inner text.
     /// </summary>
     public int InnerLength => _innerText.TotalLength;
+
     /// <summary>
     /// Gets the total length of the HTML expandable blockquote syntax.
     /// </summary>
     public int SyntaxLength => Prefix.Length + Suffix.Length;
+
     /// <summary>
     /// Gets the total length of the formatted text.
     /// </summary>
@@ -53,22 +56,16 @@ public readonly struct ExpandableBlockquoteNode<TInner> : INode
     /// <exception cref="ArgumentException">Thrown if the destination span is too small.</exception>
     public int CopyTo(Span<char> destination)
     {
-        var totalLength = TotalLength;
-        if (destination.Length < totalLength)
-        {
-            throw new ArgumentException("The destination span is too small to hold the formatted text.");
-        }
+        var writtenChars = 0;
+        Prefix.AsSpan().CopyTo(destination.Slice(writtenChars, Prefix.Length));
+        writtenChars += Prefix.Length;
 
-        var pos = 0;
-        Prefix.AsSpan().CopyTo(destination.Slice(pos, Prefix.Length));
-        pos += Prefix.Length;
+        writtenChars += _innerText.CopyTo(destination[writtenChars..]);
 
-        _innerText.CopyTo(destination.Slice(pos, InnerLength));
-        pos += InnerLength;
+        Suffix.AsSpan().CopyTo(destination.Slice(writtenChars, Suffix.Length));
+        writtenChars += Suffix.Length;
 
-        Suffix.AsSpan().CopyTo(destination.Slice(pos, Suffix.Length));
-
-        return totalLength;
+        return writtenChars;
     }
 
     /// <inheritdoc />

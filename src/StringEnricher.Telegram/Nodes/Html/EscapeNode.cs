@@ -54,21 +54,17 @@ public struct EscapeNode<TInner> : INode
     /// <inheritdoc />
     public int CopyTo(Span<char> destination)
     {
-        if (destination.Length < TotalLength)
-        {
-            throw new ArgumentException(
-                $"The destination span is too small. Required length: {TotalLength}, actual length: {destination.Length}");
-        }
+        var writtenChars = 0;
 
+        // the iterator is needed because the inner text is processed on the fly
         var iterator = new CharacterIterator(this);
-        var index = 0;
 
         while (iterator.MoveNext(out var character))
         {
-            destination[index++] = character;
+            destination[writtenChars++] = character;
         }
 
-        return TotalLength;
+        return writtenChars;
     }
 
     /// <inheritdoc />

@@ -48,10 +48,7 @@ public readonly struct TgEmojiNode : INode
     /// Use this method when you finished all styling operations and need the final string.
     /// </summary>
     /// <returns>The created string representation</returns>
-    public override string ToString()
-    {
-        return string.Create(TotalLength, this, static (span, style) => style.CopyTo(span));
-    }
+    public override string ToString() => string.Create(TotalLength, this, static (span, style) => style.CopyTo(span));
 
     /// <summary>
     /// Gets the length of the inner styled text.
@@ -67,34 +64,27 @@ public readonly struct TgEmojiNode : INode
     /// <inheritdoc />
     public int CopyTo(Span<char> destination)
     {
-        var totalLength = TotalLength;
-        if (destination.Length < totalLength)
-        {
-            throw new ArgumentException("The destination span is too small to hold the formatted text.");
-        }
-
-        var pos = 0;
+        var writtenChars = 0;
 
         // Copy Prefix
-        Prefix.AsSpan().CopyTo(destination.Slice(pos, Prefix.Length));
-        pos += Prefix.Length;
+        Prefix.AsSpan().CopyTo(destination.Slice(writtenChars, Prefix.Length));
+        writtenChars += Prefix.Length;
 
         // Copy Default Emoji
-        _defaultEmoji.CopyTo(destination.Slice(pos, _defaultEmoji.TotalLength));
-        pos += _defaultEmoji.TotalLength;
+        writtenChars += _defaultEmoji.CopyTo(destination[writtenChars..]);
 
         // Copy Separator
-        Separator.AsSpan().CopyTo(destination.Slice(pos, Separator.Length));
-        pos += Separator.Length;
+        Separator.AsSpan().CopyTo(destination.Slice(writtenChars, Separator.Length));
+        writtenChars += Separator.Length;
 
         // Copy Custom Emoji ID
-        _customEmojiId.CopyTo(destination.Slice(pos, _customEmojiId.TotalLength));
-        pos += _customEmojiId.TotalLength;
+        writtenChars += _customEmojiId.CopyTo(destination[writtenChars..]);
 
         // Copy Suffix
-        Suffix.AsSpan().CopyTo(destination.Slice(pos, Suffix.Length));
+        Suffix.AsSpan().CopyTo(destination.Slice(writtenChars, Suffix.Length));
+        writtenChars += Suffix.Length;
 
-        return totalLength;
+        return writtenChars;
     }
 
     /// <inheritdoc />

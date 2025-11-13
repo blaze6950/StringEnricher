@@ -56,22 +56,16 @@ public readonly struct ItalicNode<TInner> : INode
     /// <exception cref="ArgumentException">Thrown if the destination span is too small.</exception>
     public int CopyTo(Span<char> destination)
     {
-        var totalLength = TotalLength;
-        if (destination.Length < totalLength)
-        {
-            throw new ArgumentException("The destination span is too small to hold the formatted text.");
-        }
+        var writtenChars = 0;
+        Prefix.AsSpan().CopyTo(destination.Slice(writtenChars, Prefix.Length));
+        writtenChars += Prefix.Length;
 
-        var pos = 0;
-        Prefix.AsSpan().CopyTo(destination.Slice(pos, Prefix.Length));
-        pos += Prefix.Length;
+        writtenChars += _innerText.CopyTo(destination[writtenChars..]);
 
-        _innerText.CopyTo(destination.Slice(pos, InnerLength));
-        pos += InnerLength;
+        Suffix.AsSpan().CopyTo(destination.Slice(writtenChars, Suffix.Length));
+        writtenChars += Suffix.Length;
 
-        Suffix.AsSpan().CopyTo(destination.Slice(pos, Suffix.Length));
-
-        return totalLength;
+        return writtenChars;
     }
 
     /// <inheritdoc />

@@ -57,26 +57,20 @@ public readonly struct SpoilerNode<TInner> : INode
     /// <inheritdoc />
     public int CopyTo(Span<char> destination)
     {
-        var totalLength = TotalLength;
-        if (destination.Length < totalLength)
-        {
-            throw new ArgumentException("The destination span is too small to hold the formatted text.");
-        }
-
-        var pos = 0;
+        var writtenChars = 0;
 
         // Copy prefix
-        Prefix.AsSpan().CopyTo(destination.Slice(pos, Prefix.Length));
-        pos += Prefix.Length;
+        Prefix.AsSpan().CopyTo(destination.Slice(writtenChars, Prefix.Length));
+        writtenChars += Prefix.Length;
 
         // Copy inner text
-        _innerText.CopyTo(destination.Slice(pos, InnerLength));
-        pos += InnerLength;
+        writtenChars += _innerText.CopyTo(destination[writtenChars..]);
 
         // Copy suffix
-        Suffix.AsSpan().CopyTo(destination.Slice(pos, Suffix.Length));
+        Suffix.AsSpan().CopyTo(destination.Slice(writtenChars, Suffix.Length));
+        writtenChars += Suffix.Length;
 
-        return totalLength;
+        return writtenChars;
     }
 
     /// <inheritdoc />
