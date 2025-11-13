@@ -54,17 +54,24 @@ public struct EscapeNode<TInner> : INode
     /// <inheritdoc />
     public int CopyTo(Span<char> destination)
     {
-        var writtenChars = 0;
-
-        // the iterator is needed because the inner text is processed on the fly
-        var iterator = new CharacterIterator(this);
-
-        while (iterator.MoveNext(out var character))
+        try
         {
-            destination[writtenChars++] = character;
-        }
+            var writtenChars = 0;
 
-        return writtenChars;
+            // the iterator is needed because the inner text is processed on the fly
+            var iterator = new CharacterIterator(this);
+
+            while (iterator.MoveNext(out var character))
+            {
+                destination[writtenChars++] = character;
+            }
+
+            return writtenChars;
+        }
+        catch (IndexOutOfRangeException e)
+        {
+            throw new ArgumentException("The destination span is too small to hold the escaped text.", e);
+        }
     }
 
     /// <inheritdoc />

@@ -47,7 +47,7 @@ public struct SByteNode : INode
     /// <inheritdoc />
     public int CopyTo(Span<char> destination) => _sbyte.TryFormat(destination, out var textLength, _format, _provider)
         ? textLength
-        : throw new ArgumentException("The destination span is too small to hold the boolean value.",
+        : throw new ArgumentException("The destination span is too small to hold the sbyte value.",
             nameof(destination));
 
     /// <inheritdoc />

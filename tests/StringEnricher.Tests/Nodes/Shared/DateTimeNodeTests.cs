@@ -155,7 +155,7 @@ public class DateTimeNodeTests
         // Assert
         Assert.NotNull(exception);
         Assert.IsType<ArgumentException>(exception);
-        Assert.Equal("Destination span too small.", exception.Message);
+        Assert.Contains("The destination span is too small to hold the DateTime value.", exception.Message);
     }
 
     [Fact]

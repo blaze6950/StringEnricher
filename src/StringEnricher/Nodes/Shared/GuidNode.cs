@@ -43,7 +43,7 @@ public struct GuidNode : INode
     /// <inheritdoc />
     public int CopyTo(Span<char> destination) => _guid.TryFormat(destination, out var textLength, _format)
         ? textLength
-        : throw new ArgumentException("The destination span is too small to hold the boolean value.",
+        : throw new ArgumentException("The destination span is too small to hold the GUID value.",
             nameof(destination));
 
     /// <inheritdoc />

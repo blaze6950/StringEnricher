@@ -42,7 +42,7 @@ public struct EnumNode<TEnum> : INode where TEnum : struct, Enum
     /// <inheritdoc />
     public int CopyTo(Span<char> destination) => Enum.TryFormat(_enum, destination, out var textLength, _format)
         ? textLength
-        : throw new ArgumentException("The destination span is too small to hold the boolean value.",
+        : throw new ArgumentException("The destination span is too small to hold the enum value.",
             nameof(destination));
 
     /// <inheritdoc />

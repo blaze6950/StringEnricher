@@ -56,16 +56,23 @@ public readonly struct ExpandableBlockquoteNode<TInner> : INode
     /// <exception cref="ArgumentException">Thrown if the destination span is too small.</exception>
     public int CopyTo(Span<char> destination)
     {
-        var writtenChars = 0;
-        Prefix.AsSpan().CopyTo(destination.Slice(writtenChars, Prefix.Length));
-        writtenChars += Prefix.Length;
+        try
+        {
+            var writtenChars = 0;
+            Prefix.AsSpan().CopyTo(destination.Slice(writtenChars, Prefix.Length));
+            writtenChars += Prefix.Length;
 
-        writtenChars += _innerText.CopyTo(destination[writtenChars..]);
+            writtenChars += _innerText.CopyTo(destination[writtenChars..]);
 
-        Suffix.AsSpan().CopyTo(destination.Slice(writtenChars, Suffix.Length));
-        writtenChars += Suffix.Length;
+            Suffix.AsSpan().CopyTo(destination.Slice(writtenChars, Suffix.Length));
+            writtenChars += Suffix.Length;
 
-        return writtenChars;
+            return writtenChars;
+        }
+        catch (ArgumentOutOfRangeException e)
+        { 
+            throw new ArgumentException("The destination span is too small to hold the formatted text.", e);
+        }
     }
 
     /// <inheritdoc />

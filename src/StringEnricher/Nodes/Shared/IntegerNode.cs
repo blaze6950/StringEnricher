@@ -47,7 +47,7 @@ public struct IntegerNode : INode
     /// <inheritdoc />
     public int CopyTo(Span<char> destination) => _integer.TryFormat(destination, out var textLength, _format, _provider)
         ? textLength
-        : throw new ArgumentException("The destination span is too small to hold the boolean value.",
+        : throw new ArgumentException("The destination span is too small to hold the integer value.",
             nameof(destination));
 
     /// <inheritdoc />

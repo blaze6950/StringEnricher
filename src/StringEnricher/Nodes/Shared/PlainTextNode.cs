@@ -29,6 +29,12 @@ public readonly struct PlainTextNode : INode
     /// <inheritdoc />
     public int CopyTo(Span<char> destination)
     {
+        if (_text.Length > destination.Length)
+        {
+            throw new ArgumentException("The destination span is too small to hold the text value.",
+                nameof(destination));
+        }
+
         _text.AsSpan().CopyTo(destination);
 
         return _text.Length;

@@ -39,48 +39,55 @@ public struct TextCollectionNode<TCollection> : INode
     /// <inheritdoc />
     public int CopyTo(Span<char> destination)
     {
-        var writtenChars = 0;
-        if (string.IsNullOrEmpty(_separator))
+        try
         {
-            // No separator, directly copy texts
-            for (var index = 0; index < _texts.Count; index++)
+            var writtenChars = 0;
+            if (string.IsNullOrEmpty(_separator))
             {
-                var text = _texts[index];
-                if (text == null)
+                // No separator, directly copy texts
+                for (var index = 0; index < _texts.Count; index++)
                 {
-                    continue;
-                }
+                    var text = _texts[index];
+                    if (text == null)
+                    {
+                        continue;
+                    }
 
-                text.AsSpan().CopyTo(destination.Slice(writtenChars, text.Length));
-                writtenChars += text.Length;
-            }
-        }
-        else
-        {
-            // With separator, copy texts with separators
-            var sepLen = _separator.Length;
-            var textsCount = _texts.Count;
-            for (var index = 0; index < textsCount; index++)
-            {
-                var text = _texts[index];
-                if (text == null)
-                {
-                    continue;
-                }
-
-                text.AsSpan().CopyTo(destination.Slice(writtenChars, text.Length));
-                writtenChars += text.Length;
-
-                // Add separator if not the last text
-                if (index < textsCount - 1)
-                {
-                    _separator.AsSpan().CopyTo(destination.Slice(writtenChars, sepLen));
-                    writtenChars += sepLen;
+                    text.AsSpan().CopyTo(destination.Slice(writtenChars, text.Length));
+                    writtenChars += text.Length;
                 }
             }
-        }
+            else
+            {
+                // With separator, copy texts with separators
+                var sepLen = _separator.Length;
+                var textsCount = _texts.Count;
+                for (var index = 0; index < textsCount; index++)
+                {
+                    var text = _texts[index];
+                    if (text == null)
+                    {
+                        continue;
+                    }
 
-        return writtenChars;
+                    text.AsSpan().CopyTo(destination.Slice(writtenChars, text.Length));
+                    writtenChars += text.Length;
+
+                    // Add separator if not the last text
+                    if (index < textsCount - 1)
+                    {
+                        _separator.AsSpan().CopyTo(destination.Slice(writtenChars, sepLen));
+                        writtenChars += sepLen;
+                    }
+                }
+            }
+
+            return writtenChars;
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            throw new ArgumentException("The destination span is too small to hold the entire content.", e);
+        }
     }
 
     /// <inheritdoc />

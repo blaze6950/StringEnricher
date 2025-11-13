@@ -167,7 +167,7 @@ public class EnumNodeTests
         // Assert
         Assert.NotNull(exception);
         Assert.IsType<ArgumentException>(exception);
-        Assert.Equal("Destination span too small.", exception.Message);
+        Assert.Contains("The destination span is too small to hold the enum value.", exception.Message);
     }
 
     [Fact]
@@ -478,7 +478,7 @@ public class EnumNodeTests
         // Arrange
         const TestFlagsEnum value = TestFlagsEnum.All;
         const string format = "F";
-        
+
         // Act
         var node = new EnumNode<TestFlagsEnum>(value, format);
         var expected = value.ToString(format);

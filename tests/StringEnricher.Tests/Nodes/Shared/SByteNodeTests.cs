@@ -213,7 +213,7 @@ public class SByteNodeTests
         // Assert
         Assert.NotNull(exception);
         Assert.IsType<ArgumentException>(exception);
-        Assert.Equal("Destination span too small.", exception.Message);
+        Assert.Contains("The destination span is too small to hold the sbyte value.", exception.Message);
     }
 
     [Fact]

@@ -1,4 +1,4 @@
-﻿using StringEnricher.Nodes.Shared;
+﻿﻿﻿using StringEnricher.Nodes.Shared;
 using System.Globalization;
 
 namespace StringEnricher.Tests.Nodes.Shared;
@@ -248,7 +248,7 @@ public class TimeSpanNodeTests
         // Assert
         Assert.NotNull(exception);
         Assert.IsType<ArgumentException>(exception);
-        Assert.Equal("Destination span too small.", exception.Message);
+        Assert.Contains("The destination span is too small to hold the TimeSpan value.", exception.Message);
     }
 
     [Fact]
