@@ -9,7 +9,7 @@ namespace StringEnricher.Telegram.Nodes.MarkdownV2.Formatting;
 /// <typeparam name="TInner">
 /// The type of the inner style that will be wrapped with expandable blockquote syntax.
 /// </typeparam>
-public readonly struct ExpandableBlockquoteNode<TInner> : INode
+public struct ExpandableBlockquoteNode<TInner> : INode
     where TInner : INode
 {
     /// <summary>
@@ -38,7 +38,6 @@ public readonly struct ExpandableBlockquoteNode<TInner> : INode
     public ExpandableBlockquoteNode(TInner inner)
     {
         _innerText = inner;
-        SyntaxLength = CalculateSyntaxLength(inner);
     }
 
     /// <summary>
@@ -55,7 +54,9 @@ public readonly struct ExpandableBlockquoteNode<TInner> : INode
     public int InnerLength => _innerText.TotalLength;
 
     /// <inheritdoc />
-    public int SyntaxLength { get; }
+    /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
+    public int SyntaxLength => _syntaxLength ??= CalculateSyntaxLength(_innerText);
+    private int? _syntaxLength;
 
     /// <inheritdoc />
     public int TotalLength => SyntaxLength + InnerLength;

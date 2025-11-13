@@ -9,7 +9,7 @@ namespace StringEnricher.Telegram.Nodes.Html;
 /// <typeparam name="TInner">
 /// The type of the inner style that will be escaped.
 /// </typeparam>
-public readonly struct EscapeNode<TInner> : INode
+public struct EscapeNode<TInner> : INode
     where TInner : INode
 {
     private const string EscapedEntity = "&lt;";
@@ -28,7 +28,6 @@ public readonly struct EscapeNode<TInner> : INode
     public EscapeNode(TInner inner)
     {
         _innerText = inner;
-        SyntaxLength = CalculateSyntaxLength(inner);
     }
 
     /// <summary>
@@ -45,7 +44,9 @@ public readonly struct EscapeNode<TInner> : INode
     public int InnerLength => _innerText.TotalLength;
 
     /// <inheritdoc />
-    public int SyntaxLength { get; }
+    /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
+    public int SyntaxLength => _syntaxLength ??= CalculateSyntaxLength(_innerText);
+    private int? _syntaxLength;
 
     /// <inheritdoc />
     public int TotalLength => SyntaxLength + InnerLength;
