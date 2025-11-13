@@ -33,24 +33,17 @@ public struct EnumNode<TEnum> : INode where TEnum : struct, Enum
     /// <inheritdoc />
     /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
     public int TotalLength => _totalLength ??= GetEnumLength(_enum, _format);
+
     private int? _totalLength;
 
     /// <inheritdoc />
     public override string ToString() => string.Create(TotalLength, this, static (span, node) => node.CopyTo(span));
 
     /// <inheritdoc />
-    public int CopyTo(Span<char> destination)
-    {
-        var textLength = TotalLength;
-        if (destination.Length < textLength)
-        {
-            throw new ArgumentException("Destination span too small.");
-        }
-
-        Enum.TryFormat(_enum, destination, out _, _format);
-
-        return textLength;
-    }
+    public int CopyTo(Span<char> destination) => Enum.TryFormat(_enum, destination, out var textLength, _format)
+        ? textLength
+        : throw new ArgumentException("The destination span is too small to hold the boolean value.",
+            nameof(destination));
 
     /// <inheritdoc />
     public bool TryGetChar(int index, out char character)

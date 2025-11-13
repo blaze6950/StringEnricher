@@ -14,6 +14,7 @@ public readonly struct BoolNode : INode
     public BoolNode(bool @bool)
     {
         _bool = @bool;
+        // Precompute total length since it's trivial
         TotalLength = GetBoolLength(value: _bool);
     }
 
@@ -27,18 +28,10 @@ public readonly struct BoolNode : INode
     public override string ToString() => string.Create(TotalLength, this, static (span, node) => node.CopyTo(span));
 
     /// <inheritdoc />
-    public int CopyTo(Span<char> destination)
-    {
-        var textLength = TotalLength;
-        if (destination.Length < textLength)
-        {
-            throw new ArgumentException("Destination span too small.");
-        }
-
-        _bool.TryFormat(destination, out _);
-
-        return textLength;
-    }
+    public int CopyTo(Span<char> destination) => _bool.TryFormat(destination, out var textLength)
+        ? textLength
+        : throw new ArgumentException("The destination span is too small to hold the boolean value.",
+            nameof(destination));
 
     /// <inheritdoc />
     public bool TryGetChar(int index, out char character)

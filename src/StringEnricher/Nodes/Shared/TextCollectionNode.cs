@@ -39,15 +39,10 @@ public struct TextCollectionNode<TCollection> : INode
     /// <inheritdoc />
     public int CopyTo(Span<char> destination)
     {
-        if (destination.Length < TotalLength)
-        {
-            throw new ArgumentException("Destination span too small.");
-        }
-
+        var writtenChars = 0;
         if (string.IsNullOrEmpty(_separator))
         {
             // No separator, directly copy texts
-            var pos = 0;
             for (var index = 0; index < _texts.Count; index++)
             {
                 var text = _texts[index];
@@ -56,8 +51,8 @@ public struct TextCollectionNode<TCollection> : INode
                     continue;
                 }
 
-                text.AsSpan().CopyTo(destination.Slice(pos, text.Length));
-                pos += text.Length;
+                text.AsSpan().CopyTo(destination.Slice(writtenChars, text.Length));
+                writtenChars += text.Length;
             }
         }
         else
@@ -65,7 +60,6 @@ public struct TextCollectionNode<TCollection> : INode
             // With separator, copy texts with separators
             var sepLen = _separator.Length;
             var textsCount = _texts.Count;
-            var pos = 0;
             for (var index = 0; index < textsCount; index++)
             {
                 var text = _texts[index];
@@ -74,19 +68,19 @@ public struct TextCollectionNode<TCollection> : INode
                     continue;
                 }
 
-                text.AsSpan().CopyTo(destination.Slice(pos, text.Length));
-                pos += text.Length;
+                text.AsSpan().CopyTo(destination.Slice(writtenChars, text.Length));
+                writtenChars += text.Length;
 
                 // Add separator if not the last text
                 if (index < textsCount - 1)
                 {
-                    _separator.AsSpan().CopyTo(destination.Slice(pos, sepLen));
-                    pos += sepLen;
+                    _separator.AsSpan().CopyTo(destination.Slice(writtenChars, sepLen));
+                    writtenChars += sepLen;
                 }
             }
         }
 
-        return TotalLength;
+        return writtenChars;
     }
 
     /// <inheritdoc />

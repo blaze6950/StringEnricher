@@ -38,24 +38,17 @@ public struct ULongNode : INode
     /// <inheritdoc />
     /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
     public int TotalLength => _totalLength ??= GetULongLength(_ulong, _format, _provider);
+
     private int? _totalLength;
 
     /// <inheritdoc />
     public override string ToString() => string.Create(TotalLength, this, static (span, node) => node.CopyTo(span));
 
     /// <inheritdoc />
-    public int CopyTo(Span<char> destination)
-    {
-        var textLength = TotalLength;
-        if (destination.Length < textLength)
-        {
-            throw new ArgumentException("Destination span too small.");
-        }
-
-        _ulong.TryFormat(destination, out _, _format, _provider);
-
-        return textLength;
-    }
+    public int CopyTo(Span<char> destination) => _ulong.TryFormat(destination, out var textLength, _format, _provider)
+        ? textLength
+        : throw new ArgumentException("The destination span is too small to hold the boolean value.",
+            nameof(destination));
 
     /// <inheritdoc />
     public bool TryGetChar(int index, out char character)
@@ -109,7 +102,7 @@ public struct ULongNode : INode
 
             if (bufferSize > StringEnricherSettings.Nodes.Shared.ULongNode.MaxBufferSize)
             {
-                                throw new InvalidOperationException("ulong format string is too long.");
+                throw new InvalidOperationException("ulong format string is too long.");
             }
         }
     }

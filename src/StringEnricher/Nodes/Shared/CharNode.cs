@@ -28,15 +28,16 @@ public readonly struct CharNode : INode
     /// <inheritdoc />
     public int CopyTo(Span<char> destination)
     {
-        var textLength = TotalLength;
-        if (destination.Length < textLength)
+        try
         {
-            throw new ArgumentException("Destination span too small.");
+            destination[0] = _char;
+
+            return 1;
         }
-
-        destination[0] = _char;
-
-        return textLength;
+        catch (IndexOutOfRangeException e)
+        {
+            throw new ArgumentException("The destination span is too small to copy the CharNode.", e);
+        }
     }
 
     /// <inheritdoc />
