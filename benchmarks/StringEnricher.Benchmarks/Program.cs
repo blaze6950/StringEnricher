@@ -1,5 +1,6 @@
 ﻿using BenchmarkDotNet.Running;
 using StringEnricher.Benchmarks.Nodes.CompleteStyledStringBuildingBenchmarks;
+using StringEnricher.Benchmarks.Nodes.SingleBoldNodeOverDateTimeBenchmarks;
 
 namespace StringEnricher.Benchmarks;
 
@@ -17,6 +18,7 @@ public class Program
         //BenchmarkRunner.Run<HardcoreTenfoldBoldNodeBenchmarks>();
         //BenchmarkRunner.Run<MarkdownV2EscapeBenchmarks>();
         //BenchmarkRunner.Run<MethodExtractionBenchmarks>();
-        BenchmarkRunner.Run<CompleteStyledStringBuildingBenchmarks>();
+        //BenchmarkRunner.Run<CompleteStyledStringBuildingBenchmarks>();
+        BenchmarkRunner.Run<BoldNodeOverDateTimeBenchmarks>();
     }
 }
