@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageId>StringEnricher</PackageId>
-        <Version>1.0.1</Version>
+        <Version>1.0.2</Version>
         <Authors>blaze6950</Authors>
         <Description>Core library for StringEnricher. Provides foundational APIs for building platform-specific implementations (e.g., StringEnricher.Telegram). Install only if you need to create custom platform integrations; otherwise, use a platform-specific package.</Description>
         <PackageReleaseNotes>Primitive node settings were defined for advance tuning primitive nodes behavior, namely tune the allocation behavior</PackageReleaseNotes>

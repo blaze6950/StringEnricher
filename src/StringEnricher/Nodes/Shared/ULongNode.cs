@@ -7,7 +7,7 @@ namespace StringEnricher.Nodes.Shared;
 /// <summary>
 /// A style that represents an ulong.
 /// </summary>
-public readonly struct ULongNode : INode
+public struct ULongNode : INode
 {
     private readonly ulong _ulong;
     private readonly string? _format;
@@ -30,14 +30,15 @@ public readonly struct ULongNode : INode
         _ulong = @ulong;
         _format = format;
         _provider = provider;
-        TotalLength = GetLongLength(@ulong, _format, _provider);
     }
 
     /// <inheritdoc />
     public int SyntaxLength => 0;
 
     /// <inheritdoc />
-    public int TotalLength { get; }
+    /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
+    public int TotalLength => _totalLength ??= GetULongLength(_ulong, _format, _provider);
+    private int? _totalLength;
 
     /// <inheritdoc />
     public override string ToString() => string.Create(TotalLength, this, static (span, node) => node.CopyTo(span));
@@ -93,7 +94,7 @@ public readonly struct ULongNode : INode
     /// <returns>
     /// The length of the ulong when represented as a string.
     /// </returns>
-    private static int GetLongLength(ulong value, string? format = null, IFormatProvider? provider = null)
+    private static int GetULongLength(ulong value, string? format = null, IFormatProvider? provider = null)
     {
         var bufferSize = StringEnricherSettings.Nodes.Shared.ULongNode.InitialBufferSize;
         while (true)

@@ -7,7 +7,7 @@ namespace StringEnricher.Nodes.Shared;
 /// <summary>
 /// A style that represents an uinteger.
 /// </summary>
-public readonly struct UIntegerNode : INode
+public struct UIntegerNode : INode
 {
     private readonly uint _uinteger;
     private readonly string? _format;
@@ -30,14 +30,15 @@ public readonly struct UIntegerNode : INode
         _uinteger = uinteger;
         _format = format;
         _provider = provider;
-        TotalLength = GetIntLength(uinteger, _format, _provider);
     }
 
     /// <inheritdoc />
     public int SyntaxLength => 0;
 
     /// <inheritdoc />
-    public int TotalLength { get; }
+    /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
+    public int TotalLength => _totalLength ??= GetUIntLength(_uinteger, _format, _provider);
+    private int? _totalLength;
 
     /// <inheritdoc />
     public override string ToString() => string.Create(TotalLength, this, static (span, node) => node.CopyTo(span));
@@ -93,7 +94,7 @@ public readonly struct UIntegerNode : INode
     /// <returns>
     /// The length of the uinteger when formatted as a string.
     /// </returns>
-    private static int GetIntLength(uint value, string? format, IFormatProvider? provider)
+    private static int GetUIntLength(uint value, string? format, IFormatProvider? provider)
     {
         var bufferSize = StringEnricherSettings.Nodes.Shared.UIntegerNode.InitialBufferSize;
         while (true)

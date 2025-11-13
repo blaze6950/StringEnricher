@@ -7,7 +7,7 @@ namespace StringEnricher.Nodes.Shared;
 /// <summary>
 /// A style that represents a float.
 /// </summary>
-public readonly struct FloatNode : INode
+public struct FloatNode : INode
 {
     private readonly float _float;
     private readonly string? _format;
@@ -30,14 +30,15 @@ public readonly struct FloatNode : INode
         _float = @float;
         _format = format;
         _provider = provider;
-        TotalLength = GetFloatLength(@float, _format, _provider);
     }
 
     /// <inheritdoc />
     public int SyntaxLength => 0;
 
     /// <inheritdoc />
-    public int TotalLength { get; }
+    /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
+    public int TotalLength => _totalLength ??= GetFloatLength(_float, _format, _provider);
+    private int? _totalLength;
 
     /// <inheritdoc />
     public override string ToString() => string.Create(TotalLength, this, static (span, node) => node.CopyTo(span));

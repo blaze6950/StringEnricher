@@ -7,7 +7,7 @@ namespace StringEnricher.Nodes.Shared;
 /// <summary>
 /// A style that represents a timeSpan.
 /// </summary>
-public readonly struct TimeSpanNode : INode
+public struct TimeSpanNode : INode
 {
     private readonly TimeSpan _timeSpan;
     private readonly string? _format;
@@ -30,14 +30,15 @@ public readonly struct TimeSpanNode : INode
         _timeSpan = timeSpan;
         _format = format;
         _provider = provider;
-        TotalLength = GetTimeSpanLength(_timeSpan, _format, _provider);
     }
 
     /// <inheritdoc />
     public int SyntaxLength => 0;
 
     /// <inheritdoc />
-    public int TotalLength { get; }
+    /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
+    public int TotalLength => _totalLength ??= GetTimeSpanLength(_timeSpan, _format, _provider);
+    private int? _totalLength;
 
     /// <inheritdoc />
     public override string ToString() => string.Create(TotalLength, this, static (span, node) => node.CopyTo(span));

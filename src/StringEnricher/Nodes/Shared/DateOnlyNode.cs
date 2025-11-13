@@ -7,7 +7,7 @@ namespace StringEnricher.Nodes.Shared;
 /// <summary>
 /// A style that represents a dateOnly.
 /// </summary>
-public readonly struct DateOnlyNode : INode
+public struct DateOnlyNode : INode
 {
     private readonly DateOnly _dateOnly;
     private readonly string? _format;
@@ -30,14 +30,15 @@ public readonly struct DateOnlyNode : INode
         _dateOnly = dateOnly;
         _format = format;
         _provider = provider;
-        TotalLength = GetDateOnlyLength(_dateOnly, _format, _provider);
     }
 
     /// <inheritdoc />
     public int SyntaxLength => 0;
 
     /// <inheritdoc />
-    public int TotalLength { get; }
+    /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
+    public int TotalLength => _totalLength ??= GetDateOnlyLength(_dateOnly, _format, _provider);
+    private int? _totalLength;
 
     /// <inheritdoc />
     public override string ToString() => string.Create(TotalLength, this, static (span, node) => node.CopyTo(span));

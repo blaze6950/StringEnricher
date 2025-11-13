@@ -7,7 +7,7 @@ namespace StringEnricher.Nodes.Shared;
 /// <summary>
 /// A style that represents an enum.
 /// </summary>
-public readonly struct EnumNode<TEnum> : INode where TEnum : struct, Enum
+public struct EnumNode<TEnum> : INode where TEnum : struct, Enum
 {
     private readonly TEnum _enum;
     private readonly string? _format;
@@ -25,14 +25,15 @@ public readonly struct EnumNode<TEnum> : INode where TEnum : struct, Enum
     {
         _enum = @enum;
         _format = format;
-        TotalLength = GetEnumLength(value: _enum, format: _format);
     }
 
     /// <inheritdoc />
     public int SyntaxLength => 0;
 
     /// <inheritdoc />
-    public int TotalLength { get; }
+    /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
+    public int TotalLength => _totalLength ??= GetEnumLength(_enum, _format);
+    private int? _totalLength;
 
     /// <inheritdoc />
     public override string ToString() => string.Create(TotalLength, this, static (span, node) => node.CopyTo(span));

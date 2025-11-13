@@ -7,7 +7,7 @@ namespace StringEnricher.Nodes.Shared;
 /// <summary>
 /// A style that represents an ushort.
 /// </summary>
-public readonly struct UShortNode : INode
+public struct UShortNode : INode
 {
     private readonly ushort _ushort;
     private readonly string? _format;
@@ -30,14 +30,15 @@ public readonly struct UShortNode : INode
         _ushort = @ushort;
         _format = format;
         _provider = provider;
-        TotalLength = GetFloatLength(@ushort, _format, _provider);
     }
 
     /// <inheritdoc />
     public int SyntaxLength => 0;
 
     /// <inheritdoc />
-    public int TotalLength { get; }
+    /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
+    public int TotalLength => _totalLength ??= GetUShortLength(_ushort, _format, _provider);
+    private int? _totalLength;
 
     /// <inheritdoc />
     public override string ToString() => string.Create(TotalLength, this, static (span, node) => node.CopyTo(span));
@@ -93,7 +94,7 @@ public readonly struct UShortNode : INode
     /// <returns>
     /// The length of the ushort when formatted as a string.
     /// </returns>
-    private static int GetFloatLength(ushort value, string? format = null, IFormatProvider? provider = null)
+    private static int GetUShortLength(ushort value, string? format = null, IFormatProvider? provider = null)
     {
         var bufferSize = StringEnricherSettings.Nodes.Shared.UShortNode.InitialBufferSize;
         while (true)

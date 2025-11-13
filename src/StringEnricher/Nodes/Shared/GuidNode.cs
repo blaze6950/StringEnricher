@@ -7,7 +7,7 @@ namespace StringEnricher.Nodes.Shared;
 /// <summary>
 /// A style that represents an GUID.
 /// </summary>
-public readonly struct GuidNode : INode
+public struct GuidNode : INode
 {
     private readonly Guid _guid;
     private readonly string? _format;
@@ -26,14 +26,15 @@ public readonly struct GuidNode : INode
     {
         _guid = guid;
         _format = format;
-        TotalLength = GetGuidLength(guid, _format);
     }
 
     /// <inheritdoc />
     public int SyntaxLength => 0;
 
     /// <inheritdoc />
-    public int TotalLength { get; }
+    /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
+    public int TotalLength => _totalLength ??= GetGuidLength(_guid, _format);
+    private int? _totalLength;
 
     /// <inheritdoc />
     public override string ToString() => string.Create(TotalLength, this, static (span, node) => node.CopyTo(span));

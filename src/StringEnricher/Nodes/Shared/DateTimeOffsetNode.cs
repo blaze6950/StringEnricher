@@ -7,7 +7,7 @@ namespace StringEnricher.Nodes.Shared;
 /// <summary>
 /// A style that represents a dateTimeOffset.
 /// </summary>
-public readonly struct DateTimeOffsetNode : INode
+public struct DateTimeOffsetNode : INode
 {
     private readonly DateTimeOffset _dateTimeOffset;
     private readonly string? _format;
@@ -30,14 +30,15 @@ public readonly struct DateTimeOffsetNode : INode
         _dateTimeOffset = dateTimeOffset;
         _format = format;
         _provider = provider;
-        TotalLength = GetDateTimeOffsetLength(_dateTimeOffset, _format, _provider);
     }
 
     /// <inheritdoc />
     public int SyntaxLength => 0;
 
     /// <inheritdoc />
-    public int TotalLength { get; }
+    /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
+    public int TotalLength => _totalLength ??= GetDateTimeOffsetLength(_dateTimeOffset, _format, _provider);
+    private int? _totalLength;
 
     /// <inheritdoc />
     public override string ToString() => string.Create(TotalLength, this, static (span, node) => node.CopyTo(span));

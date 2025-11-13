@@ -7,7 +7,7 @@ namespace StringEnricher.Nodes.Shared;
 /// <summary>
 /// A style that represents a decimal.
 /// </summary>
-public readonly struct DecimalNode : INode
+public struct DecimalNode : INode
 {
     private readonly decimal _decimal;
     private readonly string? _format;
@@ -30,14 +30,15 @@ public readonly struct DecimalNode : INode
         _decimal = @decimal;
         _format = format;
         _provider = provider;
-        TotalLength = GetDecimalLength(@decimal, _format, _provider);
     }
 
     /// <inheritdoc />
     public int SyntaxLength => 0;
 
     /// <inheritdoc />
-    public int TotalLength { get; }
+    /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
+    public int TotalLength => _totalLength ??= GetDecimalLength(_decimal, _format, _provider);
+    private int? _totalLength;
 
     /// <inheritdoc />
     public override string ToString() => string.Create(TotalLength, this, static (span, node) => node.CopyTo(span));

@@ -7,7 +7,7 @@ namespace StringEnricher.Nodes.Shared;
 /// <summary>
 /// A style that represents a byte.
 /// </summary>
-public readonly struct ByteNode : INode
+public struct ByteNode : INode
 {
     private readonly byte _byte;
     private readonly string? _format;
@@ -30,14 +30,15 @@ public readonly struct ByteNode : INode
         _byte = @byte;
         _format = format;
         _provider = provider;
-        TotalLength = GetByteLength(@byte, _format, _provider);
     }
 
     /// <inheritdoc />
     public int SyntaxLength => 0;
 
     /// <inheritdoc />
-    public int TotalLength { get; }
+    /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
+    public int TotalLength => _totalLength ??= GetByteLength(_byte, _format, _provider);
+    private int? _totalLength;
 
     /// <inheritdoc />
     public override string ToString() => string.Create(TotalLength, this, static (span, node) => node.CopyTo(span));

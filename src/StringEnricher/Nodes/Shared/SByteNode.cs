@@ -7,7 +7,7 @@ namespace StringEnricher.Nodes.Shared;
 /// <summary>
 /// A style that represents a sbyte.
 /// </summary>
-public readonly struct SByteNode : INode
+public struct SByteNode : INode
 {
     private readonly sbyte _sbyte;
     private readonly string? _format;
@@ -30,14 +30,15 @@ public readonly struct SByteNode : INode
         _sbyte = @sbyte;
         _format = format;
         _provider = provider;
-        TotalLength = GetLongLength(@sbyte, _format, _provider);
     }
 
     /// <inheritdoc />
     public int SyntaxLength => 0;
 
     /// <inheritdoc />
-    public int TotalLength { get; }
+    /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
+    public int TotalLength => _totalLength ??= GetSByteLength(_sbyte, _format, _provider);
+    private int? _totalLength;
 
     /// <inheritdoc />
     public override string ToString() => string.Create(TotalLength, this, static (span, node) => node.CopyTo(span));
@@ -93,7 +94,7 @@ public readonly struct SByteNode : INode
     /// <returns>
     /// The length of the sbyte when represented as a string.
     /// </returns>
-    private static int GetLongLength(sbyte value, string? format = null, IFormatProvider? provider = null)
+    private static int GetSByteLength(sbyte value, string? format = null, IFormatProvider? provider = null)
     {
         var bufferSize = StringEnricherSettings.Nodes.Shared.SByteNode.InitialBufferSize;
         while (true)

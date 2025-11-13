@@ -7,7 +7,7 @@ namespace StringEnricher.Nodes.Shared;
 /// <summary>
 /// A style that represents a short.
 /// </summary>
-public readonly struct ShortNode : INode
+public struct ShortNode : INode
 {
     private readonly short _short;
     private readonly string? _format;
@@ -30,14 +30,15 @@ public readonly struct ShortNode : INode
         _short = @short;
         _format = format;
         _provider = provider;
-        TotalLength = GetFloatLength(@short, _format, _provider);
     }
 
     /// <inheritdoc />
     public int SyntaxLength => 0;
 
     /// <inheritdoc />
-    public int TotalLength { get; }
+    /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
+    public int TotalLength => _totalLength ??= GetShortLength(_short, _format, _provider);
+    private int? _totalLength;
 
     /// <inheritdoc />
     public override string ToString() => string.Create(TotalLength, this, static (span, node) => node.CopyTo(span));
@@ -93,7 +94,7 @@ public readonly struct ShortNode : INode
     /// <returns>
     /// The length of the short when formatted as a string.
     /// </returns>
-    private static int GetFloatLength(short value, string? format = null, IFormatProvider? provider = null)
+    private static int GetShortLength(short value, string? format = null, IFormatProvider? provider = null)
     {
         var bufferSize = StringEnricherSettings.Nodes.Shared.ShortNode.InitialBufferSize;
         while (true)

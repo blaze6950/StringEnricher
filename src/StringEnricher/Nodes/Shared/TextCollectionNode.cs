@@ -3,7 +3,7 @@ namespace StringEnricher.Nodes.Shared;
 /// <summary>
 /// A style that represents a collection of plain texts without any special formatting.
 /// </summary>
-public readonly struct TextCollectionNode<TCollection> : INode
+public struct TextCollectionNode<TCollection> : INode
     where TCollection : IReadOnlyList<string>
 {
     private readonly TCollection _texts;
@@ -23,14 +23,15 @@ public readonly struct TextCollectionNode<TCollection> : INode
         ArgumentNullException.ThrowIfNull(texts);
         _texts = texts;
         _separator = separator;
-        TotalLength = CalculateTotalLength(texts, separator);
     }
 
     /// <inheritdoc />
     public int SyntaxLength => 0;
 
     /// <inheritdoc />
-    public int TotalLength { get; }
+    /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
+    public int TotalLength => _totalLength ??= CalculateTotalLength(_texts, _separator);
+    private int? _totalLength;
 
     /// <inheritdoc />
     public override string ToString() => string.Create(TotalLength, this, static (span, node) => node.CopyTo(span));

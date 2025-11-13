@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageId>StringEnricher.Telegram</PackageId>
-        <Version>1.0.1</Version>
+        <Version>1.0.2</Version>
         <Authors>blaze6950</Authors>
         <Description>A .NET 9 library that provides high performance string enrichment functionalities with zero heap allocations building styled strings for Telegram.</Description>
         <PackageReleaseNotes>Metedata was updated.</PackageReleaseNotes>
