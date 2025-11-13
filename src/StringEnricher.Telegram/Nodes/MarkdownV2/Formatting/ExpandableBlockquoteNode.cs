@@ -13,7 +13,7 @@ public readonly struct ExpandableBlockquoteNode<TInner> : INode
     where TInner : INode
 {
     /// <summary>
-    /// The prefix used for each line in a expandable blockquote in MarkdownV2.
+    /// The prefix used for each line in an expandable blockquote in MarkdownV2.
     /// </summary>
     public const char LinePrefix = '>';
 
