@@ -2,6 +2,7 @@
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using StringEnricher.Buffer.Processors;
+using StringEnricher.Buffer.Processors.LengthCalculation;
 using StringEnricher.Configuration;
 
 namespace StringEnricher.Buffer;

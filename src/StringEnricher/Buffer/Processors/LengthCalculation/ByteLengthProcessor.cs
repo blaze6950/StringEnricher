@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 
-namespace StringEnricher.Buffer.Processors;
+namespace StringEnricher.Buffer.Processors.LengthCalculation;
 
 /// <summary>
 /// A buffer processor that formats a byte value into a character buffer and returns the length of the formatted string.

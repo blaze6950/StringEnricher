@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 
-namespace StringEnricher.Buffer.Processors;
+namespace StringEnricher.Buffer.Processors.LengthCalculation;
 
 /// <summary>
 /// A processor that calculates the length of a formatted <see cref="Guid"/> value.

@@ -1,4 +1,4 @@
-﻿namespace StringEnricher.Buffer.Processors;
+﻿namespace StringEnricher.Buffer.Processors.LengthCalculation;
 
 /// <summary>
 /// An interface for processing buffers with a specific state and returning a result.

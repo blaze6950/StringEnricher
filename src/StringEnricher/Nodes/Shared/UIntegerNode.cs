@@ -1,5 +1,6 @@
 using StringEnricher.Buffer;
 using StringEnricher.Buffer.Processors;
+using StringEnricher.Buffer.Processors.LengthCalculation;
 using StringEnricher.Configuration;
 
 namespace StringEnricher.Nodes.Shared;
