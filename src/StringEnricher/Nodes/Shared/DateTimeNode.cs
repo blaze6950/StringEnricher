@@ -1,6 +1,6 @@
-using System.Buffers;
+using StringEnricher.Buffer;
+using StringEnricher.Buffer.Processors;
 using StringEnricher.Configuration;
-using StringEnricher.Utils;
 
 namespace StringEnricher.Nodes.Shared;
 
@@ -90,91 +90,16 @@ public struct DateTimeNode : INode
     /// </returns>
     private static int GetDateTimeLength(DateTime value, string? format = null, IFormatProvider? provider = null)
     {
-        var bufferSize = StringEnricherSettings.Nodes.Shared.DateTimeNode.InitialBufferSize;
-        while (true)
-        {
-            if (TryGetFormattedLength(value, format, provider, bufferSize, out var dateOnlyLength))
-            {
-                return dateOnlyLength;
-            }
+        // prepare state - the value and everything needed for formatting into an allocated buffer
+        var state = new FormattingState<DateTime>(value, format, provider);
 
-            bufferSize = BufferSizeUtils.GetNewBufferSize(bufferSize,
-                StringEnricherSettings.Nodes.Shared.DateTimeNode.GrowthFactor);
+        // tries to allocate a buffer and use the processor to get the length of the formatted value
+        var length = BufferUtils.AllocateBuffer<DateTimeLengthProcessor, FormattingState<DateTime>, int>(
+            func: new DateTimeLengthProcessor(),
+            state: in state,
+            nodeSettings: StringEnricherSettings.Nodes.Shared.DateTimeNode
+        );
 
-            if (bufferSize > StringEnricherSettings.Nodes.Shared.DateTimeNode.MaxBufferSize)
-            {
-                throw new InvalidOperationException("DateTime format string is too long.");
-            }
-        }
-    }
-
-    /// <summary>
-    /// Tries to get the length of the formatted string representation of a DateTime.
-    /// </summary>
-    /// <param name="value">
-    /// The DateTime value.
-    /// </param>
-    /// <param name="format">
-    /// The format to use when converting the DateTime to a string.
-    /// </param>
-    /// <param name="provider">
-    /// The format provider to use when converting the DateTime to a string.
-    /// </param>
-    /// <param name="bufferSize">
-    /// The size of the buffer to use when formatting the DateTime.
-    /// </param>
-    /// <param name="length">
-    /// The length of the formatted string representation of the DateTime.
-    /// </param>
-    /// <returns>
-    /// True if the length was successfully obtained; otherwise, false.
-    /// </returns>
-    private static bool TryGetFormattedLength(DateTime value, string? format, IFormatProvider? provider, int bufferSize,
-        out int length)
-    {
-        length = 0;
-
-        if (bufferSize <= StringEnricherSettings.Nodes.Shared.DateTimeNode.MaxStackAllocLength)
-        {
-            // stackalloc for small sizes (fastest)
-            Span<char> buffer = stackalloc char[bufferSize];
-            if (!value.TryFormat(buffer, out var charsWritten, format, provider))
-            {
-                return false;
-            }
-
-            length = charsWritten;
-        }
-        else if (bufferSize <= StringEnricherSettings.Nodes.Shared.DateTimeNode.MaxPooledArrayLength)
-        {
-            // array pool for medium sizes (less pressure on the GC)
-            var buffer = ArrayPool<char>.Shared.Rent(bufferSize);
-            try
-            {
-                if (!value.TryFormat(buffer, out var charsWritten, format, provider))
-                {
-                    return false;
-                }
-
-                length = charsWritten;
-            }
-            finally
-            {
-                ArrayPool<char>.Shared.Return(buffer);
-            }
-        }
-        else
-        {
-            // fallback: direct heap allocation (rare but safe)
-            var buffer = new char[bufferSize];
-            if (!value.TryFormat(buffer, out var charsWritten, format, provider))
-            {
-                return false;
-            }
-
-            length = charsWritten;
-        }
-
-        return true;
+        return length;
     }
 }

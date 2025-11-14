@@ -1,6 +1,6 @@
-using System.Buffers;
+using StringEnricher.Buffer;
+using StringEnricher.Buffer.Processors;
 using StringEnricher.Configuration;
-using StringEnricher.Utils;
 
 namespace StringEnricher.Nodes.Shared;
 
@@ -90,91 +90,16 @@ public struct DateOnlyNode : INode
     /// </returns>
     private static int GetDateOnlyLength(DateOnly value, string? format, IFormatProvider? provider)
     {
-        var bufferSize = StringEnricherSettings.Nodes.Shared.DateOnlyNode.InitialBufferSize;
-        while (true)
-        {
-            if (TryGetFormattedLength(value, format, provider, bufferSize, out var dateOnlyLength))
-            {
-                return dateOnlyLength;
-            }
+        // prepare state - the value and everything needed for formatting into an allocated buffer
+        var state = new FormattingState<DateOnly>(value, format, provider);
 
-            bufferSize = BufferSizeUtils.GetNewBufferSize(bufferSize,
-                StringEnricherSettings.Nodes.Shared.DateOnlyNode.GrowthFactor);
+        // tries to allocate a buffer and use the processor to get the length of the formatted value
+        var length = BufferUtils.AllocateBuffer<DateOnlyLengthProcessor, FormattingState<DateOnly>, int>(
+            func: new DateOnlyLengthProcessor(),
+            state: in state,
+            nodeSettings: StringEnricherSettings.Nodes.Shared.DateOnlyNode
+        );
 
-            if (bufferSize > StringEnricherSettings.Nodes.Shared.DateOnlyNode.MaxBufferSize)
-            {
-                throw new InvalidOperationException("DateOnly format string is too long.");
-            }
-        }
-    }
-
-    /// <summary>
-    /// Tries to get the length of the formatted string representation of a dateOnly.
-    /// </summary>
-    /// <param name="value">
-    /// The dateOnly value.
-    /// </param>
-    /// <param name="format">
-    /// The format to use when converting the dateOnly to a string.
-    /// </param>
-    /// <param name="provider">
-    /// The format provider to use when converting the dateOnly to a string.
-    /// </param>
-    /// <param name="bufferSize">
-    /// The size of the buffer to use when formatting the dateOnly.
-    /// </param>
-    /// <param name="length">
-    /// The length of the formatted string representation of the dateOnly.
-    /// </param>
-    /// <returns>
-    /// True if the length was successfully obtained; otherwise, false.
-    /// </returns>
-    private static bool TryGetFormattedLength(DateOnly value, string? format, IFormatProvider? provider, int bufferSize,
-        out int length)
-    {
-        length = 0;
-
-        if (bufferSize <= StringEnricherSettings.Nodes.Shared.DateOnlyNode.MaxStackAllocLength)
-        {
-            // stackalloc for small sizes (fastest)
-            Span<char> buffer = stackalloc char[bufferSize];
-            if (!value.TryFormat(buffer, out var charsWritten, format, provider))
-            {
-                return false;
-            }
-
-            length = charsWritten;
-        }
-        else if (bufferSize <= StringEnricherSettings.Nodes.Shared.DateOnlyNode.MaxPooledArrayLength)
-        {
-            // array pool for medium sizes (less pressure on the GC)
-            var buffer = ArrayPool<char>.Shared.Rent(bufferSize);
-            try
-            {
-                if (!value.TryFormat(buffer, out var charsWritten, format, provider))
-                {
-                    return false;
-                }
-
-                length = charsWritten;
-            }
-            finally
-            {
-                ArrayPool<char>.Shared.Return(buffer);
-            }
-        }
-        else
-        {
-            // fallback: direct heap allocation (rare but safe)
-            var buffer = new char[bufferSize];
-            if (!value.TryFormat(buffer, out var charsWritten, format, provider))
-            {
-                return false;
-            }
-
-            length = charsWritten;
-        }
-
-        return true;
+        return length;
     }
 }

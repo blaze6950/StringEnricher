@@ -1,6 +1,6 @@
-using System.Buffers;
+using StringEnricher.Buffer;
+using StringEnricher.Buffer.Processors;
 using StringEnricher.Configuration;
-using StringEnricher.Utils;
 
 namespace StringEnricher.Nodes.Shared;
 
@@ -89,91 +89,16 @@ public struct ShortNode : INode
     /// </returns>
     private static int GetShortLength(short value, string? format = null, IFormatProvider? provider = null)
     {
-        var bufferSize = StringEnricherSettings.Nodes.Shared.ShortNode.InitialBufferSize;
-        while (true)
-        {
-            if (TryGetFormattedLength(value, format, provider, bufferSize, out var shortLength))
-            {
-                return shortLength;
-            }
+        // prepare state - the value and everything needed for formatting into an allocated buffer
+        var state = new FormattingState<short>(value, format, provider);
 
-            bufferSize = BufferSizeUtils.GetNewBufferSize(bufferSize,
-                StringEnricherSettings.Nodes.Shared.ShortNode.GrowthFactor);
+        // tries to allocate a buffer and use the processor to get the length of the formatted value
+        var length = BufferUtils.AllocateBuffer<ShortLengthProcessor, FormattingState<short>, int>(
+            func: new ShortLengthProcessor(),
+            state: in state,
+            nodeSettings: StringEnricherSettings.Nodes.Shared.ShortNode
+        );
 
-            if (bufferSize > StringEnricherSettings.Nodes.Shared.ShortNode.MaxBufferSize)
-            {
-                throw new InvalidOperationException("short format string is too long.");
-            }
-        }
-    }
-
-    /// <summary>
-    /// Tries to get the length of the formatted string representation of a short.
-    /// </summary>
-    /// <param name="value">
-    /// The short value.
-    /// </param>
-    /// <param name="format">
-    /// The format to use when converting the short to a string.
-    /// </param>
-    /// <param name="provider">
-    /// The format provider to use when converting the short to a string.
-    /// </param>
-    /// <param name="bufferSize">
-    /// The size of the buffer to use when formatting the short.
-    /// </param>
-    /// <param name="length">
-    /// The length of the formatted string representation of the short.
-    /// </param>
-    /// <returns>
-    /// True if the length was successfully obtained; otherwise, false.
-    /// </returns>
-    private static bool TryGetFormattedLength(short value, string? format, IFormatProvider? provider, int bufferSize,
-        out int length)
-    {
-        length = 0;
-
-        if (bufferSize <= StringEnricherSettings.Nodes.Shared.ShortNode.MaxStackAllocLength)
-        {
-            // stackalloc for small sizes (fastest)
-            Span<char> buffer = stackalloc char[bufferSize];
-            if (!value.TryFormat(buffer, out var charsWritten, format, provider))
-            {
-                return false;
-            }
-
-            length = charsWritten;
-        }
-        else if (bufferSize <= StringEnricherSettings.Nodes.Shared.ShortNode.MaxPooledArrayLength)
-        {
-            // array pool for medium sizes (less pressure on the GC)
-            var buffer = ArrayPool<char>.Shared.Rent(bufferSize);
-            try
-            {
-                if (!value.TryFormat(buffer, out var charsWritten, format, provider))
-                {
-                    return false;
-                }
-
-                length = charsWritten;
-            }
-            finally
-            {
-                ArrayPool<char>.Shared.Return(buffer);
-            }
-        }
-        else
-        {
-            // fallback: direct heap allocation (rare but safe)
-            var buffer = new char[bufferSize];
-            if (!value.TryFormat(buffer, out var charsWritten, format, provider))
-            {
-                return false;
-            }
-
-            length = charsWritten;
-        }
-
-        return true;
+        return length;
     }
 }

@@ -1,6 +1,6 @@
-using System.Buffers;
+using StringEnricher.Buffer;
+using StringEnricher.Buffer.Processors;
 using StringEnricher.Configuration;
-using StringEnricher.Utils;
 
 namespace StringEnricher.Nodes.Shared;
 
@@ -75,88 +75,16 @@ public struct EnumNode<TEnum> : INode where TEnum : struct, Enum
     /// </returns>
     private static int GetEnumLength(TEnum value, string? format = null)
     {
-        var bufferSize = StringEnricherSettings.Nodes.Shared.EnumNode.InitialBufferSize;
-        while (true)
-        {
-            if (TryGetFormattedLength(value, format, bufferSize, out var enumLength))
-            {
-                return enumLength;
-            }
+        // prepare state - the value and everything needed for formatting into an allocated buffer
+        var state = new FormattingState<TEnum>(value, format);
 
-            bufferSize = BufferSizeUtils.GetNewBufferSize(bufferSize,
-                StringEnricherSettings.Nodes.Shared.EnumNode.GrowthFactor);
+        // tries to allocate a buffer and use the processor to get the length of the formatted value
+        var length = BufferUtils.AllocateBuffer<EnumLengthProcessor<TEnum>, FormattingState<TEnum>, int>(
+            func: new EnumLengthProcessor<TEnum>(),
+            state: in state,
+            nodeSettings: StringEnricherSettings.Nodes.Shared.EnumNode
+        );
 
-            if (bufferSize > StringEnricherSettings.Nodes.Shared.EnumNode.MaxBufferSize)
-            {
-                throw new InvalidOperationException("enum format string is too long.");
-            }
-        }
-    }
-
-    /// <summary>
-    /// Tries to get the length of the formatted string representation of a int.
-    /// </summary>
-    /// <param name="value">
-    /// The int value.
-    /// </param>
-    /// <param name="format">
-    /// The format to use when converting the int to a string.
-    /// </param>
-    /// <param name="bufferSize">
-    /// The size of the buffer to use when formatting the int.
-    /// </param>
-    /// <param name="length">
-    /// The length of the formatted string representation of the int.
-    /// </param>
-    /// <returns>
-    /// True if the length was successfully obtained; otherwise, false.
-    /// </returns>
-    private static bool TryGetFormattedLength(TEnum value, string? format, int bufferSize,
-        out int length)
-    {
-        length = 0;
-
-        if (bufferSize <= StringEnricherSettings.Nodes.Shared.EnumNode.MaxStackAllocLength)
-        {
-            // stackalloc for small sizes (fastest)
-            Span<char> buffer = stackalloc char[bufferSize];
-            if (!Enum.TryFormat(value, buffer, out var charsWritten, format))
-            {
-                return false;
-            }
-
-            length = charsWritten;
-        }
-        else if (bufferSize <= StringEnricherSettings.Nodes.Shared.EnumNode.MaxPooledArrayLength)
-        {
-            // array pool for medium sizes (less pressure on the GC)
-            var buffer = ArrayPool<char>.Shared.Rent(bufferSize);
-            try
-            {
-                if (!Enum.TryFormat(value, buffer, out var charsWritten, format))
-                {
-                    return false;
-                }
-
-                length = charsWritten;
-            }
-            finally
-            {
-                ArrayPool<char>.Shared.Return(buffer);
-            }
-        }
-        else
-        {
-            // fallback: direct heap allocation (rare but safe)
-            var buffer = new char[bufferSize];
-            if (!Enum.TryFormat(value, buffer, out var charsWritten, format))
-            {
-                return false;
-            }
-
-            length = charsWritten;
-        }
-
-        return true;
+        return length;
     }
 }

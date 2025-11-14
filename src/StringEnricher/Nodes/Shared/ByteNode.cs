@@ -1,6 +1,6 @@
-using System.Buffers;
+using StringEnricher.Buffer;
+using StringEnricher.Buffer.Processors;
 using StringEnricher.Configuration;
-using StringEnricher.Utils;
 
 namespace StringEnricher.Nodes.Shared;
 
@@ -89,92 +89,16 @@ public struct ByteNode : INode
     /// </returns>
     private static int GetByteLength(byte value, string? format = null, IFormatProvider? provider = null)
     {
-        var bufferSize = StringEnricherSettings.Nodes.Shared.ByteNode.InitialBufferSize;
+        // prepare state - the value and everything needed for formatting into an allocated buffer
+        var state = new FormattingState<byte>(value, format, provider);
 
-        while (true)
-        {
-            if (TryGetFormattedLength(value, format, provider, bufferSize, out var byteLength))
-            {
-                return byteLength;
-            }
+        // tries to allocate a buffer and use the ByteLengthProcessor to get the length of the formatted byte
+        var length = BufferUtils.AllocateBuffer<ByteLengthProcessor, FormattingState<byte>, int>(
+            func: new ByteLengthProcessor(),
+            state: in state,
+            nodeSettings: StringEnricherSettings.Nodes.Shared.ByteNode
+        );
 
-            bufferSize = BufferSizeUtils.GetNewBufferSize(bufferSize,
-                StringEnricherSettings.Nodes.Shared.ByteNode.GrowthFactor);
-
-            if (bufferSize > StringEnricherSettings.Nodes.Shared.ByteNode.MaxBufferSize)
-            {
-                throw new InvalidOperationException("byte format string is too long.");
-            }
-        }
-    }
-
-    /// <summary>
-    /// Tries to get the length of the formatted string representation of a byte.
-    /// </summary>
-    /// <param name="value">
-    /// The byte value.
-    /// </param>
-    /// <param name="format">
-    /// The format to use when converting the byte to a string.
-    /// </param>
-    /// <param name="provider">
-    /// The format provider to use when converting the byte to a string.
-    /// </param>
-    /// <param name="bufferSize">
-    /// The size of the buffer to use when formatting the byte.
-    /// </param>
-    /// <param name="length">
-    /// The length of the formatted string representation of the byte.
-    /// </param>
-    /// <returns>
-    /// True if the length was successfully obtained; otherwise, false.
-    /// </returns>
-    private static bool TryGetFormattedLength(byte value, string? format, IFormatProvider? provider, int bufferSize,
-        out int length)
-    {
-        length = 0;
-
-        if (bufferSize <= StringEnricherSettings.Nodes.Shared.ByteNode.MaxStackAllocLength)
-        {
-            // stackalloc for small sizes (fastest)
-            Span<char> buffer = stackalloc char[bufferSize];
-            if (!value.TryFormat(buffer, out var charsWritten, format, provider))
-            {
-                return false;
-            }
-
-            length = charsWritten;
-        }
-        else if (bufferSize <= StringEnricherSettings.Nodes.Shared.ByteNode.MaxPooledArrayLength)
-        {
-            // array pool for medium sizes (less pressure on the GC)
-            var buffer = ArrayPool<char>.Shared.Rent(bufferSize);
-            try
-            {
-                if (!value.TryFormat(buffer, out var charsWritten, format, provider))
-                {
-                    return false;
-                }
-
-                length = charsWritten;
-            }
-            finally
-            {
-                ArrayPool<char>.Shared.Return(buffer);
-            }
-        }
-        else
-        {
-            // fallback: direct heap allocation (rare but safe)
-            var buffer = new char[bufferSize];
-            if (!value.TryFormat(buffer, out var charsWritten, format, provider))
-            {
-                return false;
-            }
-
-            length = charsWritten;
-        }
-
-        return true;
+        return length;
     }
 }
