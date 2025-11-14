@@ -1,6 +1,6 @@
 using StringEnricher.Buffer;
-using StringEnricher.Buffer.Processors;
 using StringEnricher.Buffer.Processors.LengthCalculation;
+using StringEnricher.Buffer.States;
 using StringEnricher.Configuration;
 
 namespace StringEnricher.Nodes.Shared;
@@ -95,7 +95,7 @@ public struct FloatNode : INode
 
         // tries to allocate a buffer and use the processor to get the length of the formatted value
         var length = BufferUtils.AllocateBuffer<FloatLengthProcessor, FormattingState<float>, int>(
-            func: new FloatLengthProcessor(),
+            processor: new FloatLengthProcessor(),
             state: in state,
             nodeSettings: StringEnricherSettings.Nodes.Shared.FloatNode
         );

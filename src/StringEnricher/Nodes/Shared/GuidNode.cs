@@ -1,6 +1,6 @@
 using StringEnricher.Buffer;
-using StringEnricher.Buffer.Processors;
 using StringEnricher.Buffer.Processors.LengthCalculation;
+using StringEnricher.Buffer.States;
 using StringEnricher.Configuration;
 
 namespace StringEnricher.Nodes.Shared;
@@ -86,7 +86,7 @@ public struct GuidNode : INode
 
         // tries to allocate a buffer and use the processor to get the length of the formatted value
         var length = BufferUtils.AllocateBuffer<GuidLengthProcessor, FormattingState<Guid>, int>(
-            func: new GuidLengthProcessor(),
+            processor: new GuidLengthProcessor(),
             state: in state,
             nodeSettings: StringEnricherSettings.Nodes.Shared.GuidNode
         );

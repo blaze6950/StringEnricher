@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace StringEnricher.Buffer;
+namespace StringEnricher.Buffer.States;
 
 /// <summary>
 /// Represents the state for formatting a value of type T.

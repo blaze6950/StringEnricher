@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
+using StringEnricher.Buffer.States;
 
 namespace StringEnricher.Buffer.Processors.LengthCalculation;
 

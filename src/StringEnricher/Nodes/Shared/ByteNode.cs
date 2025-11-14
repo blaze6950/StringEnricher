@@ -1,6 +1,6 @@
 using StringEnricher.Buffer;
-using StringEnricher.Buffer.Processors;
 using StringEnricher.Buffer.Processors.LengthCalculation;
+using StringEnricher.Buffer.States;
 using StringEnricher.Configuration;
 
 namespace StringEnricher.Nodes.Shared;
@@ -95,7 +95,7 @@ public struct ByteNode : INode
 
         // tries to allocate a buffer and use the ByteLengthProcessor to get the length of the formatted byte
         var length = BufferUtils.AllocateBuffer<ByteLengthProcessor, FormattingState<byte>, int>(
-            func: new ByteLengthProcessor(),
+            processor: new ByteLengthProcessor(),
             state: in state,
             nodeSettings: StringEnricherSettings.Nodes.Shared.ByteNode
         );

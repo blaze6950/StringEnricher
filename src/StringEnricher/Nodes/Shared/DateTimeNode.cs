@@ -1,6 +1,6 @@
 using StringEnricher.Buffer;
-using StringEnricher.Buffer.Processors;
 using StringEnricher.Buffer.Processors.LengthCalculation;
+using StringEnricher.Buffer.States;
 using StringEnricher.Configuration;
 
 namespace StringEnricher.Nodes.Shared;
@@ -96,7 +96,7 @@ public struct DateTimeNode : INode
 
         // tries to allocate a buffer and use the processor to get the length of the formatted value
         var length = BufferUtils.AllocateBuffer<DateTimeLengthProcessor, FormattingState<DateTime>, int>(
-            func: new DateTimeLengthProcessor(),
+            processor: new DateTimeLengthProcessor(),
             state: in state,
             nodeSettings: StringEnricherSettings.Nodes.Shared.DateTimeNode
         );

@@ -5,7 +5,7 @@ namespace StringEnricher.Configuration;
 /// <summary>
 /// Configuration settings for a node.
 /// </summary>
-public struct NodeSettings
+public record struct NodeSettings
 {
     /// <summary>
     /// The name of the node.
