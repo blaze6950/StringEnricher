@@ -166,16 +166,6 @@ public struct BufferSizes
                 $"{nameof(InitialBufferLength)} must be greater than zero.");
         }
 
-        const int hardLimit = 2048; // Arbitrary hard limit to prevent excessive stack usage.
-        if (value > hardLimit)
-        {
-            // strongly discourage values above this limit
-            throw new ArgumentOutOfRangeException(
-                nameof(value),
-                value,
-                $"{nameof(InitialBufferLength)} cannot be greater than {hardLimit}.");
-        }
-
         if (value > _maxBufferLength)
         {
             // must not exceed MaxPooledArrayLength
@@ -183,17 +173,6 @@ public struct BufferSizes
                 nameof(value),
                 value,
                 $"{nameof(InitialBufferLength)} cannot be greater than {nameof(MaxBufferLength)} ({_maxBufferLength}).");
-        }
-
-        // soft warnings to help with sensible configuration
-
-        const int softUpperLimit = 1024; // Arbitrary soft upper limit to prevent excessive stack allocations.
-        if (StringEnricherSettings.EnableDebugLogs && value > softUpperLimit)
-        {
-            // warn about high values
-            Console.WriteLine(
-                $"WARNING: [{_name}].{nameof(InitialBufferLength)} is set to a high value ({value}). " +
-                $"This may lead to increased stack usage and potential stack overflow in deep recursion scenarios. Consider setting it to no more than {softUpperLimit}.");
         }
     }
 
@@ -246,17 +225,6 @@ public struct BufferSizes
                 nameof(value),
                 value,
                 $"{nameof(MaxBufferLength)} cannot be less than {nameof(InitialBufferLength)} ({_initialBufferLength}).");
-        }
-
-        // soft warnings to help with sensible configuration
-
-        const int softUpperLimit = 1024; // Arbitrary soft upper limit to prevent excessive memory usage due to large buffer sizes.
-        if (StringEnricherSettings.EnableDebugLogs && value > softUpperLimit)
-        {
-            // warn about high values
-            Console.WriteLine(
-                $"WARNING: [{_name}].{nameof(MaxBufferLength)} is set to a high value ({value}). " +
-                $"This may lead to increased memory usage and potential performance issues. Consider setting it to no more than {softUpperLimit}.");
         }
     }
 

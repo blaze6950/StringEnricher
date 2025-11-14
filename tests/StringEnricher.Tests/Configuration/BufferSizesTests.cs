@@ -58,17 +58,6 @@ public class BufferSizesTests
         Assert.Contains("must be greater than zero", exception.Message);
     }
 
-    [Theory]
-    [InlineData(2049)]
-    [InlineData(3000)]
-    public void Constructor_WithInitialBufferLengthAboveHardLimit_ThrowsArgumentOutOfRangeException(int initial)
-    {
-        // Arrange, Act & Assert
-        var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
-            new BufferSizes("TestConfig", initial, initial + 1000));
-        Assert.Contains("cannot be greater than 2048", exception.Message);
-    }
-
     [Fact]
     public void Constructor_WithInitialBufferLengthGreaterThanMax_ThrowsArgumentOutOfRangeException()
     {
@@ -107,20 +96,6 @@ public class BufferSizesTests
         var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
             bufferSizes.InitialBufferLength = value);
         Assert.Contains("must be greater than zero", exception.Message);
-    }
-
-    [Theory]
-    [InlineData(2049)]
-    [InlineData(5000)]
-    public void InitialBufferLength_Setter_WithValueAboveHardLimit_ThrowsArgumentOutOfRangeException(int value)
-    {
-        // Arrange
-        var bufferSizes = new BufferSizes("TestConfig", 1, 10000);
-
-        // Act & Assert
-        var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
-            bufferSizes.InitialBufferLength = value);
-        Assert.Contains("cannot be greater than 2048", exception.Message);
     }
 
     [Fact]
@@ -332,52 +307,6 @@ public class BufferSizesTests
         // Assert
         var output = writer.ToString();
         Assert.Contains("[TestConfig].GrowthFactor set to 3", output);
-
-        // Cleanup
-        Console.SetOut(originalOut);
-        StringEnricherSettings.EnableDebugLogs = false;
-    }
-
-    [Fact]
-    public void Constructor_WithHighInitialBufferLength_AndDebugLogsEnabled_WritesWarning()
-    {
-        // Arrange
-        StringEnricherSettings.EnableDebugLogs = true;
-        var originalOut = Console.Out;
-        using var writer = new StringWriter();
-        Console.SetOut(writer);
-
-        // Act
-        _ = new BufferSizes("TestConfig", 1025, 10000);
-
-        // Assert
-        var output = writer.ToString();
-        Assert.Contains("WARNING", output);
-        Assert.Contains("InitialBufferLength", output);
-        Assert.Contains("1025", output);
-
-        // Cleanup
-        Console.SetOut(originalOut);
-        StringEnricherSettings.EnableDebugLogs = false;
-    }
-
-    [Fact]
-    public void Constructor_WithHighMaxBufferLength_AndDebugLogsEnabled_WritesWarning()
-    {
-        // Arrange
-        StringEnricherSettings.EnableDebugLogs = true;
-        var originalOut = Console.Out;
-        using var writer = new StringWriter();
-        Console.SetOut(writer);
-
-        // Act
-        _ = new BufferSizes("TestConfig", 1, 2000);
-
-        // Assert
-        var output = writer.ToString();
-        Assert.Contains("WARNING", output);
-        Assert.Contains("MaxBufferLength", output);
-        Assert.Contains("2000", output);
 
         // Cleanup
         Console.SetOut(originalOut);
