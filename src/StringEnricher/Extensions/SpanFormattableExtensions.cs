@@ -1,5 +1,7 @@
 ﻿using StringEnricher.Buffer;
+using StringEnricher.Buffer.Processors.CharAtIndex;
 using StringEnricher.Buffer.Processors.LengthCalculation;
+using StringEnricher.Buffer.Results;
 using StringEnricher.Buffer.States;
 using StringEnricher.Configuration;
 
@@ -50,5 +52,61 @@ public static class SpanFormattableExtensions
         );
 
         return length;
+    }
+    
+    /// <summary>
+    /// Gets the character at the specified index from the formatted representation of an <see cref="ISpanFormattable"/> value.
+    /// </summary>
+    /// <param name="value">
+    /// The <see cref="ISpanFormattable"/> value to format into a configurable buffer and get the character from.
+    /// </param>
+    /// <param name="index">
+    /// The index of the character to retrieve.
+    /// </param>
+    /// <param name="nodeSettings">
+    /// The node settings to use for buffer allocation.
+    /// </param>
+    /// <param name="format">
+    /// The format string.
+    /// </param>
+    /// <param name="provider">
+    /// The format provider.
+    /// </param>
+    /// <param name="initialBufferLengthHint">
+    /// An optional hint for the initial buffer length to allocate.
+    /// </param>
+    /// <typeparam name="T">
+    /// The type of the <see cref="ISpanFormattable"/> value.
+    /// </typeparam>
+    /// <returns>
+    /// A <see cref="CharWithTotalWrittenCharsResult"/> containing the character at the specified index
+    /// and the total number of characters written during formatting.
+    /// </returns>
+    public static CharWithTotalWrittenCharsResult GetCharAtIndex<T>(
+        this T value,
+        int index,
+        NodeSettings nodeSettings,
+        string? format = null,
+        IFormatProvider? provider = null,
+        int? initialBufferLengthHint = null
+    ) where T : ISpanFormattable
+    {
+        // prepare state - the value and everything needed for formatting into an allocated buffer
+        var state = new IndexedState<FormattingState<T>>(
+            new FormattingState<T>(value, format, provider), index);
+
+        // tries to allocate a buffer and use the processor to get the length of the formatted value
+        var result = BufferUtils.AllocateBuffer<
+            CharAtIndexProcessor<T>,
+            IndexedState<FormattingState<T>>,
+            CharWithTotalWrittenCharsResult>
+        (
+            processor: new CharAtIndexProcessor<T>(),
+            state: in state,
+            nodeSettings: (NodeSettingsInternal)nodeSettings,
+            initialBufferLengthHint: initialBufferLengthHint ?? index + 1 // at least enough to cover the requested index
+        );
+
+        return result;
     }
 }

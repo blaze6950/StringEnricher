@@ -51,16 +51,30 @@ public struct EnumNode<TEnum> : INode where TEnum : struct, Enum
     /// <inheritdoc />
     public bool TryGetChar(int index, out char character)
     {
-        if (index < 0 || index >= TotalLength)
+        if (index < 0)
         {
             character = '\0';
             return false;
         }
 
-        Span<char> buffer = stackalloc char[TotalLength];
-        Enum.TryFormat(_enum, buffer, out _, _format);
-        character = buffer[index];
+        // if we already have the total length cached, use it to quickly determine if the index is valid
+        if (_totalLength.HasValue && index >= _totalLength.Value)
+        {
+            character = '\0';
+            return false;
+        }
 
-        return true;
+        var result = _enum.GetCharAtIndex(
+            index: index,
+            nodeSettings: StringEnricherSettings.Nodes.Shared.EnumNode,
+            format: _format,
+            initialBufferLengthHint: _totalLength
+        );
+
+        character = result.Char;
+
+        _totalLength ??= result.CharsWritten;
+
+        return result.Success;
     }
 }

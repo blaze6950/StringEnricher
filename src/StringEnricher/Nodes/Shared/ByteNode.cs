@@ -56,16 +56,32 @@ public struct ByteNode : INode
     /// <inheritdoc />
     public bool TryGetChar(int index, out char character)
     {
-        if (index < 0 || index >= TotalLength)
+        if (index < 0)
         {
             character = '\0';
             return false;
         }
 
-        Span<char> buffer = stackalloc char[TotalLength];
-        _byte.TryFormat(buffer, out _, _format, _provider);
-        character = buffer[index];
-        return true;
+        // if we already have the total length cached, use it to quickly determine if the index is valid
+        if (_totalLength.HasValue && index >= _totalLength.Value)
+        {
+            character = '\0';
+            return false;
+        }
+
+        var result = _byte.GetCharAtIndex(
+            index: index,
+            nodeSettings: StringEnricherSettings.Nodes.Shared.ByteNode,
+            format: _format,
+            provider: _provider,
+            initialBufferLengthHint: _totalLength
+        );
+
+        character = result.Char;
+
+        _totalLength ??= result.CharsWritten;
+
+        return result.Success;
     }
 
     /// <summary>
