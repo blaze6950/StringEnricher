@@ -1,5 +1,5 @@
 ﻿using System.Globalization;
-using StringEnricher.Helpers.Shared;
+using StringEnricher.Helpers;
 using StringEnricher.Nodes.Shared;
 
 namespace StringEnricher.Tests.Helpers.Shared;
