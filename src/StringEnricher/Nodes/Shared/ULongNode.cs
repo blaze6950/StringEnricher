@@ -1,13 +1,13 @@
-using StringEnricher.Buffer;
-using StringEnricher.Buffer.Processors.LengthCalculation;
-using StringEnricher.Buffer.States;
+using System.Diagnostics;
 using StringEnricher.Configuration;
+using StringEnricher.Extensions;
 
 namespace StringEnricher.Nodes.Shared;
 
 /// <summary>
 /// A style that represents an ulong.
 /// </summary>
+[DebuggerDisplay("{typeof(ULongNode).Name,nq} Value={_ulong} Format={_format} Provider={_provider}")]
 public struct ULongNode : INode
 {
     private readonly ulong _ulong;
@@ -38,7 +38,9 @@ public struct ULongNode : INode
 
     /// <inheritdoc />
     /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
-    public int TotalLength => _totalLength ??= GetULongLength(_ulong, _format, _provider);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public int TotalLength => _totalLength ??=
+        _ulong.GetSpanFormattableLength(StringEnricherSettings.Nodes.Shared.ULongNode, _format, _provider);
 
     private int? _totalLength;
 
@@ -72,34 +74,4 @@ public struct ULongNode : INode
     /// <param name="ulong">Source ulong</param>
     /// <returns><see cref="ULongNode"/></returns>
     public static implicit operator ULongNode(ulong @ulong) => new(@ulong);
-
-    /// <summary>
-    /// Calculates the length of the ulong when represented as a string.
-    /// </summary>
-    /// <param name="value">
-    /// The ulong value to calculate the length for.
-    /// </param>
-    /// <param name="format">
-    /// The format string to use when converting the ulong to a string.
-    /// </param>
-    /// <param name="provider">
-    /// The format provider to use when converting the ulong to a string.
-    /// </param>
-    /// <returns>
-    /// The length of the ulong when represented as a string.
-    /// </returns>
-    private static int GetULongLength(ulong value, string? format = null, IFormatProvider? provider = null)
-    {
-        // prepare state - the value and everything needed for formatting into an allocated buffer
-        var state = new FormattingState<ulong>(value, format, provider);
-
-        // tries to allocate a buffer and use the processor to get the length of the formatted value
-        var length = BufferUtils.AllocateBuffer<ULongLengthProcessor, FormattingState<ulong>, int>(
-            processor: new ULongLengthProcessor(),
-            state: in state,
-            nodeSettings: StringEnricherSettings.Nodes.Shared.ULongNode
-        );
-
-        return length;
-    }
 }

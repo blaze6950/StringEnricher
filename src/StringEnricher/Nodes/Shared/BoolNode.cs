@@ -1,8 +1,11 @@
+using System.Diagnostics;
+
 namespace StringEnricher.Nodes.Shared;
 
 /// <summary>
 /// A style that represents a bool.
 /// </summary>
+[DebuggerDisplay("{typeof(BoolNode).Name,nq} Value={_bool}")]
 public readonly struct BoolNode : INode
 {
     private readonly bool _bool;

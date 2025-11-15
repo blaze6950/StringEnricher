@@ -1,13 +1,13 @@
-using StringEnricher.Buffer;
-using StringEnricher.Buffer.Processors.LengthCalculation;
-using StringEnricher.Buffer.States;
+using System.Diagnostics;
 using StringEnricher.Configuration;
+using StringEnricher.Extensions;
 
 namespace StringEnricher.Nodes.Shared;
 
 /// <summary>
 /// A style that represents a dateOnly.
 /// </summary>
+[DebuggerDisplay("{typeof(DateOnlyNode).Name,nq} Value={_dateOnly} Format={_format} Provider={_provider}")]
 public struct DateOnlyNode : INode
 {
     private readonly DateOnly _dateOnly;
@@ -38,7 +38,9 @@ public struct DateOnlyNode : INode
 
     /// <inheritdoc />
     /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
-    public int TotalLength => _totalLength ??= GetDateOnlyLength(_dateOnly, _format, _provider);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public int TotalLength => _totalLength ??=
+        _dateOnly.GetSpanFormattableLength(StringEnricherSettings.Nodes.Shared.DateOnlyNode, _format, _provider);
 
     private int? _totalLength;
 
@@ -73,34 +75,4 @@ public struct DateOnlyNode : INode
     /// <param name="dateOnly">Source dateOnly</param>
     /// <returns><see cref="DateOnlyNode"/></returns>
     public static implicit operator DateOnlyNode(DateOnly dateOnly) => new(dateOnly);
-
-    /// <summary>
-    /// Gets the length of the string representation of a dateOnly.
-    /// </summary>
-    /// <param name="value">
-    /// The dateOnly value.
-    /// </param>
-    /// <param name="format">
-    /// The format to use when converting the dateOnly to a string.
-    /// </param>
-    /// <param name="provider">
-    /// The format provider to use when converting the dateOnly to a string.
-    /// </param>
-    /// <returns>
-    /// The length of the string representation of the dateOnly.
-    /// </returns>
-    private static int GetDateOnlyLength(DateOnly value, string? format, IFormatProvider? provider)
-    {
-        // prepare state - the value and everything needed for formatting into an allocated buffer
-        var state = new FormattingState<DateOnly>(value, format, provider);
-
-        // tries to allocate a buffer and use the processor to get the length of the formatted value
-        var length = BufferUtils.AllocateBuffer<DateOnlyLengthProcessor, FormattingState<DateOnly>, int>(
-            processor: new DateOnlyLengthProcessor(),
-            state: in state,
-            nodeSettings: StringEnricherSettings.Nodes.Shared.DateOnlyNode
-        );
-
-        return length;
-    }
 }

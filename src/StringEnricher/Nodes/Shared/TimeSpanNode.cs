@@ -1,13 +1,13 @@
-using StringEnricher.Buffer;
-using StringEnricher.Buffer.Processors.LengthCalculation;
-using StringEnricher.Buffer.States;
+using System.Diagnostics;
 using StringEnricher.Configuration;
+using StringEnricher.Extensions;
 
 namespace StringEnricher.Nodes.Shared;
 
 /// <summary>
 /// A style that represents a timeSpan.
 /// </summary>
+[DebuggerDisplay("{typeof(TimeSpanNode).Name,nq} Value={_timeSpan} Format={_format} Provider={_provider}")]
 public struct TimeSpanNode : INode
 {
     private readonly TimeSpan _timeSpan;
@@ -38,7 +38,9 @@ public struct TimeSpanNode : INode
 
     /// <inheritdoc />
     /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
-    public int TotalLength => _totalLength ??= GetTimeSpanLength(_timeSpan, _format, _provider);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public int TotalLength => _totalLength ??=
+        _timeSpan.GetSpanFormattableLength(StringEnricherSettings.Nodes.Shared.TimeSpanNode, _format, _provider);
 
     private int? _totalLength;
 
@@ -73,34 +75,4 @@ public struct TimeSpanNode : INode
     /// <param name="timeSpan">Source timeSpan</param>
     /// <returns><see cref="TimeSpanNode"/></returns>
     public static implicit operator TimeSpanNode(TimeSpan timeSpan) => new(timeSpan);
-
-    /// <summary>
-    /// Gets the length of the string representation of a timeSpan.
-    /// </summary>
-    /// <param name="value">
-    /// The timeSpan value.
-    /// </param>
-    /// <param name="format">
-    /// The format to use. If null, the default format is used.
-    /// </param>
-    /// <param name="provider">
-    /// The format provider to use. If null, the current culture is used.
-    /// </param>
-    /// <returns>
-    /// The length of the string representation of the timeSpan.
-    /// </returns>
-    private static int GetTimeSpanLength(TimeSpan value, string? format = null, IFormatProvider? provider = null)
-    {
-        // prepare state - the value and everything needed for formatting into an allocated buffer
-        var state = new FormattingState<TimeSpan>(value, format, provider);
-
-        // tries to allocate a buffer and use the processor to get the length of the formatted value
-        var length = BufferUtils.AllocateBuffer<TimeSpanLengthProcessor, FormattingState<TimeSpan>, int>(
-            processor: new TimeSpanLengthProcessor(),
-            state: in state,
-            nodeSettings: StringEnricherSettings.Nodes.Shared.TimeSpanNode
-        );
-
-        return length;
-    }
 }

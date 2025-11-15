@@ -1,13 +1,13 @@
-using StringEnricher.Buffer;
-using StringEnricher.Buffer.Processors.LengthCalculation;
-using StringEnricher.Buffer.States;
+using System.Diagnostics;
 using StringEnricher.Configuration;
+using StringEnricher.Extensions;
 
 namespace StringEnricher.Nodes.Shared;
 
 /// <summary>
 /// A style that represents a byte.
 /// </summary>
+[DebuggerDisplay("{typeof(ByteNode).Name,nq} Value={_byte} Format={_format} Provider={_provider}")]
 public struct ByteNode : INode
 {
     private readonly byte _byte;
@@ -38,7 +38,9 @@ public struct ByteNode : INode
 
     /// <inheritdoc />
     /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
-    public int TotalLength => _totalLength ??= GetByteLength(_byte, _format, _provider);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public int TotalLength => _totalLength ??=
+        _byte.GetSpanFormattableLength(StringEnricherSettings.Nodes.Shared.ByteNode, _format, _provider);
 
     private int? _totalLength;
 
@@ -72,34 +74,4 @@ public struct ByteNode : INode
     /// <param name="byte">Source byte</param>
     /// <returns><see cref="ByteNode"/></returns>
     public static implicit operator ByteNode(byte @byte) => new(@byte);
-
-    /// <summary>
-    /// Calculates the length of the byte when represented as a string.
-    /// </summary>
-    /// <param name="value">
-    /// The byte value to calculate the length for.
-    /// </param>
-    /// <param name="format">
-    /// The format string to use when converting the byte to a string.
-    /// </param>
-    /// <param name="provider">
-    /// The format provider to use when converting the byte to a string.
-    /// </param>
-    /// <returns>
-    /// The length of the byte when represented as a string.
-    /// </returns>
-    private static int GetByteLength(byte value, string? format = null, IFormatProvider? provider = null)
-    {
-        // prepare state - the value and everything needed for formatting into an allocated buffer
-        var state = new FormattingState<byte>(value, format, provider);
-
-        // tries to allocate a buffer and use the ByteLengthProcessor to get the length of the formatted byte
-        var length = BufferUtils.AllocateBuffer<ByteLengthProcessor, FormattingState<byte>, int>(
-            processor: new ByteLengthProcessor(),
-            state: in state,
-            nodeSettings: StringEnricherSettings.Nodes.Shared.ByteNode
-        );
-
-        return length;
-    }
 }

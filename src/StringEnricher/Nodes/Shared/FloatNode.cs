@@ -1,13 +1,13 @@
-using StringEnricher.Buffer;
-using StringEnricher.Buffer.Processors.LengthCalculation;
-using StringEnricher.Buffer.States;
+using System.Diagnostics;
 using StringEnricher.Configuration;
+using StringEnricher.Extensions;
 
 namespace StringEnricher.Nodes.Shared;
 
 /// <summary>
 /// A style that represents a float.
 /// </summary>
+[DebuggerDisplay("{typeof(FloatNode).Name,nq} Value={_float} Format={_format} Provider={_provider}")]
 public struct FloatNode : INode
 {
     private readonly float _float;
@@ -38,7 +38,9 @@ public struct FloatNode : INode
 
     /// <inheritdoc />
     /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
-    public int TotalLength => _totalLength ??= GetFloatLength(_float, _format, _provider);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public int TotalLength => _totalLength ??=
+        _float.GetSpanFormattableLength(StringEnricherSettings.Nodes.Shared.FloatNode, _format, _provider);
 
     private int? _totalLength;
 
@@ -72,34 +74,4 @@ public struct FloatNode : INode
     /// <param name="float">Source float</param>
     /// <returns><see cref="FloatNode"/></returns>
     public static implicit operator FloatNode(float @float) => new(@float);
-
-    /// <summary>
-    /// Calculates the length of the float when represented as a string.
-    /// </summary>
-    /// <param name="value">
-    /// The float value to be measured.
-    /// </param>
-    /// <param name="format">
-    /// A standard or custom numeric format string that defines the format of the float.
-    /// </param>
-    /// <param name="provider">
-    /// An object that supplies culture-specific formatting information.
-    /// </param>
-    /// <returns>
-    /// The length of the float when formatted as a string.
-    /// </returns>
-    private static int GetFloatLength(float value, string? format = null, IFormatProvider? provider = null)
-    {
-        // prepare state - the value and everything needed for formatting into an allocated buffer
-        var state = new FormattingState<float>(value, format, provider);
-
-        // tries to allocate a buffer and use the processor to get the length of the formatted value
-        var length = BufferUtils.AllocateBuffer<FloatLengthProcessor, FormattingState<float>, int>(
-            processor: new FloatLengthProcessor(),
-            state: in state,
-            nodeSettings: StringEnricherSettings.Nodes.Shared.FloatNode
-        );
-
-        return length;
-    }
 }

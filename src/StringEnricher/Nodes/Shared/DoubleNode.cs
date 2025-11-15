@@ -1,13 +1,13 @@
-using StringEnricher.Buffer;
-using StringEnricher.Buffer.Processors.LengthCalculation;
-using StringEnricher.Buffer.States;
+using System.Diagnostics;
 using StringEnricher.Configuration;
+using StringEnricher.Extensions;
 
 namespace StringEnricher.Nodes.Shared;
 
 /// <summary>
 /// A style that represents a double.
 /// </summary>
+[DebuggerDisplay("{typeof(DoubleNode).Name,nq} Value={_double} Format={_format} Provider={_provider}")]
 public struct DoubleNode : INode
 {
     private readonly double _double;
@@ -38,7 +38,9 @@ public struct DoubleNode : INode
 
     /// <inheritdoc />
     /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
-    public int TotalLength => _totalLength ??= GetDoubleLength(_double, _format, _provider);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public int TotalLength => _totalLength ??=
+        _double.GetSpanFormattableLength(StringEnricherSettings.Nodes.Shared.DoubleNode, _format, _provider);
 
     private int? _totalLength;
 
@@ -72,26 +74,4 @@ public struct DoubleNode : INode
     /// <param name="double">Source double</param>
     /// <returns><see cref="DoubleNode"/></returns>
     public static implicit operator DoubleNode(double @double) => new(@double);
-
-    /// <summary>
-    /// Calculates the length of the double when represented as a string.
-    /// </summary>
-    /// <param name="value"></param>
-    /// <param name="format"></param>
-    /// <param name="provider"></param>
-    /// <returns></returns>
-    private static int GetDoubleLength(double value, string? format = null, IFormatProvider? provider = null)
-    {
-        // prepare state - the value and everything needed for formatting into an allocated buffer
-        var state = new FormattingState<double>(value, format, provider);
-
-        // tries to allocate a buffer and use the processor to get the length of the formatted value
-        var length = BufferUtils.AllocateBuffer<DoubleLengthProcessor, FormattingState<double>, int>(
-            processor: new DoubleLengthProcessor(),
-            state: in state,
-            nodeSettings: StringEnricherSettings.Nodes.Shared.DoubleNode
-        );
-
-        return length;
-    }
 }

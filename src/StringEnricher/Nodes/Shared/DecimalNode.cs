@@ -1,13 +1,13 @@
-using StringEnricher.Buffer;
-using StringEnricher.Buffer.Processors.LengthCalculation;
-using StringEnricher.Buffer.States;
+using System.Diagnostics;
 using StringEnricher.Configuration;
+using StringEnricher.Extensions;
 
 namespace StringEnricher.Nodes.Shared;
 
 /// <summary>
 /// A style that represents a decimal.
 /// </summary>
+[DebuggerDisplay("{typeof(DecimalNode).Name,nq} Value={_decimal} Format={_format} Provider={_provider}")]
 public struct DecimalNode : INode
 {
     private readonly decimal _decimal;
@@ -38,7 +38,9 @@ public struct DecimalNode : INode
 
     /// <inheritdoc />
     /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
-    public int TotalLength => _totalLength ??= GetDecimalLength(_decimal, _format, _provider);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public int TotalLength => _totalLength ??=
+        _decimal.GetSpanFormattableLength(StringEnricherSettings.Nodes.Shared.DecimalNode, _format, _provider);
 
     private int? _totalLength;
 
@@ -72,34 +74,4 @@ public struct DecimalNode : INode
     /// <param name="decimal">Source decimal</param>
     /// <returns><see cref="DecimalNode"/></returns>
     public static implicit operator DecimalNode(decimal @decimal) => new(@decimal);
-
-    /// <summary>
-    /// Calculates the length of the decimal when represented as a string.
-    /// </summary>
-    /// <param name="value">
-    /// The decimal value to measure.
-    /// </param>
-    /// <param name="format">
-    /// The format string to use when converting the decimal to a string.
-    /// </param>
-    /// <param name="provider">
-    /// The format provider to use when converting the decimal to a string.
-    /// </param>
-    /// <returns>
-    /// The length of the decimal when formatted as a string.
-    /// </returns>
-    private static int GetDecimalLength(decimal value, string? format = null, IFormatProvider? provider = null)
-    {
-        // prepare state - the value and everything needed for formatting into an allocated buffer
-        var state = new FormattingState<decimal>(value, format, provider);
-
-        // tries to allocate a buffer and use the processor to get the length of the formatted value
-        var length = BufferUtils.AllocateBuffer<DecimalLengthProcessor, FormattingState<decimal>, int>(
-            processor: new DecimalLengthProcessor(),
-            state: in state,
-            nodeSettings: StringEnricherSettings.Nodes.Shared.DecimalNode
-        );
-
-        return length;
-    }
 }

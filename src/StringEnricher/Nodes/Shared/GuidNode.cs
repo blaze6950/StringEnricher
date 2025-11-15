@@ -1,13 +1,13 @@
-using StringEnricher.Buffer;
-using StringEnricher.Buffer.Processors.LengthCalculation;
-using StringEnricher.Buffer.States;
+using System.Diagnostics;
 using StringEnricher.Configuration;
+using StringEnricher.Extensions;
 
 namespace StringEnricher.Nodes.Shared;
 
 /// <summary>
 /// A style that represents an GUID.
 /// </summary>
+[DebuggerDisplay("{typeof(GuidNode).Name,nq} Value={_guid} Format={_format}")]
 public struct GuidNode : INode
 {
     private readonly Guid _guid;
@@ -34,7 +34,9 @@ public struct GuidNode : INode
 
     /// <inheritdoc />
     /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
-    public int TotalLength => _totalLength ??= GetGuidLength(_guid, _format);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public int TotalLength => _totalLength ??=
+        _guid.GetSpanFormattableLength(StringEnricherSettings.Nodes.Shared.GuidNode, _format);
 
     private int? _totalLength;
 
@@ -68,29 +70,4 @@ public struct GuidNode : INode
     /// <param name="guid">Source GUID</param>
     /// <returns><see cref="GuidNode"/></returns>
     public static implicit operator GuidNode(Guid guid) => new(guid);
-
-    /// <summary>
-    /// Calculates the length of the GUID when represented as a string.
-    /// </summary>
-    /// <param name="value">
-    /// The GUID value.
-    /// </param>
-    /// <param name="format">
-    /// The format string (e.g., "D", "N", "B", "P", "X").
-    /// </param>
-    /// <returns></returns>
-    private static int GetGuidLength(Guid value, string? format = null)
-    {
-        // prepare state - the value and everything needed for formatting into an allocated buffer
-        var state = new FormattingState<Guid>(value, format);
-
-        // tries to allocate a buffer and use the processor to get the length of the formatted value
-        var length = BufferUtils.AllocateBuffer<GuidLengthProcessor, FormattingState<Guid>, int>(
-            processor: new GuidLengthProcessor(),
-            state: in state,
-            nodeSettings: StringEnricherSettings.Nodes.Shared.GuidNode
-        );
-
-        return length;
-    }
 }

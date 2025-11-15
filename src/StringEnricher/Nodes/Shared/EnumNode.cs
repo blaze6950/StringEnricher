@@ -1,13 +1,13 @@
-using StringEnricher.Buffer;
-using StringEnricher.Buffer.Processors.LengthCalculation;
-using StringEnricher.Buffer.States;
+using System.Diagnostics;
 using StringEnricher.Configuration;
+using StringEnricher.Extensions;
 
 namespace StringEnricher.Nodes.Shared;
 
 /// <summary>
 /// A style that represents an enum.
 /// </summary>
+[DebuggerDisplay("{typeof(EnumNode).Name,nq} EnumType={typeof(TEnum).Name,nq} Value={_enum} Format={_format}")]
 public struct EnumNode<TEnum> : INode where TEnum : struct, Enum
 {
     private readonly TEnum _enum;
@@ -33,7 +33,9 @@ public struct EnumNode<TEnum> : INode where TEnum : struct, Enum
 
     /// <inheritdoc />
     /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
-    public int TotalLength => _totalLength ??= GetEnumLength(_enum, _format);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public int TotalLength => _totalLength ??=
+        _enum.GetSpanFormattableLength(StringEnricherSettings.Nodes.Shared.EnumNode, _format);
 
     private int? _totalLength;
 
@@ -60,32 +62,5 @@ public struct EnumNode<TEnum> : INode where TEnum : struct, Enum
         character = buffer[index];
 
         return true;
-    }
-
-    /// <summary>
-    /// Gets the length of the string representation of an enum.
-    /// </summary>
-    /// <param name="value">
-    /// The enum value.
-    /// </param>
-    /// <param name="format">
-    /// The format string (optional).
-    /// </param>
-    /// <returns>
-    /// The length of the string representation of the enum.
-    /// </returns>
-    private static int GetEnumLength(TEnum value, string? format = null)
-    {
-        // prepare state - the value and everything needed for formatting into an allocated buffer
-        var state = new FormattingState<TEnum>(value, format);
-
-        // tries to allocate a buffer and use the processor to get the length of the formatted value
-        var length = BufferUtils.AllocateBuffer<EnumLengthProcessor<TEnum>, FormattingState<TEnum>, int>(
-            processor: new EnumLengthProcessor<TEnum>(),
-            state: in state,
-            nodeSettings: StringEnricherSettings.Nodes.Shared.EnumNode
-        );
-
-        return length;
     }
 }

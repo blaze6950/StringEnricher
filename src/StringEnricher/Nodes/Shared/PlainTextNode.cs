@@ -1,8 +1,11 @@
+using System.Diagnostics;
+
 namespace StringEnricher.Nodes.Shared;
 
 /// <summary>
 /// A style that represents plain text without any special formatting.
 /// </summary>
+[DebuggerDisplay("{typeof(PlainTextNode).Name,nq} Value={_text}")]
 public readonly struct PlainTextNode : INode
 {
     private readonly string _text;

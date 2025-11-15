@@ -1,13 +1,13 @@
-using StringEnricher.Buffer;
-using StringEnricher.Buffer.Processors.LengthCalculation;
-using StringEnricher.Buffer.States;
+using System.Diagnostics;
 using StringEnricher.Configuration;
+using StringEnricher.Extensions;
 
 namespace StringEnricher.Nodes.Shared;
 
 /// <summary>
 /// A style that represents a dateTimeOffset.
 /// </summary>
+[DebuggerDisplay("{typeof(DateTimeOffsetNode).Name,nq} Value={_dateTimeOffset} Format={_format} Provider={_provider}")]
 public struct DateTimeOffsetNode : INode
 {
     private readonly DateTimeOffset _dateTimeOffset;
@@ -38,7 +38,12 @@ public struct DateTimeOffsetNode : INode
 
     /// <inheritdoc />
     /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
-    public int TotalLength => _totalLength ??= GetDateTimeOffsetLength(_dateTimeOffset, _format, _provider);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public int TotalLength => _totalLength ??= _dateTimeOffset.GetSpanFormattableLength(
+        StringEnricherSettings.Nodes.Shared.DateTimeOffsetNode,
+        _format,
+        _provider
+    );
 
     private int? _totalLength;
 
@@ -73,35 +78,4 @@ public struct DateTimeOffsetNode : INode
     /// <param name="dateTimeOffset">Source dateTimeOffset</param>
     /// <returns><see cref="DateTimeOffsetNode"/></returns>
     public static implicit operator DateTimeOffsetNode(DateTimeOffset dateTimeOffset) => new(dateTimeOffset);
-
-    /// <summary>
-    /// Gets the length of the string representation of a dateTimeOffset.
-    /// </summary>
-    /// <param name="value">
-    /// The dateTimeOffset value.
-    /// </param>
-    /// <param name="format">
-    /// The format to use when converting the dateTimeOffset to a string.
-    /// </param>
-    /// <param name="provider">
-    /// The format provider to use when converting the dateTimeOffset to a string.
-    /// </param>
-    /// <returns>
-    /// The length of the string representation of the dateTimeOffset.
-    /// </returns>
-    private static int GetDateTimeOffsetLength(DateTimeOffset value, string? format = null,
-        IFormatProvider? provider = null)
-    {
-        // prepare state - the value and everything needed for formatting into an allocated buffer
-        var state = new FormattingState<DateTimeOffset>(value, format, provider);
-
-        // tries to allocate a buffer and use the processor to get the length of the formatted value
-        var length = BufferUtils.AllocateBuffer<DateTimeOffsetLengthProcessor, FormattingState<DateTimeOffset>, int>(
-            processor: new DateTimeOffsetLengthProcessor(),
-            state: in state,
-            nodeSettings: StringEnricherSettings.Nodes.Shared.DateTimeOffsetNode
-        );
-
-        return length;
-    }
 }

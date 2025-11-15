@@ -1,8 +1,11 @@
+using System.Diagnostics;
+
 namespace StringEnricher.Nodes.Shared;
 
 /// <summary>
 /// A style that represents a char.
 /// </summary>
+[DebuggerDisplay("{typeof(CharNode).Name,nq} Value={_char}")]
 public readonly struct CharNode : INode
 {
     private readonly char _char;

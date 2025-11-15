@@ -1,13 +1,13 @@
-using StringEnricher.Buffer;
-using StringEnricher.Buffer.Processors.LengthCalculation;
-using StringEnricher.Buffer.States;
+using System.Diagnostics;
 using StringEnricher.Configuration;
+using StringEnricher.Extensions;
 
 namespace StringEnricher.Nodes.Shared;
 
 /// <summary>
 /// A style that represents a timeOnly.
 /// </summary>
+[DebuggerDisplay("{typeof(TimeOnlyNode).Name,nq} Value={_timeOnly} Format={_format} Provider={_provider}")]
 public struct TimeOnlyNode : INode
 {
     private readonly TimeOnly _timeOnly;
@@ -38,7 +38,9 @@ public struct TimeOnlyNode : INode
 
     /// <inheritdoc />
     /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
-    public int TotalLength => _totalLength ??= GetTimeOnlyLength(_timeOnly, _format, _provider);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public int TotalLength => _totalLength ??=
+        _timeOnly.GetSpanFormattableLength(StringEnricherSettings.Nodes.Shared.TimeOnlyNode, _format, _provider);
 
     private int? _totalLength;
 
@@ -73,34 +75,4 @@ public struct TimeOnlyNode : INode
     /// <param name="timeOnly">Source timeOnly</param>
     /// <returns><see cref="TimeOnlyNode"/></returns>
     public static implicit operator TimeOnlyNode(TimeOnly timeOnly) => new(timeOnly);
-
-    /// <summary>
-    /// Gets the length of the string representation of a timeOnly.
-    /// </summary>
-    /// <param name="value">
-    /// The timeOnly value.
-    /// </param>
-    /// <param name="format">
-    /// The format string.
-    /// </param>
-    /// <param name="provider">
-    /// The format provider.
-    /// </param>
-    /// <returns>
-    /// The length of the string representation of the timeOnly.
-    /// </returns>
-    private static int GetTimeOnlyLength(TimeOnly value, string? format = null, IFormatProvider? provider = null)
-    {
-        // prepare state - the value and everything needed for formatting into an allocated buffer
-        var state = new FormattingState<TimeOnly>(value, format, provider);
-
-        // tries to allocate a buffer and use the processor to get the length of the formatted value
-        var length = BufferUtils.AllocateBuffer<TimeOnlyLengthProcessor, FormattingState<TimeOnly>, int>(
-            processor: new TimeOnlyLengthProcessor(),
-            state: in state,
-            nodeSettings: StringEnricherSettings.Nodes.Shared.TimeOnlyNode
-        );
-
-        return length;
-    }
 }

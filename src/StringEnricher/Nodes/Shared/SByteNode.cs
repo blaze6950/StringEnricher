@@ -1,13 +1,13 @@
-using StringEnricher.Buffer;
-using StringEnricher.Buffer.Processors.LengthCalculation;
-using StringEnricher.Buffer.States;
+using System.Diagnostics;
 using StringEnricher.Configuration;
+using StringEnricher.Extensions;
 
 namespace StringEnricher.Nodes.Shared;
 
 /// <summary>
 /// A style that represents a sbyte.
 /// </summary>
+[DebuggerDisplay("{typeof(SByteNode).Name,nq} Value={_sbyte} Format={_format} Provider={_provider}")]
 public struct SByteNode : INode
 {
     private readonly sbyte _sbyte;
@@ -38,7 +38,9 @@ public struct SByteNode : INode
 
     /// <inheritdoc />
     /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
-    public int TotalLength => _totalLength ??= GetSByteLength(_sbyte, _format, _provider);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public int TotalLength => _totalLength ??=
+        _sbyte.GetSpanFormattableLength(StringEnricherSettings.Nodes.Shared.SByteNode, _format, _provider);
 
     private int? _totalLength;
 
@@ -72,34 +74,4 @@ public struct SByteNode : INode
     /// <param name="sbyte">Source sbyte</param>
     /// <returns><see cref="SByteNode"/></returns>
     public static implicit operator SByteNode(sbyte @sbyte) => new(@sbyte);
-
-    /// <summary>
-    /// Calculates the length of the sbyte when represented as a string.
-    /// </summary>
-    /// <param name="value">
-    /// The sbyte value to calculate the length for.
-    /// </param>
-    /// <param name="format">
-    /// The format string to use when converting the sbyte to a string.
-    /// </param>
-    /// <param name="provider">
-    /// The format provider to use when converting the sbyte to a string.
-    /// </param>
-    /// <returns>
-    /// The length of the sbyte when represented as a string.
-    /// </returns>
-    private static int GetSByteLength(sbyte value, string? format = null, IFormatProvider? provider = null)
-    {
-        // prepare state - the value and everything needed for formatting into an allocated buffer
-        var state = new FormattingState<sbyte>(value, format, provider);
-
-        // tries to allocate a buffer and use the processor to get the length of the formatted value
-        var length = BufferUtils.AllocateBuffer<SByteLengthProcessor, FormattingState<sbyte>, int>(
-            processor: new SByteLengthProcessor(),
-            state: in state,
-            nodeSettings: StringEnricherSettings.Nodes.Shared.SByteNode
-        );
-
-        return length;
-    }
 }

@@ -1,11 +1,14 @@
-﻿namespace StringEnricher.Nodes.Shared;
+﻿using System.Diagnostics;
+
+namespace StringEnricher.Nodes.Shared;
 
 /// <summary>
 /// A node that combines two other nodes.
 /// </summary>
 /// <typeparam name="TLeft"></typeparam>
 /// <typeparam name="TRight"></typeparam>
-public readonly struct CompositeNode<TLeft, TRight> : INode
+[DebuggerDisplay("{typeof(CompositeNode).Name,nq} Left={_left.GetType().Name,nq} Right={_right.GetType().Name,nq}")]
+public struct CompositeNode<TLeft, TRight> : INode
     where TLeft : INode
     where TRight : INode
 {
@@ -31,7 +34,11 @@ public readonly struct CompositeNode<TLeft, TRight> : INode
     public int SyntaxLength => _left.SyntaxLength + _right.SyntaxLength;
 
     /// <inheritdoc />
-    public int TotalLength => _left.TotalLength + _right.TotalLength;
+    /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public int TotalLength => _totalLength ??= _left.TotalLength + _right.TotalLength;
+
+    private int? _totalLength;
 
     /// <inheritdoc />
     public override string ToString() => string.Create(TotalLength, this, static (span, node) => node.CopyTo(span));

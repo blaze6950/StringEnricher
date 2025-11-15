@@ -1,13 +1,13 @@
-using StringEnricher.Buffer;
-using StringEnricher.Buffer.Processors.LengthCalculation;
-using StringEnricher.Buffer.States;
+using System.Diagnostics;
 using StringEnricher.Configuration;
+using StringEnricher.Extensions;
 
 namespace StringEnricher.Nodes.Shared;
 
 /// <summary>
 /// A style that represents an uinteger.
 /// </summary>
+[DebuggerDisplay("{typeof(UIntegerNode).Name,nq} Value={_uinteger} Format={_format} Provider={_provider}")]
 public struct UIntegerNode : INode
 {
     private readonly uint _uinteger;
@@ -38,7 +38,9 @@ public struct UIntegerNode : INode
 
     /// <inheritdoc />
     /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
-    public int TotalLength => _totalLength ??= GetUIntLength(_uinteger, _format, _provider);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public int TotalLength => _totalLength ??=
+        _uinteger.GetSpanFormattableLength(StringEnricherSettings.Nodes.Shared.UIntegerNode, _format, _provider);
 
     private int? _totalLength;
 
@@ -73,34 +75,4 @@ public struct UIntegerNode : INode
     /// <param name="uinteger">Source uinteger</param>
     /// <returns><see cref="UIntegerNode"/></returns>
     public static implicit operator UIntegerNode(uint uinteger) => new(uinteger);
-
-    /// <summary>
-    /// Calculates the length of the uinteger when represented as a string.
-    /// </summary>
-    /// <param name="value">
-    /// The uinteger value whose length is to be calculated.
-    /// </param>
-    /// <param name="format">
-    /// An optional format string that defines how the uinteger should be formatted.
-    /// </param>
-    /// <param name="provider">
-    /// An optional format provider that supplies culture-specific formatting information.
-    /// </param>
-    /// <returns>
-    /// The length of the uinteger when formatted as a string.
-    /// </returns>
-    private static int GetUIntLength(uint value, string? format, IFormatProvider? provider)
-    {
-        // prepare state - the value and everything needed for formatting into an allocated buffer
-        var state = new FormattingState<uint>(value, format, provider);
-
-        // tries to allocate a buffer and use the processor to get the length of the formatted value
-        var length = BufferUtils.AllocateBuffer<UIntegerLengthProcessor, FormattingState<uint>, int>(
-            processor: new UIntegerLengthProcessor(),
-            state: in state,
-            nodeSettings: StringEnricherSettings.Nodes.Shared.UIntegerNode
-        );
-
-        return length;
-    }
 }

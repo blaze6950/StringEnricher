@@ -1,13 +1,17 @@
+using System.Diagnostics;
 using StringEnricher.Buffer;
-using StringEnricher.Buffer.Processors.LengthCalculation;
+using StringEnricher.Buffer.Processors.CharAtIndex;
+using StringEnricher.Buffer.Results;
 using StringEnricher.Buffer.States;
 using StringEnricher.Configuration;
+using StringEnricher.Extensions;
 
 namespace StringEnricher.Nodes.Shared;
 
 /// <summary>
 /// A style that represents a dateTime.
 /// </summary>
+[DebuggerDisplay("{typeof(DateTimeNode).Name,nq} Value={_dateTime} Format={_format} Provider={_provider}")]
 public struct DateTimeNode : INode
 {
     private readonly DateTime _dateTime;
@@ -38,7 +42,9 @@ public struct DateTimeNode : INode
 
     /// <inheritdoc />
     /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
-    public int TotalLength => _totalLength ??= GetDateTimeLength(_dateTime, _format, _provider);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public int TotalLength => _totalLength ??=
+        _dateTime.GetSpanFormattableLength(StringEnricherSettings.Nodes.Shared.DateTimeNode, _format, _provider);
 
     private int? _totalLength;
 
@@ -73,34 +79,4 @@ public struct DateTimeNode : INode
     /// <param name="dateTime">Source dateTime</param>
     /// <returns><see cref="DateTimeNode"/></returns>
     public static implicit operator DateTimeNode(DateTime dateTime) => new(dateTime);
-
-    /// <summary>
-    /// Gets the length of the string representation of a dateTime.
-    /// </summary>
-    /// <param name="value">
-    /// The dateTime value.
-    /// </param>
-    /// <param name="format">
-    /// The format to use when converting the dateTime to a string.
-    /// </param>
-    /// <param name="provider">
-    /// The format provider to use when converting the dateTime to a string.
-    /// </param>
-    /// <returns>
-    /// The length of the string representation of the dateTime ("true" or "false").
-    /// </returns>
-    private static int GetDateTimeLength(DateTime value, string? format = null, IFormatProvider? provider = null)
-    {
-        // prepare state - the value and everything needed for formatting into an allocated buffer
-        var state = new FormattingState<DateTime>(value, format, provider);
-
-        // tries to allocate a buffer and use the processor to get the length of the formatted value
-        var length = BufferUtils.AllocateBuffer<DateTimeLengthProcessor, FormattingState<DateTime>, int>(
-            processor: new DateTimeLengthProcessor(),
-            state: in state,
-            nodeSettings: StringEnricherSettings.Nodes.Shared.DateTimeNode
-        );
-
-        return length;
-    }
 }

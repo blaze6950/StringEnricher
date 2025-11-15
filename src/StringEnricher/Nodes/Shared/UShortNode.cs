@@ -1,13 +1,13 @@
-using StringEnricher.Buffer;
-using StringEnricher.Buffer.Processors.LengthCalculation;
-using StringEnricher.Buffer.States;
+using System.Diagnostics;
 using StringEnricher.Configuration;
+using StringEnricher.Extensions;
 
 namespace StringEnricher.Nodes.Shared;
 
 /// <summary>
 /// A style that represents an ushort.
 /// </summary>
+[DebuggerDisplay("{typeof(UShortNode).Name,nq} Value={_ushort} Format={_format} Provider={_provider}")]
 public struct UShortNode : INode
 {
     private readonly ushort _ushort;
@@ -38,7 +38,9 @@ public struct UShortNode : INode
 
     /// <inheritdoc />
     /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
-    public int TotalLength => _totalLength ??= GetUShortLength(_ushort, _format, _provider);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public int TotalLength => _totalLength ??=
+        _ushort.GetSpanFormattableLength(StringEnricherSettings.Nodes.Shared.UShortNode, _format, _provider);
 
     private int? _totalLength;
 
@@ -72,34 +74,4 @@ public struct UShortNode : INode
     /// <param name="ushort">Source ushort</param>
     /// <returns><see cref="UShortNode"/></returns>
     public static implicit operator UShortNode(ushort @ushort) => new(@ushort);
-
-    /// <summary>
-    /// Calculates the length of the ushort when represented as a string.
-    /// </summary>
-    /// <param name="value">
-    /// The ushort value to be measured.
-    /// </param>
-    /// <param name="format">
-    /// A standard or custom numeric format string that defines the format of the ushort.
-    /// </param>
-    /// <param name="provider">
-    /// An object that supplies culture-specific formatting information.
-    /// </param>
-    /// <returns>
-    /// The length of the ushort when formatted as a string.
-    /// </returns>
-    private static int GetUShortLength(ushort value, string? format = null, IFormatProvider? provider = null)
-    {
-        // prepare state - the value and everything needed for formatting into an allocated buffer
-        var state = new FormattingState<ushort>(value, format, provider);
-
-        // tries to allocate a buffer and use the processor to get the length of the formatted value
-        var length = BufferUtils.AllocateBuffer<UShortLengthProcessor, FormattingState<ushort>, int>(
-            processor: new UShortLengthProcessor(),
-            state: in state,
-            nodeSettings: StringEnricherSettings.Nodes.Shared.UShortNode
-        );
-
-        return length;
-    }
 }

@@ -1,8 +1,11 @@
+using System.Diagnostics;
+
 namespace StringEnricher.Nodes.Shared;
 
 /// <summary>
 /// A style that represents a collection of plain texts without any special formatting.
 /// </summary>
+[DebuggerDisplay("{typeof(TextCollectionNode).Name,nq} TCollection={typeof(TCollection).Name,nq} Count={_texts.Count} Separator={_separator,nq}")]
 public struct TextCollectionNode<TCollection> : INode
     where TCollection : IReadOnlyList<string>
 {
@@ -30,6 +33,7 @@ public struct TextCollectionNode<TCollection> : INode
 
     /// <inheritdoc />
     /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int TotalLength => _totalLength ??= CalculateTotalLength(_texts, _separator);
     private int? _totalLength;
 

@@ -1,13 +1,13 @@
-using StringEnricher.Buffer;
-using StringEnricher.Buffer.Processors.LengthCalculation;
-using StringEnricher.Buffer.States;
+using System.Diagnostics;
 using StringEnricher.Configuration;
+using StringEnricher.Extensions;
 
 namespace StringEnricher.Nodes.Shared;
 
 /// <summary>
 /// A style that represents a long.
 /// </summary>
+[DebuggerDisplay("{typeof(LongNode).Name,nq} Value={_long} Format={_format} Provider={_provider}")]
 public struct LongNode : INode
 {
     private readonly long _long;
@@ -38,7 +38,9 @@ public struct LongNode : INode
 
     /// <inheritdoc />
     /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
-    public int TotalLength => _totalLength ??= GetLongLength(_long, _format, _provider);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public int TotalLength => _totalLength ??=
+        _long.GetSpanFormattableLength(StringEnricherSettings.Nodes.Shared.LongNode, _format, _provider);
 
     private int? _totalLength;
 
@@ -72,34 +74,4 @@ public struct LongNode : INode
     /// <param name="long">Source long</param>
     /// <returns><see cref="LongNode"/></returns>
     public static implicit operator LongNode(long @long) => new(@long);
-
-    /// <summary>
-    /// Calculates the length of the long when represented as a string.
-    /// </summary>
-    /// <param name="value">
-    /// The long value to calculate the length for.
-    /// </param>
-    /// <param name="format">
-    /// The format string to use when converting the long to a string.
-    /// </param>
-    /// <param name="provider">
-    /// The format provider to use when converting the long to a string.
-    /// </param>
-    /// <returns>
-    /// The length of the long when represented as a string.
-    /// </returns>
-    private static int GetLongLength(long value, string? format = null, IFormatProvider? provider = null)
-    {
-        // prepare state - the value and everything needed for formatting into an allocated buffer
-        var state = new FormattingState<long>(value, format, provider);
-
-        // tries to allocate a buffer and use the processor to get the length of the formatted value
-        var length = BufferUtils.AllocateBuffer<LongLengthProcessor, FormattingState<long>, int>(
-            processor: new LongLengthProcessor(),
-            state: in state,
-            nodeSettings: StringEnricherSettings.Nodes.Shared.LongNode
-        );
-
-        return length;
-    }
 }
