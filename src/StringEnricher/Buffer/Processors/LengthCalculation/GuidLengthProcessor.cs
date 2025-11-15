@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
+using StringEnricher.Buffer.Results;
 using StringEnricher.Buffer.States;
 
 namespace StringEnricher.Buffer.Processors.LengthCalculation;
@@ -23,8 +24,8 @@ public readonly struct GuidLengthProcessor : IBufferProcessor<FormattingState<Gu
     /// </returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Result<int> Process(Span<char> buffer, in FormattingState<Guid> state)
+    public BufferAllocationResult<int> Process(Span<char> buffer, in FormattingState<Guid> state)
         => state.Value.TryFormat(buffer, out var written, state.Format)
-            ? Result<int>.Ok(written)
-            : Result<int>.Fail(written);
+            ? BufferAllocationResult<int>.BufferIsEnough(written)
+            : BufferAllocationResult<int>.BufferIsNotEnough(written);
 }

@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
+using StringEnricher.Buffer.Results;
 using StringEnricher.Buffer.States;
 
 namespace StringEnricher.Buffer.Processors.LengthCalculation;
@@ -23,8 +24,8 @@ public readonly struct DateTimeOffsetLengthProcessor : IBufferProcessor<Formatti
     /// </returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Result<int> Process(Span<char> buffer, in FormattingState<DateTimeOffset> state)
+    public BufferAllocationResult<int> Process(Span<char> buffer, in FormattingState<DateTimeOffset> state)
         => state.Value.TryFormat(buffer, out var written, state.Format, state.Provider)
-            ? Result<int>.Ok(written)
-            : Result<int>.Fail(written);
+            ? BufferAllocationResult<int>.BufferIsEnough(written)
+            : BufferAllocationResult<int>.BufferIsNotEnough(written);
 }

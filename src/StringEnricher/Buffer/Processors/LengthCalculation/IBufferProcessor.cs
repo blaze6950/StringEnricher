@@ -1,4 +1,6 @@
-﻿namespace StringEnricher.Buffer.Processors.LengthCalculation;
+﻿using StringEnricher.Buffer.Results;
+
+namespace StringEnricher.Buffer.Processors.LengthCalculation;
 
 /// <summary>
 /// An interface for processing buffers with a specific state and returning a result.
@@ -18,9 +20,9 @@ public interface IBufferProcessor<TState, TResult>
     /// </param>
     /// <returns>
     /// The result of the processing operation.
-    /// Returns a <see cref="Result{TResult}"/> indicating success or failure along with the result value.
+    /// Returns a <see cref="BufferAllocationResult{T}"/> indicating success or failure along with the result value.
     /// Result.Success is true if processing was successful; otherwise, false.
     /// The success actually is the indicator whether the provided buffer was sufficient.
     /// </returns>
-    Result<TResult> Process(Span<char> buffer, in TState state);
+    BufferAllocationResult<TResult> Process(Span<char> buffer, in TState state);
 }

@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
+using StringEnricher.Buffer.Results;
 using StringEnricher.Buffer.States;
 
 namespace StringEnricher.Buffer.Processors.LengthCalculation;
@@ -24,8 +25,8 @@ public readonly struct EnumLengthProcessor<TEnum> : IBufferProcessor<FormattingS
     /// </returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Result<int> Process(Span<char> buffer, in FormattingState<TEnum> state)
+    public BufferAllocationResult<int> Process(Span<char> buffer, in FormattingState<TEnum> state)
         => Enum.TryFormat<TEnum>(state.Value, buffer, out var written, state.Format)
-            ? Result<int>.Ok(written)
-            : Result<int>.Fail(written);
+            ? BufferAllocationResult<int>.BufferIsEnough(written)
+            : BufferAllocationResult<int>.BufferIsNotEnough(written);
 }

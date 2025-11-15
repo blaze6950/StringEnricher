@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
+using StringEnricher.Buffer.Results;
 using StringEnricher.Buffer.States;
 
 namespace StringEnricher.Buffer.Processors.LengthCalculation;
@@ -21,14 +22,14 @@ public readonly struct DecimalLengthProcessor : IBufferProcessor<FormattingState
     /// </param>
     /// <returns>
     /// The result of the processing operation.
-    /// Returns a <see cref="Result{TResult}"/> indicating success or failure along with the length of the formatted decimal.
+    /// Returns a <see cref="BufferAllocationResult{T}"/> indicating success or failure along with the length of the formatted decimal.
     /// Result.Success is true if processing was successful; otherwise, false.
     /// The Result.Value contains the number of characters written to the buffer.
     /// </returns>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Result<int> Process(Span<char> buffer, in FormattingState<decimal> state)
+    public BufferAllocationResult<int> Process(Span<char> buffer, in FormattingState<decimal> state)
         => state.Value.TryFormat(buffer, out var written, state.Format, state.Provider)
-            ? Result<int>.Ok(written)
-            : Result<int>.Fail(written);
+            ? BufferAllocationResult<int>.BufferIsEnough(written)
+            : BufferAllocationResult<int>.BufferIsNotEnough(written);
 }
