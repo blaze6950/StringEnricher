@@ -8,12 +8,12 @@ namespace StringEnricher.Buffer.States;
 /// <typeparam name="T">
 /// The type of the value to be formatted.
 /// </typeparam>
-public readonly struct FormattingState<T>
+public readonly struct FormattingState<T> : IState<T> where T : ISpanFormattable
 {
     /// <summary>
     /// The value to be formatted.
     /// </summary>
-    public readonly T Value;
+    public T Value { get; }
 
     /// <summary>
     /// The format string to use for formatting.
