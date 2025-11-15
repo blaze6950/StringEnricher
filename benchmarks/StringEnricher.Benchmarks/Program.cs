@@ -1,5 +1,4 @@
 ﻿using BenchmarkDotNet.Running;
-using StringEnricher.Benchmarks.Nodes.CompleteStyledStringBuildingBenchmarks;
 using StringEnricher.Benchmarks.Nodes.SingleBoldNodeOverDateTimeBenchmarks;
 
 namespace StringEnricher.Benchmarks;
