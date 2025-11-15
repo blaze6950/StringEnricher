@@ -1,7 +1,7 @@
 ﻿using StringEnricher.Nodes;
 using StringEnricher.Nodes.Shared;
 
-namespace StringEnricher.Helpers.Shared;
+namespace StringEnricher.Helpers;
 
 /// <summary>
 /// Extension methods for combining nodes.

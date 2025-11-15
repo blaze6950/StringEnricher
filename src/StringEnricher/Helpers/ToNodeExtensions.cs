@@ -1,6 +1,6 @@
 ﻿using StringEnricher.Nodes.Shared;
 
-namespace StringEnricher.Helpers.Shared;
+namespace StringEnricher.Helpers;
 
 /// <summary>
 /// Extension methods to convert primitive types to their corresponding Node representations.
