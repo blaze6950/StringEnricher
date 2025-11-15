@@ -40,20 +40,27 @@ public static class BufferUtils
     /// <param name="nodeSettings">
     /// The node settings containing buffer size limits.
     /// </param>
+    /// <param name="initialBufferLengthHint">
+    /// An optional hint for the initial buffer length.
+    /// </param>
     /// <exception cref="InvalidOperationException">
     /// Thrown if the required buffer size exceeds the maximum allowed size.
     /// </exception>
     public static TResult AllocateBuffer<TProcessor, TState, TResult>(
         TProcessor processor,
         in TState state,
-        NodeSettingsInternal nodeSettings
+        NodeSettingsInternal nodeSettings,
+        int? initialBufferLengthHint = null
     ) where TProcessor : struct, IBufferProcessor<TState, TResult>
     {
-        var bufferSize = nodeSettings.BufferSizes.InitialBufferLength;
+        // Determine the initial buffer size taking into account any provided hint
+        var bufferSize = initialBufferLengthHint.HasValue
+            ? Math.Max(nodeSettings.BufferSizes.InitialBufferLength, initialBufferLengthHint.Value)
+            : nodeSettings.BufferSizes.InitialBufferLength;
 
         while (true)
         {
-            if (TryAllocate<TProcessor, TState, TResult>(processor, in state, bufferSize, nodeSettings, out var result))
+            if (TryAllocateAndProcess<TProcessor, TState, TResult>(processor, in state, bufferSize, nodeSettings, out var result))
             {
                 return result!;
             }
@@ -64,7 +71,9 @@ public static class BufferUtils
 
             if (bufferSize > bufferSizesInternal.MaxBufferLength)
             {
-                throw new InvalidOperationException("byte format string is too long.");
+                throw new InvalidOperationException(
+                    $"Unable to format value into buffer. Tried buffer sizes up to {bufferSizesInternal.MaxBufferLength}. " +
+                    "This may be caused by an extremely long format result or an invalid format string.");
             }
         }
     }
@@ -90,7 +99,7 @@ public static class BufferUtils
     /// <returns>
     /// True if the processing was successful; otherwise, false.
     /// </returns>
-    private static bool TryAllocate<TProcessor, TState, TResult>(
+    private static bool TryAllocateAndProcess<TProcessor, TState, TResult>(
         TProcessor processor,
         in TState state,
         int bufferSize,
@@ -98,12 +107,12 @@ public static class BufferUtils
         out TResult? result
     ) where TProcessor : struct, IBufferProcessor<TState, TResult>
     {
-        Result<TResult> funcResult;
+        BufferAllocationResult<TResult> funcBufferAllocationResult;
         if (bufferSize <= nodeSettings.BufferAllocationThresholds.MaxStackAllocLength)
         {
             // stackalloc for small sizes (fastest)
             Span<char> buffer = stackalloc char[bufferSize];
-            funcResult = processor.Process(buffer, in state);
+            funcBufferAllocationResult = processor.Process(buffer, in state);
         }
         else if (bufferSize <= nodeSettings.BufferAllocationThresholds.MaxPooledArrayLength)
         {
@@ -115,7 +124,7 @@ public static class BufferUtils
             var buffer = rawBuffer.AsSpan()[..bufferSize];
             try
             {
-                funcResult = processor.Process(buffer, in state);
+                funcBufferAllocationResult = processor.Process(buffer, in state);
             }
             finally
             {
@@ -126,11 +135,11 @@ public static class BufferUtils
         {
             // fallback: direct heap allocation (rare but safe)
             var buffer = new char[bufferSize];
-            funcResult = processor.Process(buffer, in state);
+            funcBufferAllocationResult = processor.Process(buffer, in state);
         }
 
-        result = funcResult.Value;
+        result = funcBufferAllocationResult.IsSuccess ? funcBufferAllocationResult.Value : default;
 
-        return funcResult.Success;
+        return funcBufferAllocationResult.IsSuccess;
     }
 }
