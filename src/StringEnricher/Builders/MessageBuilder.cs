@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using StringEnricher.Helpers.Shared;
+using StringEnricher.Helpers;
 using StringEnricher.Nodes;
 
 namespace StringEnricher.Builders;
