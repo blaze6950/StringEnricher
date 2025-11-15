@@ -87,10 +87,7 @@ public struct BufferSizes
 
             _growthFactor = value;
 
-            if (StringEnricherSettings.EnableDebugLogs)
-            {
-                Console.WriteLine($"[{_name}].{nameof(GrowthFactor)} set to {value}.\n{Environment.StackTrace}");
-            }
+            DebugLog($"[{_name}].{nameof(GrowthFactor)} set to {value}.\n{Environment.StackTrace}");
         }
     }
 
@@ -113,10 +110,10 @@ public struct BufferSizes
                 $"Consider setting it to at least {(float)(_initialBufferLength + 1) / _initialBufferLength}.");
         }
 
-        if (value > 10.0f && StringEnricherSettings.EnableDebugLogs)
+        if (value > 10.0f)
         {
             // warn about very high values
-            Console.WriteLine(
+            DebugLog(
                 $"WARNING: {nameof(GrowthFactor)} is set to a very high value ({value}). " +
                 $"This may lead to excessive memory allocations and performance issues. Consider setting it to no more than 10.0.");
         }
@@ -144,10 +141,7 @@ public struct BufferSizes
 
             _initialBufferLength = value;
 
-            if (StringEnricherSettings.EnableDebugLogs)
-            {
-                Console.WriteLine($"[{_name}].{nameof(InitialBufferLength)} set to {value}.\n{Environment.StackTrace}");
-            }
+            DebugLog($"[{_name}].{nameof(InitialBufferLength)} set to {value}.\n{Environment.StackTrace}");
         }
     }
 
@@ -196,10 +190,7 @@ public struct BufferSizes
 
             _maxBufferLength = value;
 
-            if (StringEnricherSettings.EnableDebugLogs)
-            {
-                Console.WriteLine($"[{_name}].{nameof(MaxBufferLength)} set to {value}.\n{Environment.StackTrace}");
-            }
+            DebugLog($"[{_name}].{nameof(MaxBufferLength)} set to {value}.\n{Environment.StackTrace}");
         }
     }
 
@@ -229,4 +220,43 @@ public struct BufferSizes
     }
 
     #endregion
+
+    /// <summary>
+    /// Implicitly converts a <see cref="BufferSizes"/> to its internal representation <see cref="BufferSizesInternal"/>.
+    /// </summary>
+    /// <param name="bufferSizes">
+    /// The <see cref="BufferSizes"/> instance to convert.
+    /// </param>
+    /// <returns>
+    /// The internal representation <see cref="BufferSizesInternal"/> of the provided <see cref="BufferSizes"/>.
+    /// </returns>
+    public static implicit operator BufferSizesInternal(BufferSizes bufferSizes) => new(
+        bufferSizes.GrowthFactor,
+        bufferSizes.InitialBufferLength,
+        bufferSizes.MaxBufferLength
+    );
+
+    /// <summary>
+    /// Logs a debug message if debug logging is enabled.
+    /// </summary>
+    /// <param name="msg">
+    /// The message to log.
+    /// </param>
+    private void DebugLog(string msg)
+    {
+        if (StringEnricherSettings.EnableDebugLogs)
+        {
+            Console.WriteLine($"[{_name}] {msg}\n{Environment.StackTrace}");
+        }
+    }
 }
+
+/// <summary>
+/// Internal DTO representation of BufferSizes for use within the library.
+/// This struct is immutable and is used to pass buffer size configurations internally without validation overhead.
+/// </summary>
+public record struct BufferSizesInternal(
+    float GrowthFactor,
+    int InitialBufferLength,
+    int MaxBufferLength
+);

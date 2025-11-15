@@ -46,10 +46,10 @@ public static class BufferUtils
     public static TResult AllocateBuffer<TProcessor, TState, TResult>(
         TProcessor processor,
         in TState state,
-        NodeSettings nodeSettings
+        NodeSettingsInternal nodeSettings
     ) where TProcessor : struct, IBufferProcessor<TState, TResult>
     {
-        var bufferSize = nodeSettings.InitialBufferSize;
+        var bufferSize = nodeSettings.BufferSizes.InitialBufferLength;
 
         while (true)
         {
@@ -58,9 +58,11 @@ public static class BufferUtils
                 return result!;
             }
 
-            bufferSize = GetNewBufferSize(bufferSize, nodeSettings.GrowthFactor);
+            var bufferSizesInternal = nodeSettings.BufferSizes;
 
-            if (bufferSize > nodeSettings.MaxBufferSize)
+            bufferSize = GetNewBufferSize(bufferSize, bufferSizesInternal.GrowthFactor);
+
+            if (bufferSize > bufferSizesInternal.MaxBufferLength)
             {
                 throw new InvalidOperationException("byte format string is too long.");
             }
@@ -92,18 +94,18 @@ public static class BufferUtils
         TProcessor processor,
         in TState state,
         int bufferSize,
-        NodeSettings nodeSettings,
+        NodeSettingsInternal nodeSettings,
         out TResult? result
     ) where TProcessor : struct, IBufferProcessor<TState, TResult>
     {
         Result<TResult> funcResult;
-        if (bufferSize <= nodeSettings.MaxStackAllocLength)
+        if (bufferSize <= nodeSettings.BufferAllocationThresholds.MaxStackAllocLength)
         {
             // stackalloc for small sizes (fastest)
             Span<char> buffer = stackalloc char[bufferSize];
             funcResult = processor.Process(buffer, in state);
         }
-        else if (bufferSize <= nodeSettings.MaxPooledArrayLength)
+        else if (bufferSize <= nodeSettings.BufferAllocationThresholds.MaxPooledArrayLength)
         {
             // array pool for medium sizes (less pressure on the GC)
             var rawBuffer = ArrayPool<char>.Shared.Rent(bufferSize);

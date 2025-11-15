@@ -15,12 +15,12 @@ public record struct NodeSettings
     /// <summary>
     /// The buffer sizes to use for the node.
     /// </summary>
-    private BufferSizes _bufferSizes;
+    internal BufferSizes _bufferSizes;
 
     /// <summary>
     /// The buffer allocation thresholds to use for the node.
     /// </summary>
-    private BufferAllocationThresholds _bufferAllocationThresholds;
+    internal BufferAllocationThresholds _bufferAllocationThresholds;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NodeSettings"/> struct.
@@ -155,4 +155,20 @@ public record struct NodeSettings
         get => _bufferAllocationThresholds.MaxPooledArrayLength;
         set => _bufferAllocationThresholds.MaxPooledArrayLength = value;
     }
+
+    /// <summary>
+    /// Implicitly converts <see cref="NodeSettings"/> to <see cref="NodeSettingsInternal"/>.
+    /// </summary>
+    public static implicit operator NodeSettingsInternal(NodeSettings settings) => new(
+        settings._bufferSizes,
+        settings._bufferAllocationThresholds
+    );
 }
+
+/// <summary>
+/// Internal representation of node settings for efficient access.
+/// </summary>
+public record struct NodeSettingsInternal(
+    BufferSizesInternal BufferSizes,
+    BufferAllocationThresholdsInternal BufferAllocationThresholds
+);

@@ -88,10 +88,7 @@ public struct BufferAllocationThresholds
 
             _maxStackAllocLength = value;
 
-            if (StringEnricherSettings.EnableDebugLogs)
-            {
-                Console.WriteLine($"[{_name}].{nameof(MaxStackAllocLength)} set to {value}.\n{Environment.StackTrace}");
-            }
+            DebugLog($"[{_name}].{nameof(MaxStackAllocLength)} set to {value}.\n{Environment.StackTrace}");
         }
     }
 
@@ -137,19 +134,19 @@ public struct BufferAllocationThresholds
         // soft warnings to help with sensible configuration
 
         const int softLowerLimit = 32; // Arbitrary soft lower limit to prevent too small stack allocations.
-        if (StringEnricherSettings.EnableDebugLogs && value < softLowerLimit)
+        if (value < softLowerLimit)
         {
             // warn about very low values
-            Console.WriteLine(
+            DebugLog(
                 $"WARNING: [{_name}].{nameof(MaxStackAllocLength)} is set to a very low value ({value}). " +
                 $"This may lead to increased heap allocations and reduced performance. Consider setting it to at least {softLowerLimit}.");
         }
 
         const int softUpperLimit = 1024; // Arbitrary soft upper limit to prevent excessive stack allocations.
-        if (StringEnricherSettings.EnableDebugLogs && value > softUpperLimit)
+        if (value > softUpperLimit)
         {
             // warn about high values
-            Console.WriteLine(
+            DebugLog(
                 $"WARNING: [{_name}].{nameof(MaxStackAllocLength)} is set to a high value ({value}). " +
                 $"This may lead to increased stack usage and potential stack overflow in deep recursion scenarios. Consider setting it to no more than {softUpperLimit}.");
         }
@@ -182,11 +179,7 @@ public struct BufferAllocationThresholds
 
             _maxPooledArrayLength = value;
 
-            if (StringEnricherSettings.EnableDebugLogs)
-            {
-                Console.WriteLine(
-                    $"[{_name}].{nameof(MaxPooledArrayLength)} set to {value}.\n{Environment.StackTrace}");
-            }
+            DebugLog($"[{_name}].{nameof(MaxPooledArrayLength)} set to {value}.\n{Environment.StackTrace}");
         }
     }
 
@@ -229,24 +222,61 @@ public struct BufferAllocationThresholds
 
         const int
             softLowerLimit = 500_000; // Arbitrary soft lower limit to prevent too small pooled arrays (500 KB).
-        if (StringEnricherSettings.EnableDebugLogs && value < softLowerLimit)
+        if (value < softLowerLimit)
         {
             // warn about very low values
-            Console.WriteLine(
+            DebugLog(
                 $"WARNING: [{_name}].{nameof(MaxPooledArrayLength)} is set to a very low value ({value}). " +
                 $"This may lead to increased heap allocations and reduced performance. Consider setting it to at least {softLowerLimit}.");
         }
 
         const int
             softUpperLimit = 5_242_880; // Arbitrary soft upper limit to prevent excessive pooled arrays (5 MB).
-        if (StringEnricherSettings.EnableDebugLogs && value > softUpperLimit)
+        if (value > softUpperLimit)
         {
             // warn about high values
-            Console.WriteLine(
+            DebugLog(
                 $"WARNING: [{_name}].{nameof(MaxPooledArrayLength)} is set to a high value ({value}). " +
                 $"This may lead to increased memory usage and pressure on the garbage collector. Consider setting it to no more than {softUpperLimit}.");
         }
     }
 
     #endregion
+
+    /// <summary>
+    /// Implicitly converts to the internal representation.
+    /// </summary>
+    /// <param name="bufferSizes">
+    /// The buffer sizes to convert.
+    /// </param>
+    /// <returns>
+    /// The internal representation of the buffer sizes.
+    /// </returns>
+    public static implicit operator BufferAllocationThresholdsInternal(BufferAllocationThresholds bufferSizes) => new()
+    {
+        MaxStackAllocLength = bufferSizes.MaxStackAllocLength,
+        MaxPooledArrayLength = bufferSizes.MaxPooledArrayLength
+    };
+
+    /// <summary>
+    /// Logs a debug message if debug logging is enabled.
+    /// </summary>
+    /// <param name="msg">
+    /// The message to log.
+    /// </param>
+    private void DebugLog(string msg)
+    {
+        if (StringEnricherSettings.EnableDebugLogs)
+        {
+            Console.WriteLine($"[{_name}] {msg}\n{Environment.StackTrace}");
+        }
+    }
 }
+
+/// <summary>
+/// Internal representation of buffer allocation thresholds.
+/// </summary>
+public record struct BufferAllocationThresholdsInternal(
+    int MaxStackAllocLength,
+    int MaxPooledArrayLength
+);
