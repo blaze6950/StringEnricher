@@ -230,7 +230,7 @@ public struct BufferSizes
     /// <returns>
     /// The internal representation <see cref="BufferSizesInternal"/> of the provided <see cref="BufferSizes"/>.
     /// </returns>
-    public static implicit operator BufferSizesInternal(BufferSizes bufferSizes) => new(
+    public static explicit  operator BufferSizesInternal(BufferSizes bufferSizes) => new(
         bufferSizes.GrowthFactor,
         bufferSizes.InitialBufferLength,
         bufferSizes.MaxBufferLength

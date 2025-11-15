@@ -159,9 +159,9 @@ public record struct NodeSettings
     /// <summary>
     /// Implicitly converts <see cref="NodeSettings"/> to <see cref="NodeSettingsInternal"/>.
     /// </summary>
-    public static implicit operator NodeSettingsInternal(NodeSettings settings) => new(
-        settings._bufferSizes,
-        settings._bufferAllocationThresholds
+    public static explicit operator NodeSettingsInternal(NodeSettings settings) => new(
+        (BufferSizesInternal)settings._bufferSizes,
+        (BufferAllocationThresholdsInternal)settings._bufferAllocationThresholds
     );
 }
 

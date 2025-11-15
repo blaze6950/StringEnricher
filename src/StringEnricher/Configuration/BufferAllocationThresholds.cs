@@ -252,7 +252,7 @@ public struct BufferAllocationThresholds
     /// <returns>
     /// The internal representation of the buffer sizes.
     /// </returns>
-    public static implicit operator BufferAllocationThresholdsInternal(BufferAllocationThresholds bufferSizes) => new()
+    public static explicit operator BufferAllocationThresholdsInternal(BufferAllocationThresholds bufferSizes) => new()
     {
         MaxStackAllocLength = bufferSizes.MaxStackAllocLength,
         MaxPooledArrayLength = bufferSizes.MaxPooledArrayLength
