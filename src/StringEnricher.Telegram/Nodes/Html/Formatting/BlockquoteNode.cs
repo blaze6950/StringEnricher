@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using StringEnricher.Nodes;
 
 namespace StringEnricher.Telegram.Nodes.Html.Formatting;
@@ -6,6 +7,7 @@ namespace StringEnricher.Telegram.Nodes.Html.Formatting;
 /// Represents blockquote text in HTML format.
 /// Example: "&lt;blockquote&gt;quoted text&lt;/blockquote&gt;"
 /// </summary>
+[DebuggerDisplay("{typeof(BlockquoteNode).Name,nq} Prefix={Prefix} InnerType={typeof(TInner).Name,nq} Suffix={Suffix}")]
 public readonly struct BlockquoteNode<TInner> : INode
     where TInner : INode
 {
@@ -13,6 +15,7 @@ public readonly struct BlockquoteNode<TInner> : INode
     /// The opening blockquote tag.
     /// </summary>
     public const string Prefix = "<blockquote>";
+
     /// <summary>
     /// The closing blockquote tag.
     /// </summary>
@@ -35,14 +38,18 @@ public readonly struct BlockquoteNode<TInner> : INode
     /// <summary>
     /// Gets the length of the inner text.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int InnerLength => _innerText.TotalLength;
+
     /// <summary>
     /// Gets the total length of the HTML blockquote syntax.
     /// </summary>
     public int SyntaxLength => Prefix.Length + Suffix.Length;
+
     /// <summary>
     /// Gets the total length of the formatted text.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int TotalLength => SyntaxLength + InnerLength;
 
     /// <summary>

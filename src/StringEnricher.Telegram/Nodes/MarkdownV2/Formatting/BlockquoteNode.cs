@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using StringEnricher.Nodes;
 
 namespace StringEnricher.Telegram.Nodes.MarkdownV2.Formatting;
@@ -9,6 +10,7 @@ namespace StringEnricher.Telegram.Nodes.MarkdownV2.Formatting;
 /// <typeparam name="TInner">
 /// The type of the inner style that will be wrapped with blockquote syntax.
 /// </typeparam>
+[DebuggerDisplay("{typeof(BlockquoteNode).Name,nq} LinePrefix={LinePrefix} InnerType={typeof(TInner).Name,nq}")]
 public struct BlockquoteNode<TInner> : INode
     where TInner : INode
 {
@@ -46,14 +48,17 @@ public struct BlockquoteNode<TInner> : INode
     /// <summary>
     /// Gets the length of the inner text without the blockquote syntax.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int InnerLength => _innerText.TotalLength;
 
     /// <inheritdoc />
     /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int SyntaxLength => _syntaxLength ??= CalculateSyntaxLength(_innerText);
     private int? _syntaxLength;
 
     /// <inheritdoc />
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int TotalLength => SyntaxLength + InnerLength;
 
     /// <inheritdoc />

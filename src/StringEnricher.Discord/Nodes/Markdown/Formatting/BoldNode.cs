@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using StringEnricher.Nodes;
 
 namespace StringEnricher.Discord.Nodes.Markdown.Formatting;
@@ -9,6 +10,7 @@ namespace StringEnricher.Discord.Nodes.Markdown.Formatting;
 /// <typeparam name="TInner">
 /// The type of the inner style that will be wrapped with bold syntax.
 /// </typeparam>
+[DebuggerDisplay("{typeof(BoldNode).Name,nq} Prefix={Prefix} InnerType={typeof(TInner).Name,nq} Suffix={Suffix}")]
 public readonly struct BoldNode<TInner> : INode
     where TInner : INode
 {
@@ -44,12 +46,14 @@ public readonly struct BoldNode<TInner> : INode
     /// <summary>
     /// Gets the length of the inner text.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int InnerLength => _innerText.TotalLength;
 
     /// <inheritdoc />
     public int SyntaxLength => Prefix.Length + Suffix.Length;
 
     /// <inheritdoc />
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int TotalLength => SyntaxLength + InnerLength;
 
     /// <inheritdoc />

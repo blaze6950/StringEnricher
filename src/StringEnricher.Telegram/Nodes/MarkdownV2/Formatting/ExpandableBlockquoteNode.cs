@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using StringEnricher.Nodes;
 
 namespace StringEnricher.Telegram.Nodes.MarkdownV2.Formatting;
@@ -9,6 +10,8 @@ namespace StringEnricher.Telegram.Nodes.MarkdownV2.Formatting;
 /// <typeparam name="TInner">
 /// The type of the inner style that will be wrapped with expandable blockquote syntax.
 /// </typeparam>
+[DebuggerDisplay(
+    "{typeof(ExpandableBlockquoteNode).Name,nq} LinePrefix={LinePrefix} InnerType={typeof(TInner).Name,nq} Suffix={Suffix}")]
 public struct ExpandableBlockquoteNode<TInner> : INode
     where TInner : INode
 {
@@ -51,14 +54,18 @@ public struct ExpandableBlockquoteNode<TInner> : INode
     /// <summary>
     /// Gets the length of the inner text without the expandable blockquote syntax.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int InnerLength => _innerText.TotalLength;
 
     /// <inheritdoc />
     /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int SyntaxLength => _syntaxLength ??= CalculateSyntaxLength(_innerText);
+
     private int? _syntaxLength;
 
     /// <inheritdoc />
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int TotalLength => SyntaxLength + InnerLength;
 
     /// <inheritdoc />
@@ -81,7 +88,8 @@ public struct ExpandableBlockquoteNode<TInner> : INode
         }
         catch (IndexOutOfRangeException e)
         {
-            throw new ArgumentException("The destination span is too small to hold the entire expandable blockquote text.", e);
+            throw new ArgumentException(
+                "The destination span is too small to hold the entire expandable blockquote text.", e);
         }
     }
 

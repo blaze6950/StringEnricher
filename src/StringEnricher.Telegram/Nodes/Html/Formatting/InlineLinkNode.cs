@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using StringEnricher.Nodes;
 
 namespace StringEnricher.Telegram.Nodes.Html.Formatting;
@@ -6,6 +7,7 @@ namespace StringEnricher.Telegram.Nodes.Html.Formatting;
 /// Represents inline link text in HTML format.
 /// Example: "&lt;a href="url"&gt;title&lt;/a&gt;"
 /// </summary>
+[DebuggerDisplay("{typeof(InlineLinkNode).Name,nq} Prefix={Prefix} InnerType={typeof(TInner).Name,nq} Suffix={Suffix}")]
 public readonly struct InlineLinkNode<TInner> : INode
     where TInner : INode
 {
@@ -44,6 +46,7 @@ public readonly struct InlineLinkNode<TInner> : INode
     /// <summary>
     /// Gets the length of the inner title and URL.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int InnerLength => _linkTitle.TotalLength + _linkUrl.Length;
 
     /// <summary>
@@ -54,6 +57,7 @@ public readonly struct InlineLinkNode<TInner> : INode
     /// <summary>
     /// Gets the total length of the formatted text.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int TotalLength => SyntaxLength + InnerLength;
 
     /// <summary>

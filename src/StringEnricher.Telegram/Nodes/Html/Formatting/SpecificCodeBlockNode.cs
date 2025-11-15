@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using StringEnricher.Nodes;
 
 namespace StringEnricher.Telegram.Nodes.Html.Formatting;
@@ -6,6 +7,7 @@ namespace StringEnricher.Telegram.Nodes.Html.Formatting;
 /// Represents a specific code block in HTML format with language class.
 /// Example: "&lt;pre&gt;&lt;code class="language-csharp"&gt;code block&lt;/code&gt;&lt;/pre&gt;"
 /// </summary>
+[DebuggerDisplay("{typeof(SpecificCodeBlockNode).Name,nq} Prefix={Prefix} InnerType={typeof(TInner).Name,nq} Suffix={Suffix}")]
 public readonly struct SpecificCodeBlockNode<TInner> : INode
     where TInner : INode
 {
@@ -44,6 +46,7 @@ public readonly struct SpecificCodeBlockNode<TInner> : INode
     /// <summary>
     /// Gets the length of the inner code block and language.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int InnerLength => _innerCodeBlock.TotalLength + _language.Length;
 
     /// <summary>
@@ -54,6 +57,7 @@ public readonly struct SpecificCodeBlockNode<TInner> : INode
     /// <summary>
     /// Gets the total length of the formatted text.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int TotalLength => SyntaxLength + InnerLength;
 
     /// <summary>

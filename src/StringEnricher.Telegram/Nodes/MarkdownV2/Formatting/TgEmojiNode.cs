@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using StringEnricher.Nodes;
 using StringEnricher.Nodes.Shared;
 
@@ -7,6 +8,7 @@ namespace StringEnricher.Telegram.Nodes.MarkdownV2.Formatting;
 /// Represents TG emoji text in MarkdownV2 format.
 /// Example: "![👍](tg://emoji?id=123456)"
 /// </summary>
+[DebuggerDisplay("{typeof(TgEmojiNode).Name,nq} Prefix={Prefix} InnerType={typeof(TInner).Name,nq} Suffix={Suffix}")]
 public readonly struct TgEmojiNode : INode
 {
     /// <summary>
@@ -53,12 +55,14 @@ public readonly struct TgEmojiNode : INode
     /// <summary>
     /// Gets the length of the inner styled text.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int InnerLength => _defaultEmoji.TotalLength + _customEmojiId.TotalLength;
 
     /// <inheritdoc />
     public int SyntaxLength => Prefix.Length + Separator.Length + Suffix.Length;
 
     /// <inheritdoc />
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int TotalLength => SyntaxLength + InnerLength;
 
     /// <inheritdoc />

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using StringEnricher.Nodes;
 using StringEnricher.Nodes.Shared;
 
@@ -7,6 +8,7 @@ namespace StringEnricher.Telegram.Nodes.Html.Formatting;
 /// Represents Telegram emoji text in HTML format.
 /// Example: "&lt;tg-emoji emoji-id="id"&gt;emoji&lt;/tg-emoji&gt;"
 /// </summary>
+[DebuggerDisplay("{typeof(TgEmojiNode).Name,nq} Prefix={Prefix} InnerType={typeof(TInner).Name,nq} Suffix={Suffix}")]
 public readonly struct TgEmojiNode : INode
 {
     /// <summary>
@@ -44,6 +46,7 @@ public readonly struct TgEmojiNode : INode
     /// <summary>
     /// Gets the length of the default and custom emoji.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int InnerLength => _defaultEmoji.TotalLength + _customEmojiId.TotalLength;
 
     /// <summary>
@@ -54,6 +57,7 @@ public readonly struct TgEmojiNode : INode
     /// <summary>
     /// Gets the total length of the formatted text.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int TotalLength => SyntaxLength + InnerLength;
 
     /// <summary>

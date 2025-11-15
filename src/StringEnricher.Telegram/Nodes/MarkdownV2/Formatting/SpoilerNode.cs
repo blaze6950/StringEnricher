@@ -1,4 +1,5 @@
-﻿using StringEnricher.Nodes;
+﻿using System.Diagnostics;
+using StringEnricher.Nodes;
 
 namespace StringEnricher.Telegram.Nodes.MarkdownV2.Formatting;
 
@@ -9,6 +10,7 @@ namespace StringEnricher.Telegram.Nodes.MarkdownV2.Formatting;
 /// <typeparam name="TInner">
 /// The type of the inner style that will be wrapped with spoiler syntax.
 /// </typeparam>
+[DebuggerDisplay("{typeof(SpoilerNode).Name,nq} Prefix={Prefix} InnerType={typeof(TInner).Name,nq} Suffix={Suffix}")]
 public readonly struct SpoilerNode<TInner> : INode
     where TInner : INode
 {
@@ -46,12 +48,14 @@ public readonly struct SpoilerNode<TInner> : INode
     /// <summary>
     /// Gets the length of the inner text excluding the spoiler syntax.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int InnerLength => _innerText.TotalLength;
 
     /// <inheritdoc />
     public int SyntaxLength => Prefix.Length + Suffix.Length;
 
     /// <inheritdoc />
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int TotalLength => SyntaxLength + InnerLength;
 
     /// <inheritdoc />

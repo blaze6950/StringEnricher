@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using StringEnricher.Nodes;
 
 namespace StringEnricher.Discord.Nodes.Markdown.Formatting;
@@ -9,6 +10,7 @@ namespace StringEnricher.Discord.Nodes.Markdown.Formatting;
 /// <typeparam name="TInner">
 /// The type of the inner style that will be wrapped with inline link syntax.
 /// </typeparam>
+[DebuggerDisplay("{typeof(InlineLinkNode).Name,nq} Prefix={Prefix} InnerType={typeof(TInner).Name,nq} LinkSeparator={LinkSeparator} Suffix={Suffix}")]
 public readonly struct InlineLinkNode<TInner> : INode
     where TInner : INode
 {
@@ -56,12 +58,14 @@ public readonly struct InlineLinkNode<TInner> : INode
     /// <summary>
     /// Gets the length of the inner content (link title + link URL).
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int InnerLength => _linkTitle.TotalLength + _linkUrl.Length;
 
     /// <inheritdoc />
     public int SyntaxLength => Prefix.Length + LinkSeparator.Length + Suffix.Length;
 
     /// <inheritdoc />
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int TotalLength => SyntaxLength + InnerLength;
 
     /// <inheritdoc />

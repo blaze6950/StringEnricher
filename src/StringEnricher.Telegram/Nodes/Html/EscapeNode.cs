@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using StringEnricher.Nodes;
 
 namespace StringEnricher.Telegram.Nodes.Html;
@@ -9,6 +10,7 @@ namespace StringEnricher.Telegram.Nodes.Html;
 /// <typeparam name="TInner">
 /// The type of the inner style that will be escaped.
 /// </typeparam>
+[DebuggerDisplay("{typeof(EscapeNode).Name,nq} InnerType={typeof(TInner).Name,nq}")]
 public struct EscapeNode<TInner> : INode
     where TInner : INode
 {
@@ -41,6 +43,7 @@ public struct EscapeNode<TInner> : INode
     /// <summary>
     /// Gets the length of the inner text.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int InnerLength => _innerText.TotalLength;
 
     /// <inheritdoc />
@@ -49,6 +52,7 @@ public struct EscapeNode<TInner> : INode
     private int? _syntaxLength;
 
     /// <inheritdoc />
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int TotalLength => SyntaxLength + InnerLength;
 
     /// <inheritdoc />

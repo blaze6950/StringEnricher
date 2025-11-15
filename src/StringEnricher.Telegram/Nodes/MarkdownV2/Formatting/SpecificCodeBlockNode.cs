@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using StringEnricher.Nodes;
 
 namespace StringEnricher.Telegram.Nodes.MarkdownV2.Formatting;
@@ -9,6 +10,7 @@ namespace StringEnricher.Telegram.Nodes.MarkdownV2.Formatting;
 /// <typeparam name="TInner">
 /// The type of the inner style that will be wrapped with specific code block syntax.
 /// </typeparam>
+[DebuggerDisplay("{typeof(SpecificCodeBlockNode).Name,nq} Prefix={Prefix} Language={_language} InnerType={typeof(TInner).Name,nq} Suffix={Suffix}")]
 public readonly struct SpecificCodeBlockNode<TInner> : INode
     where TInner : INode
 {
@@ -56,12 +58,14 @@ public readonly struct SpecificCodeBlockNode<TInner> : INode
     /// <summary>
     /// Gets the length of the inner content (language + code block).
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int InnerLength => _innerCodeBlock.TotalLength + _language.Length;
 
     /// <inheritdoc />
     public int SyntaxLength => Prefix.Length + Separator.Length + Suffix.Length;
 
     /// <inheritdoc />
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int TotalLength => SyntaxLength + InnerLength;
 
     /// <inheritdoc />

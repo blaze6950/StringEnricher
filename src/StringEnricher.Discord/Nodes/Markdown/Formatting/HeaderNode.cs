@@ -1,4 +1,5 @@
-﻿using StringEnricher.Nodes;
+﻿using System.Diagnostics;
+using StringEnricher.Nodes;
 
 namespace StringEnricher.Discord.Nodes.Markdown.Formatting;
 
@@ -9,6 +10,7 @@ namespace StringEnricher.Discord.Nodes.Markdown.Formatting;
 /// <typeparam name="TInner">
 /// The type of the inner style that will be wrapped with header syntax.
 /// </typeparam>
+[DebuggerDisplay("{typeof(HeaderNode).Name,nq} InnerType={typeof(TInner).Name,nq} Level={_level}")]
 public readonly struct HeaderNode<TInner> : INode
     where TInner : INode
 {
@@ -46,12 +48,14 @@ public readonly struct HeaderNode<TInner> : INode
     /// <summary>
     /// Gets the length of the inner text without the header syntax.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int InnerLength => _innerText.TotalLength;
 
     /// <inheritdoc />
     public int SyntaxLength => _level + 1; // '#' characters + space
 
     /// <inheritdoc />
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int TotalLength => SyntaxLength + InnerLength;
 
     /// <inheritdoc />

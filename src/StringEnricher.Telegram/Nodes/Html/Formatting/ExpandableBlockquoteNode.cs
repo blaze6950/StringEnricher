@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using StringEnricher.Nodes;
 
 namespace StringEnricher.Telegram.Nodes.Html.Formatting;
@@ -6,6 +7,7 @@ namespace StringEnricher.Telegram.Nodes.Html.Formatting;
 /// Represents expandable blockquote text in HTML format.
 /// Example: "&lt;blockquote expandable&gt;quoted text&lt;/blockquote&gt;"
 /// </summary>
+[DebuggerDisplay("{typeof(ExpandableBlockquoteNode).Name,nq} Prefix={Prefix} InnerType={typeof(TInner).Name,nq} Suffix={Suffix}")]
 public readonly struct ExpandableBlockquoteNode<TInner> : INode
     where TInner : INode
 {
@@ -36,6 +38,7 @@ public readonly struct ExpandableBlockquoteNode<TInner> : INode
     /// <summary>
     /// Gets the length of the inner text.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int InnerLength => _innerText.TotalLength;
 
     /// <summary>
@@ -46,6 +49,7 @@ public readonly struct ExpandableBlockquoteNode<TInner> : INode
     /// <summary>
     /// Gets the total length of the formatted text.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int TotalLength => SyntaxLength + InnerLength;
 
     /// <summary>

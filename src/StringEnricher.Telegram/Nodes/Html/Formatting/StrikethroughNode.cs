@@ -1,4 +1,5 @@
-﻿using StringEnricher.Nodes;
+﻿using System.Diagnostics;
+using StringEnricher.Nodes;
 
 namespace StringEnricher.Telegram.Nodes.Html.Formatting;
 
@@ -6,6 +7,7 @@ namespace StringEnricher.Telegram.Nodes.Html.Formatting;
 /// Represents strikethrough text in HTML format.
 /// Example: "&lt;s&gt;strikethrough text&lt;/s&gt;"
 /// </summary>
+[DebuggerDisplay("{typeof(StrikethroughNode).Name,nq} Prefix={Prefix} InnerType={typeof(TInner).Name,nq} Suffix={Suffix}")]
 public readonly struct StrikethroughNode<TInner> : INode
     where TInner : INode
 {
@@ -36,6 +38,7 @@ public readonly struct StrikethroughNode<TInner> : INode
     /// <summary>
     /// Gets the length of the inner text.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int InnerLength => _innerText.TotalLength;
 
     /// <summary>
@@ -46,6 +49,7 @@ public readonly struct StrikethroughNode<TInner> : INode
     /// <summary>
     /// Gets the total length of the formatted text.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int TotalLength => SyntaxLength + InnerLength;
 
     /// <summary>

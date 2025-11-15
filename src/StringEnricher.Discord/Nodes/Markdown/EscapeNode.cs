@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using StringEnricher.Nodes;
 
 namespace StringEnricher.Discord.Nodes.Markdown;
@@ -8,6 +9,7 @@ namespace StringEnricher.Discord.Nodes.Markdown;
 /// <typeparam name="TInner">
 /// The type of the inner style that will be escaped.
 /// </typeparam>
+[DebuggerDisplay("{typeof(EscapeNode).Name,nq} InnerType={typeof(TInner).Name,nq}")]
 public struct EscapeNode<TInner> : INode
     where TInner : INode
 {
@@ -37,15 +39,18 @@ public struct EscapeNode<TInner> : INode
     /// <summary>
     /// Gets the length of the inner text.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int InnerLength => _innerText.TotalLength;
 
     /// <inheritdoc />
     /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int SyntaxLength => _syntaxLength ??= CalculateSyntaxLength(_innerText);
 
     private int? _syntaxLength;
 
     /// <inheritdoc />
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int TotalLength => SyntaxLength + InnerLength;
 
     /// <inheritdoc />

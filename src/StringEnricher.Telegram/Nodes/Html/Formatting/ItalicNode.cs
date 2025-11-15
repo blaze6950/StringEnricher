@@ -1,4 +1,5 @@
-﻿using StringEnricher.Nodes;
+﻿using System.Diagnostics;
+using StringEnricher.Nodes;
 
 namespace StringEnricher.Telegram.Nodes.Html.Formatting;
 
@@ -6,6 +7,7 @@ namespace StringEnricher.Telegram.Nodes.Html.Formatting;
 /// Represents italic text in HTML format.
 /// Example: "&lt;i&gt;italic text&lt;/i&gt;"
 /// </summary>
+[DebuggerDisplay("{typeof(ItalicNode).Name,nq} Prefix={Prefix} InnerType={typeof(TInner).Name,nq} Suffix={Suffix}")]
 public readonly struct ItalicNode<TInner> : INode
     where TInner : INode
 {
@@ -36,6 +38,7 @@ public readonly struct ItalicNode<TInner> : INode
     /// <summary>
     /// Gets the length of the inner text.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int InnerLength => _innerText.TotalLength;
 
     /// <summary>
@@ -46,6 +49,7 @@ public readonly struct ItalicNode<TInner> : INode
     /// <summary>
     /// Gets the total length of the formatted text.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int TotalLength => SyntaxLength + InnerLength;
 
     /// <summary>

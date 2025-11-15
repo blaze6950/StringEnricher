@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using StringEnricher.Nodes;
 
 namespace StringEnricher.Discord.Nodes.Markdown.Formatting;
@@ -10,6 +11,7 @@ namespace StringEnricher.Discord.Nodes.Markdown.Formatting;
 /// <typeparam name="TInner">
 /// The type of the inner style that will be wrapped with subtext syntax.
 /// </typeparam>
+[DebuggerDisplay("{typeof(SubtextNode).Name,nq} Prefix={Prefix} InnerType={typeof(TInner).Name,nq}")]
 public readonly struct SubtextNode<TInner> : INode
     where TInner : INode
 {
@@ -42,12 +44,14 @@ public readonly struct SubtextNode<TInner> : INode
     /// <summary>
     /// Gets the length of the inner text without the subtext syntax.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int InnerLength => _innerText.TotalLength;
 
     /// <inheritdoc />
     public int SyntaxLength => Prefix.Length;
 
     /// <inheritdoc />
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int TotalLength => SyntaxLength + InnerLength;
 
     /// <inheritdoc />

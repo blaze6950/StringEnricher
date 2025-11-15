@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using StringEnricher.Nodes;
 
 namespace StringEnricher.Discord.Nodes.Markdown.Formatting;
@@ -9,6 +10,7 @@ namespace StringEnricher.Discord.Nodes.Markdown.Formatting;
 /// <typeparam name="TInner">
 /// The type of the inner style that will be wrapped with list syntax.
 /// </typeparam>
+[DebuggerDisplay("{typeof(ListNode).Name,nq} LinePrefix={LinePrefix} InnerType={typeof(TInner).Name,nq}")]
 public struct ListNode<TInner> : INode
     where TInner : INode
 {
@@ -46,6 +48,7 @@ public struct ListNode<TInner> : INode
     /// <summary>
     /// Gets the length of the inner text without the list syntax.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int InnerLength => _innerText.TotalLength;
 
     /// <inheritdoc />
@@ -54,6 +57,7 @@ public struct ListNode<TInner> : INode
     private int? _syntaxLength;
 
     /// <inheritdoc />
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int TotalLength => SyntaxLength + InnerLength;
 
     /// <inheritdoc />

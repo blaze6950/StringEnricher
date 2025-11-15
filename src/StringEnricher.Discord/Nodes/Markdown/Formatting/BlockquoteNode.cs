@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using StringEnricher.Nodes;
 
 namespace StringEnricher.Discord.Nodes.Markdown.Formatting;
@@ -9,6 +10,7 @@ namespace StringEnricher.Discord.Nodes.Markdown.Formatting;
 /// <typeparam name="TInner">
 /// The type of the inner style that will be wrapped with blockquote syntax.
 /// </typeparam>
+[DebuggerDisplay("{typeof(BlockquoteNode).Name,nq} Prefix={Prefix} InnerType={typeof(TInner).Name,nq}")]
 public readonly struct BlockquoteNode<TInner> : INode
     where TInner : INode
 {
@@ -41,12 +43,14 @@ public readonly struct BlockquoteNode<TInner> : INode
     /// <summary>
     /// Gets the length of the inner text without the blockquote syntax.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int InnerLength => _innerText.TotalLength;
 
     /// <inheritdoc />
     public int SyntaxLength => Prefix.Length;
 
     /// <inheritdoc />
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int TotalLength => SyntaxLength + InnerLength;
 
     /// <inheritdoc />
