@@ -1,6 +1,5 @@
 ﻿using StringEnricher.Buffer;
-using StringEnricher.Buffer.Processors.CharAtIndex;
-using StringEnricher.Buffer.Processors.LengthCalculation;
+using StringEnricher.Buffer.Processors;
 using StringEnricher.Buffer.Results;
 using StringEnricher.Buffer.States;
 using StringEnricher.Configuration;

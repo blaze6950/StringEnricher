@@ -1,6 +1,6 @@
 ﻿using StringEnricher.Buffer.States;
 
-namespace StringEnricher.Buffer.Processors.LengthCalculation;
+namespace StringEnricher.Buffer.Processors;
 
 /// <summary>
 /// Calculates the number of characters that would be written when formatting an <see cref="ISpanFormattable"/> value.

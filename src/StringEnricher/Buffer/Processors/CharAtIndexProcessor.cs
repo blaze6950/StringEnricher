@@ -1,10 +1,9 @@
 ﻿using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
-using StringEnricher.Buffer.Processors.LengthCalculation;
 using StringEnricher.Buffer.Results;
 using StringEnricher.Buffer.States;
 
-namespace StringEnricher.Buffer.Processors.CharAtIndex;
+namespace StringEnricher.Buffer.Processors;
 
 /// <summary>
 /// A processor that retrieves a character at a specific index from a formatted <see cref="DateTime"/> value.
