@@ -1,4 +1,9 @@
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
+using System.Runtime.CompilerServices;
+using StringEnricher.Buffer;
+using StringEnricher.Configuration;
+using StringEnricher.Extensions;
 using StringEnricher.Nodes;
 
 namespace StringEnricher.Discord.Nodes.Markdown.Formatting;
@@ -45,43 +50,172 @@ public struct ListNode<TInner> : INode
     /// <returns>The created string representation</returns>
     public override string ToString() => string.Create(TotalLength, this, static (span, style) => style.CopyTo(span));
 
+    /// <inheritdoc />
+    public string ToString(string? format, IFormatProvider? formatProvider)
+    {
+        var charCountsResult = _innerText.GetTotalAndEscapedCharsCounts(
+            IsLineSeparator,
+            StringEnricherSettings.Extensions.StringBuilder,
+            format,
+            formatProvider
+        );
+
+        return string.Create(
+            charCountsResult.TotalCount + charCountsResult.EscapedCount, // Total length after escaping
+            ValueTuple.Create(_innerText, charCountsResult, format, formatProvider),
+            static (span, state) =>
+            {
+                // Write the line prefix
+                for (var i = 0; i < LinePrefix.Length; i++)
+                {
+                    span[i] = LinePrefix[i];
+                }
+
+                BufferUtils.StreamBuffer(
+                    source: state.Item1,
+                    destination: span[LinePrefix.Length..],
+                    streamWriter: static (c, index, destination) =>
+                    {
+                        if (!IsLineSeparator(c))
+                        {
+                            // Just write the character as is
+                            destination[0] = c;
+                            return 1;
+                        }
+
+                        // Write the line separator first
+                        destination[0] = c;
+
+                        // Then write the line prefix
+                        for (var i = 1; i <= LinePrefix.Length; i++)
+                        {
+                            destination[i] = LinePrefix[i - 1];
+                        }
+
+                        // Return the total number of characters written
+                        return 1 + LinePrefix.Length;
+                    },
+                    nodeSettings: (NodeSettingsInternal)StringEnricherSettings.Extensions.StringBuilder,
+                    format: state.Item3,
+                    provider: state.Item4,
+                    initialBufferLengthHint: state.Item2.TotalCount // Inner length before escaping
+                );
+            });
+    }
+
+    /// <inheritdoc />
+    public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format,
+        IFormatProvider? provider)
+    {
+        try
+        {
+            charsWritten = 0;
+
+            // Write the line prefix
+            for (var i = 0; i < LinePrefix.Length; i++)
+            {
+                destination[i] = LinePrefix[i];
+            }
+
+            charsWritten += LinePrefix.Length;
+
+            charsWritten += BufferUtils.StreamBuffer(
+                source: _innerText,
+                destination: destination[LinePrefix.Length..],
+                streamWriter: static (c, _, destination) =>
+                {
+                    if (!IsLineSeparator(c))
+                    {
+                        // Just write the character as is
+                        destination[0] = c;
+                        return 1;
+                    }
+
+                    // Write the line separator first
+                    destination[0] = c;
+
+                    // Then write the line prefix
+                    for (var i = 1; i <= LinePrefix.Length; i++)
+                    {
+                        destination[i] = LinePrefix[i - 1];
+                    }
+
+                    // Return the total number of characters written
+                    return 1 + LinePrefix.Length;
+                },
+                nodeSettings: (NodeSettingsInternal)StringEnricherSettings.Extensions.StringBuilder,
+                format: format.IsEmpty ? null : format.ToString(),
+                provider: provider,
+                initialBufferLengthHint: _innerLength
+            );
+        }
+        catch (IndexOutOfRangeException)
+        {
+            charsWritten = 0;
+            return false;
+        }
+
+        return true;
+    }
+
     /// <summary>
     /// Gets the length of the inner text without the list syntax.
     /// </summary>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public int InnerLength => _innerText.TotalLength;
+    public int InnerLength => _innerLength ??= CalculateLength(_innerText).Item1;
+
+    private int? _innerLength;
 
     /// <inheritdoc />
     /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
-    public int SyntaxLength => _syntaxLength ??= CalculateSyntaxLength(_innerText);
+    public int SyntaxLength => _syntaxLength ??= CalculateLength(_innerText).Item2;
+
     private int? _syntaxLength;
 
     /// <inheritdoc />
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public int TotalLength => SyntaxLength + InnerLength;
+    public int TotalLength => _totalLength ??= CalculateLength(_innerText).Item3;
+
+    private int? _totalLength;
 
     /// <inheritdoc />
     public int CopyTo(Span<char> destination)
     {
-        try
+        // Write the first line prefix
+        for (var i = 0; i < LinePrefix.Length; i++)
         {
-            var writtenChars = 0;
+            destination[i] = LinePrefix[i];
+        }
 
-            // the iterator is needed because the inner text is processed on the fly
-            var iterator = GetCharacterIterator();
-
-            while (iterator.MoveNext(out var character))
+        var writtenChars = BufferUtils.StreamBuffer(
+            source: _innerText,
+            destination: destination[LinePrefix.Length..],
+            streamWriter: static (c, _, destination) =>
             {
-                destination[writtenChars] = character;
-                writtenChars++;
-            }
+                if (!IsLineSeparator(c))
+                {
+                    // Just write the character as is
+                    destination[0] = c;
+                    return 1;
+                }
 
-            return writtenChars;
-        }
-        catch (IndexOutOfRangeException e)
-        {
-            throw new ArgumentException("The destination span is too small to hold the entire content.", e);
-        }
+                // Write the line separator first
+                destination[0] = c;
+
+                // Then write the line prefix
+                for (var i = 1; i <= LinePrefix.Length; i++)
+                {
+                    destination[i] = LinePrefix[i - 1];
+                }
+
+                // Return the total number of characters written
+                return 1 + LinePrefix.Length;
+            },
+            nodeSettings: (NodeSettingsInternal)StringEnricherSettings.Extensions.StringBuilder,
+            initialBufferLengthHint: _innerLength
+        );
+
+        return writtenChars + LinePrefix.Length;
     }
 
     /// <inheritdoc />
@@ -96,7 +230,7 @@ public struct ListNode<TInner> : INode
         // Track our position in the virtual output
         var virtualIndex = 0;
         var linePrefixPosition = 0;
-        
+
         // Start with the first line prefix
         while (linePrefixPosition < LinePrefix.Length)
         {
@@ -105,6 +239,7 @@ public struct ListNode<TInner> : INode
                 character = LinePrefix[linePrefixPosition];
                 return true;
             }
+
             virtualIndex++;
             linePrefixPosition++;
         }
@@ -117,7 +252,7 @@ public struct ListNode<TInner> : INode
             {
                 return true;
             }
-            
+
             virtualIndex++;
             originalIndex++;
 
@@ -132,6 +267,7 @@ public struct ListNode<TInner> : INode
                         character = LinePrefix[linePrefixPosition];
                         return true;
                     }
+
                     virtualIndex++;
                     linePrefixPosition++;
                 }
@@ -154,100 +290,47 @@ public struct ListNode<TInner> : INode
     public static ListNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
 
     /// <summary>
-    /// Calculates the length of the list syntax based on the number of lines in the inner text.
-    /// Does this in the most efficient way possible. No heap allocations.
+    /// Calculates the total and escaped character counts for the given inner text.
+    /// It also caches the inner and syntax lengths.
     /// </summary>
     /// <param name="innerText">
-    /// The inner text whose lines will be counted to determine the syntax length.
+    /// The inner text to calculate lengths for.
     /// </param>
     /// <returns>
-    /// The total length of the list syntax, which is the number of lines multiplied by the prefix length.
+    /// A tuple containing different lengths:
+    /// 1. Inner text total length;
+    /// 2. Number of escaped characters (i.e., added line prefixes);
+    /// 3. Total length including syntax;
     /// </returns>
-    private static int CalculateSyntaxLength(TInner innerText)
+    private ValueTuple<int, int, int> CalculateLength(TInner innerText)
     {
-        var lines = 1;
+        var (totalCount, lineSeparatorsCount) = innerText.GetTotalAndEscapedCharsCounts(
+            IsLineSeparator,
+            StringEnricherSettings.Extensions.StringBuilder
+        );
 
-        for (var i = 0; innerText.TryGetChar(i, out var ch); i++)
-        {
-            if (ch == LineSeparator)
-            {
-                lines++;
-            }
-        }
+        // Each line gets a prefix added
+        // The number of prefixes added is equal to the number of line separators + 1 (for the first line)
+        // Each prefix has a length of LinePrefix.Length
+        var syntaxLength = (lineSeparatorsCount + 1) * LinePrefix.Length;
 
-        return lines * LinePrefix.Length;
+        _innerLength = totalCount;
+        _syntaxLength = syntaxLength;
+        _totalLength = totalCount + syntaxLength;
+
+        return ValueTuple.Create(_innerLength.Value, _syntaxLength.Value, _totalLength.Value);
     }
 
     /// <summary>
-    /// Creates a new character iterator for efficient sequential access to all characters.
-    /// Use this when you need to iterate through all characters sequentially for O(n) performance.
+    /// Determines if the given character is a line separator.
     /// </summary>
-    /// <returns>A new <see cref="CharacterIterator"/> instance.</returns>
-    private CharacterIterator GetCharacterIterator() => new(this);
-
-    /// <summary>
-    /// A stateful iterator that maintains internal state for efficient sequential character access.
-    /// This allows O(n) iteration through all characters instead of O(n²) in case of <see cref="TryGetChar"/>.
-    /// </summary>
-    private struct CharacterIterator
-    {
-        private readonly ListNode<TInner> _listNode;
-        private int _currentOriginalIndex;
-        private int _linePrefixPosition;
-        private bool _hasReachedEnd;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CharacterIterator"/> struct.
-        /// </summary>
-        /// <param name="listNode">The list style to iterate through.</param>
-        public CharacterIterator(ListNode<TInner> listNode)
-        {
-            _listNode = listNode;
-            _currentOriginalIndex = 0;
-            _linePrefixPosition = 0; // Start at the beginning of the first line prefix
-            _hasReachedEnd = false;
-        }
-
-        /// <summary>
-        /// Moves to the next character and returns it.
-        /// Returns true if a character was successfully retrieved, false if the end was reached.
-        /// </summary>
-        /// <param name="character">When this method returns, contains the character at the current position.</param>
-        /// <returns>true if a character was successfully retrieved; otherwise, false.</returns>
-        public bool MoveNext(out char character)
-        {
-            if (_hasReachedEnd)
-            {
-                character = '\0';
-                return false;
-            }
-
-            // If we're in the middle of outputting a line prefix
-            if (_linePrefixPosition < LinePrefix.Length)
-            {
-                character = LinePrefix[_linePrefixPosition];
-                _linePrefixPosition++;
-                return true;
-            }
-
-            // Try to get the next character from the inner text
-            if (_listNode._innerText.TryGetChar(_currentOriginalIndex, out character))
-            {
-                _currentOriginalIndex++;
-
-                // If this character is a line separator, the next characters should be a line prefix
-                if (character == LineSeparator)
-                {
-                    _linePrefixPosition = 0; // Reset to start outputting a new line prefix after this
-                }
-
-                return true;
-            }
-
-            // No more characters available
-            _hasReachedEnd = true;
-            character = '\0';
-            return false;
-        }
-    }
+    /// <param name="character">
+    /// The character to check.
+    /// </param>
+    /// <returns>
+    /// ><c>true</c> if the character is a line separator; otherwise, <c>false</c>.
+    /// </returns>
+    [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool IsLineSeparator(char character) => character == LineSeparator;
 }

@@ -1,5 +1,7 @@
-﻿﻿using System.Diagnostics;
- using StringEnricher.Nodes;
+﻿using System.Diagnostics;
+using StringEnricher.Configuration;
+using StringEnricher.Extensions;
+using StringEnricher.Nodes;
 
 namespace StringEnricher.Discord.Nodes.Markdown.Formatting;
 
@@ -45,6 +47,72 @@ public readonly struct UnderlineNode<TInner> : INode
     /// <returns>The created string representation</returns>
     public override string ToString() => string.Create(TotalLength, this, static (span, style) => style.CopyTo(span));
 
+    /// <inheritdoc />
+    public string ToString(string? format, IFormatProvider? provider)
+    {
+        var length = this.GetSpanFormattableLength(
+            nodeSettings: StringEnricherSettings.Extensions.StringBuilder,
+            format: format,
+            provider: provider
+        );
+
+        return string.Create(
+            length: length,
+            state: ValueTuple.Create(this, format, provider),
+            action: static (span, state) =>
+            {
+                if (!state.Item1.TryFormat(span, out _, state.Item2, state.Item3))
+                {
+                    throw new InvalidOperationException("Formatting failed unexpectedly.");
+                }
+            }
+        );
+    }
+
+    /// <inheritdoc />
+    public bool TryFormat(
+        Span<char> destination,
+        out int charsWritten,
+        ReadOnlySpan<char> format = default,
+        IFormatProvider? provider = null
+    )
+    {
+        charsWritten = 0;
+
+        // Copy prefix
+        if (!Prefix.AsSpan().TryCopyTo(destination.Slice(charsWritten, Prefix.Length)))
+        {
+            return false;
+        }
+
+        charsWritten += Prefix.Length;
+
+        // Copy inner text
+        var isInnerTextFormatSuccess = _innerText.TryFormat(
+            destination[charsWritten..],
+            out var innerCharsWritten,
+            format,
+            provider
+        );
+
+        if (!isInnerTextFormatSuccess)
+        {
+            return false;
+        }
+
+        charsWritten += innerCharsWritten;
+
+        // Copy suffix
+        if (!Suffix.AsSpan().TryCopyTo(destination.Slice(charsWritten, Suffix.Length)))
+        {
+            return false;
+        }
+
+        charsWritten += Suffix.Length;
+
+        return true;
+    }
+
     /// <summary>
     /// Gets the length of the inner text excluding the underline syntax.
     /// </summary>
@@ -68,7 +136,8 @@ public readonly struct UnderlineNode<TInner> : INode
         writtenChars += Prefix.Length;
 
         // Copy inner text
-        writtenChars += _innerText.CopyTo(destination[writtenChars..]);;
+        writtenChars += _innerText.CopyTo(destination[writtenChars..]);
+        ;
 
         // Copy suffix
         Suffix.AsSpan().CopyTo(destination.Slice(writtenChars, Suffix.Length));
