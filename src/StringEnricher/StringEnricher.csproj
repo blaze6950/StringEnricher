@@ -16,6 +16,10 @@
         <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+        <DefineConstants>$(DefineConstants);UNIT_TESTS</DefineConstants>
+    </PropertyGroup>
+
     <ItemGroup>
         <Compile Update="Configuration\StringEnricherSettings.Extensions.StringBuilder.cs">
             <DependentUpon>StringEnricherSettings.cs</DependentUpon>
