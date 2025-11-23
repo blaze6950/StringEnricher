@@ -1,4 +1,10 @@
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
+using System.Runtime.CompilerServices;
+using StringEnricher.Buffer;
+using StringEnricher.Buffer.Results;
+using StringEnricher.Configuration;
+using StringEnricher.Extensions;
 using StringEnricher.Nodes;
 
 namespace StringEnricher.Telegram.Nodes.MarkdownV2;
@@ -15,7 +21,7 @@ public struct EscapeNode<TInner> : INode
 {
     private const char
         EscapeSymbol =
-            '\\'; // Character used to escape special characters in MarkdownV2. '\\' is the escaped form of '\'.
+            '\\'; // Character used to escape special characters in Discord markdown. '\\' is the escaped form of '\'.
 
     private readonly TInner _innerText;
 
@@ -29,44 +35,128 @@ public struct EscapeNode<TInner> : INode
     }
 
     /// <summary>
-    /// Returns the escaped string representation of MarkdownV2 string.
+    /// Returns the escaped string representation of Discord markdown string.
     /// Note: This method allocates a new string in the most efficient way possible.
     /// Use this method when you finished all styling operations and need the final string.
     /// </summary>
     /// <returns>The created string representation</returns>
     public override string ToString() => string.Create(TotalLength, this, static (span, style) => style.CopyTo(span));
 
+    /// <inheritdoc />
+    public string ToString(string? format, IFormatProvider? formatProvider)
+    {
+        var charCountsResult = _innerText.GetTotalAndEscapedCharsCounts(
+            IsCharacterToEscape,
+            StringEnricherSettings.Extensions.StringBuilder,
+            format,
+            formatProvider
+        );
+
+        return string.Create(
+            charCountsResult.TotalCount + charCountsResult.EscapedCount, // Total length after escaping
+            ValueTuple.Create(_innerText, charCountsResult, format, formatProvider),
+            static (span, state) =>
+            {
+                BufferUtils.StreamBuffer(
+                    source: state.Item1,
+                    destination: span,
+                    streamWriter: static (c, index, destination) =>
+                    {
+                        if (!IsCharacterToEscape(c))
+                        {
+                            destination[0] = c;
+                            return 1;
+                        }
+
+                        destination[0] = EscapeSymbol;
+                        destination[1] = c;
+                        return 2;
+                    },
+                    nodeSettings: (NodeSettingsInternal)StringEnricherSettings.Extensions.StringBuilder,
+                    format: state.Item3,
+                    provider: state.Item4,
+                    initialBufferLengthHint: state.Item2.TotalCount // Inner length before escaping
+                );
+            });
+    }
+
+    /// <inheritdoc />
+    public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format,
+        IFormatProvider? provider)
+    {
+        try
+        {
+            BufferUtils.StreamBuffer(
+                source: _innerText,
+                destination: destination,
+                streamWriter: static (c, index, destination) =>
+                {
+                    if (!IsCharacterToEscape(c))
+                    {
+                        destination[0] = c;
+                        return 1;
+                    }
+
+                    destination[0] = EscapeSymbol;
+                    destination[1] = c;
+                    return 2;
+                },
+                nodeSettings: (NodeSettingsInternal)StringEnricherSettings.Extensions.StringBuilder,
+                format: format.IsEmpty ? null : format.ToString(),
+                provider: provider,
+                initialBufferLengthHint: _innerLength
+            );
+        }
+        catch (IndexOutOfRangeException)
+        {
+            charsWritten = 0;
+            return false;
+        }
+
+        charsWritten = TotalLength;
+        return true;
+    }
+
     /// <summary>
     /// Gets the length of the inner text.
     /// </summary>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public int InnerLength => _innerText.TotalLength;
+    public int InnerLength => _innerLength ??= CalculateLength(_innerText).TotalCount;
+
+    private int? _innerLength;
 
     /// <inheritdoc />
     /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public int SyntaxLength => _syntaxLength ??= CalculateSyntaxLength(_innerText);
+    public int SyntaxLength => _syntaxLength ??= CalculateLength(_innerText).EscapedCount;
+
     private int? _syntaxLength;
 
     /// <inheritdoc />
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public int TotalLength => SyntaxLength + InnerLength;
+    public int TotalLength => _totalLength ??= SyntaxLength + InnerLength;
+
+    private int? _totalLength;
 
     /// <inheritdoc />
-    public int CopyTo(Span<char> destination)
-    {
-        var writtenChars = 0;
-
-        // the iterator is needed because the inner text is processed on the fly
-        var iterator = new CharacterIterator(this);
-
-        while (iterator.MoveNext(out var character))
+    public int CopyTo(Span<char> destination) => BufferUtils.StreamBuffer(
+        source: _innerText,
+        destination: destination,
+        streamWriter: static (c, index, destination) =>
         {
-            destination[writtenChars++] = character;
-        }
+            if (!IsCharacterToEscape(c))
+            {
+                destination[0] = c;
+                return 1;
+            }
 
-        return writtenChars;
-    }
+            destination[0] = EscapeSymbol;
+            destination[1] = c;
+            return 2;
+        },
+        nodeSettings: (NodeSettingsInternal)StringEnricherSettings.Extensions.StringBuilder,
+        initialBufferLengthHint: _syntaxLength.HasValue ? _innerText.TotalLength : null
+    );
 
     /// <inheritdoc />
     public bool TryGetChar(int index, out char character)
@@ -77,57 +167,30 @@ public struct EscapeNode<TInner> : INode
             return false;
         }
 
-        var neededIndex = index; // Fix: Remove the incorrect -1 adjustment
+        var neededIndex = index;
         var virtualIndex = 0;
         var originalIndex = 0;
         while (_innerText.TryGetChar(originalIndex, out character))
         {
-            var isCharToEscape = false;
-
-            switch (character)
-            {
-                case '_':
-                case '*':
-                case '~':
-                case '`':
-                case '#':
-                case '+':
-                case '-':
-                case '=':
-                case '.':
-                case '!':
-                case '[':
-                case ']':
-                case '(':
-                case ')':
-                case '{':
-                case '}':
-                case '>':
-                case '|':
-                case '\\':
-                    isCharToEscape = true;
-                    break;
-            }
-
-            if (isCharToEscape)
+            if (IsCharacterToEscape(character))
             {
                 if (virtualIndex == neededIndex)
                 {
                     // Add the escape character virtually
                     character = EscapeSymbol;
 
-                    // We are at the position of the line separator
-                    // Return the line separator character
+                    // We are at the position of the escape character
+                    // Return the escape character
                     return true;
                 }
 
-                // Add the line prefix character virtually
+                // Add the escape character virtually
                 virtualIndex++;
 
                 if (virtualIndex == neededIndex)
                 {
-                    // We are at the position of the virtually added line prefix
-                    // Return the line prefix character
+                    // We are at the position of the escaped character
+                    // Return the escaped character
                     return true;
                 }
             }
@@ -146,7 +209,7 @@ public struct EscapeNode<TInner> : INode
     }
 
     /// <summary>
-    /// Escapes MarkdownV2 reserved characters for the given text.
+    /// Escapes Discord markdown reserved characters for the given text.
     /// </summary>
     /// <param name="innerStyle">
     /// The inner style to be escaped.
@@ -157,140 +220,58 @@ public struct EscapeNode<TInner> : INode
     public static EscapeNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
 
     /// <summary>
-    /// Calculates the length of the escape syntax for the MarkdownV2 string.
-    /// Does this in the most efficient way possible. No heap allocations.
+    /// Calculates the total and escaped character counts for the given inner text.
+    /// It also caches the inner and syntax lengths.
     /// </summary>
     /// <param name="innerText">
-    /// The inner text to determine the syntax length.
+    /// The inner text to calculate lengths for.
     /// </param>
     /// <returns>
-    /// The total length of MarkdownV2 escape syntax, which is the number of special characters that should be fronted by '\'.
+    /// A <see cref="TotalAndEscapedCharCountsResult"/> containing the total and escaped character counts.
     /// </returns>
-    private static int CalculateSyntaxLength(TInner innerText)
+    private TotalAndEscapedCharCountsResult CalculateLength(TInner innerText)
     {
-        var charactersToEscape = 0;
-
-        for (var i = 0; innerText.TryGetChar(i, out var character); i++)
-        {
-            switch (character)
-            {
-                case '_':
-                case '*':
-                case '~':
-                case '`':
-                case '#':
-                case '+':
-                case '-':
-                case '=':
-                case '.':
-                case '!':
-                case '[':
-                case ']':
-                case '(':
-                case ')':
-                case '{':
-                case '}':
-                case '>':
-                case '|':
-                case '\\':
-                    charactersToEscape++;
-                    break;
-            }
-        }
-
-        // Each special character needs to be escaped with a backslash '\', so the syntax length is equal to the number of special characters.
-        return charactersToEscape;
+        var result = innerText.GetTotalAndEscapedCharsCounts(
+            IsCharacterToEscape,
+            StringEnricherSettings.Extensions.StringBuilder
+        );
+        _innerLength ??= result.TotalCount;
+        _syntaxLength ??= result.EscapedCount;
+        return result;
     }
 
     /// <summary>
-    /// A stateful iterator that maintains internal state for efficient sequential character access.
-    /// This allows O(n) iteration through all characters instead of O(n²) in case of <see cref="TryGetChar"/>.
+    /// Determines whether the specified character is a Discord markdown character that needs to be escaped.
     /// </summary>
-    private struct CharacterIterator
+    /// <param name="character">
+    /// The character to check.
+    /// </param>
+    /// <returns>
+    /// true if the character is a Discord markdown character that needs to be escaped; otherwise, false.
+    /// </returns>
+    [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsCharacterToEscape(char character) => character switch
     {
-        private readonly EscapeNode<TInner> _escapeNode;
-        private int _currentVirtualIndex;
-        private int _currentOriginalIndex;
-        private bool _isAtCharToEscape;
-        private bool _hasReachedEnd;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CharacterIterator"/> struct.
-        /// </summary>
-        /// <param name="escapeNode">The escape style to iterate through.</param>
-        public CharacterIterator(EscapeNode<TInner> escapeNode)
-        {
-            _escapeNode = escapeNode;
-            _currentVirtualIndex = 0;
-            _currentOriginalIndex = 0;
-            _isAtCharToEscape = false;
-            _hasReachedEnd = false;
-        }
-
-        /// <summary>
-        /// Moves to the next character and returns it.
-        /// Returns true if a character was successfully retrieved, false if the end was reached.
-        /// </summary>
-        /// <param name="character">When this method returns, contains the character at the current position.</param>
-        /// <returns>true if a character was successfully retrieved; otherwise, false.</returns>
-        public bool MoveNext(out char character)
-        {
-            if (_hasReachedEnd)
-            {
-                character = '\0';
-                return false;
-            }
-
-            // If we're currently at a line prefix position after a line separator
-            if (_isAtCharToEscape)
-            {
-                _escapeNode._innerText.TryGetChar(_currentOriginalIndex, out character); // set character to the actual character to be escaped on a previous call
-                _currentVirtualIndex++;
-                _currentOriginalIndex++;
-                _isAtCharToEscape = false;
-                return true;
-            }
-
-            // Try to get the next character from the inner text
-            if (_escapeNode._innerText.TryGetChar(_currentOriginalIndex, out character))
-            {
-                _currentVirtualIndex++;
-
-                switch (character)
-                {
-                    case '_':
-                    case '*':
-                    case '~':
-                    case '`':
-                    case '#':
-                    case '+':
-                    case '-':
-                    case '=':
-                    case '.':
-                    case '!':
-                    case '[':
-                    case ']':
-                    case '(':
-                    case ')':
-                    case '{':
-                    case '}':
-                    case '>':
-                    case '|':
-                    case '\\':
-                        character = EscapeSymbol;
-                        _isAtCharToEscape = true;
-                        return true;
-                }
-                
-                _currentOriginalIndex++;
-
-                return true;
-            }
-
-            // No more characters available
-            _hasReachedEnd = true;
-            character = '\0';
-            return false;
-        }
-    }
+        '_' => true,
+        '*' => true,
+        '~' => true,
+        '`' => true,
+        '#' => true,
+        '+' => true,
+        '-' => true,
+        '=' => true,
+        '.' => true,
+        '!' => true,
+        '[' => true,
+        ']' => true,
+        '(' => true,
+        ')' => true,
+        '{' => true,
+        '}' => true,
+        '>' => true,
+        '|' => true,
+        '\\' => true,
+        _ => false
+    };
 }

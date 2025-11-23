@@ -1,4 +1,9 @@
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
+using System.Runtime.CompilerServices;
+using StringEnricher.Buffer;
+using StringEnricher.Configuration;
+using StringEnricher.Extensions;
 using StringEnricher.Nodes;
 
 namespace StringEnricher.Telegram.Nodes.MarkdownV2.Formatting;
@@ -51,46 +56,157 @@ public struct ExpandableBlockquoteNode<TInner> : INode
     /// <returns>The created string representation</returns>
     public override string ToString() => string.Create(TotalLength, this, static (span, style) => style.CopyTo(span));
 
+    /// <inheritdoc />
+    public string ToString(string? format, IFormatProvider? formatProvider)
+    {
+        var charCountsResult = _innerText.GetTotalAndEscapedCharsCounts(
+            IsLineSeparator,
+            StringEnricherSettings.Extensions.StringBuilder,
+            format,
+            formatProvider
+        );
+
+        return string.Create(
+            charCountsResult.TotalCount + charCountsResult.EscapedCount, // Total length after escaping
+            ValueTuple.Create(_innerText, charCountsResult, format, formatProvider),
+            static (span, state) =>
+            {
+                span[0] = LinePrefix; // Write the line prefix
+
+                BufferUtils.StreamBuffer(
+                    source: state.Item1,
+                    destination: span[1..], // Start writing after the first line prefix
+                    streamWriter: static (c, _, destination) =>
+                    {
+                        if (!IsLineSeparator(c))
+                        {
+                            // Just write the character as is
+                            destination[0] = c;
+                            return 1;
+                        }
+
+                        destination[0] = c; // Write the line separator first
+                        destination[1] = LinePrefix; // Then write the line prefix
+
+                        // Return the total number of characters written
+                        return 2;
+                    },
+                    nodeSettings: (NodeSettingsInternal)StringEnricherSettings.Extensions.StringBuilder,
+                    format: state.Item3,
+                    provider: state.Item4,
+                    initialBufferLengthHint: state.Item2.TotalCount // Inner length before escaping
+                );
+            });
+    }
+
+    /// <inheritdoc />
+    public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format,
+        IFormatProvider? provider)
+    {
+        try
+        {
+            charsWritten = 1; // For the first line prefix
+            destination[0] = LinePrefix; // Write the line prefix
+
+            charsWritten += BufferUtils.StreamBuffer(
+                source: _innerText,
+                destination: destination[1..], // Start writing after the first line prefix
+                streamWriter: static (c, _, destination) =>
+                {
+                    if (!IsLineSeparator(c))
+                    {
+                        // Just write the character as is
+                        destination[0] = c;
+                        return 1;
+                    }
+
+                    destination[0] = c; // Write the line separator first
+                    destination[1] = LinePrefix; // Then write the line prefix
+
+                    // Return the total number of characters written
+                    return 2;
+                },
+                nodeSettings: (NodeSettingsInternal)StringEnricherSettings.Extensions.StringBuilder,
+                format: format.IsEmpty ? null : format.ToString(),
+                provider: provider,
+                initialBufferLengthHint: _innerLength
+            );
+
+            // Add the suffix length
+            for (var i = 0; i < Suffix.Length; i++)
+            {
+                destination[charsWritten + i] = Suffix[i];
+            }
+
+            charsWritten += Suffix.Length;
+        }
+        catch (IndexOutOfRangeException)
+        {
+            charsWritten = 0;
+            return false;
+        }
+
+        return true;
+    }
+
     /// <summary>
     /// Gets the length of the inner text without the expandable blockquote syntax.
     /// </summary>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public int InnerLength => _innerText.TotalLength;
+    public int InnerLength => _innerLength ??= CalculateLength(_innerText).Item1;
+
+    private int? _innerLength;
 
     /// <inheritdoc />
     /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public int SyntaxLength => _syntaxLength ??= CalculateSyntaxLength(_innerText);
+    public int SyntaxLength => _syntaxLength ??= CalculateLength(_innerText).Item2;
 
     private int? _syntaxLength;
 
     /// <inheritdoc />
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public int TotalLength => SyntaxLength + InnerLength;
+    public int TotalLength => _totalLength ??= CalculateLength(_innerText).Item3;
+
+    private int? _totalLength;
 
     /// <inheritdoc />
     public int CopyTo(Span<char> destination)
     {
-        try
-        {
-            var writtenChars = 0;
+        var charsWritten = 1;
+        destination[0] = LinePrefix; // Write the line prefix
 
-            // the iterator is needed because the inner text is processed on the fly
-            var iterator = GetCharacterIterator();
-
-            while (iterator.MoveNext(out var character))
+        charsWritten += BufferUtils.StreamBuffer(
+            source: _innerText,
+            destination: destination[1..], // Start writing after the first line prefix
+            streamWriter: static (c, index, destination) =>
             {
-                destination[writtenChars] = character;
-                writtenChars++;
-            }
+                if (!IsLineSeparator(c))
+                {
+                    // Just write the character as is
+                    destination[0] = c;
+                    return 1;
+                }
 
-            return writtenChars;
-        }
-        catch (IndexOutOfRangeException e)
+                destination[0] = c; // Write the line separator first
+                destination[1] = LinePrefix; // Then write the line prefix
+
+                // Return the total number of characters written
+                return 2;
+            },
+            nodeSettings: (NodeSettingsInternal)StringEnricherSettings.Extensions.StringBuilder,
+            initialBufferLengthHint: _syntaxLength.HasValue ? _innerText.TotalLength : null
+        );
+
+        // Add the suffix length
+        for (var i = 0; i < Suffix.Length; i++)
         {
-            throw new ArgumentException(
-                "The destination span is too small to hold the entire expandable blockquote text.", e);
+            destination[charsWritten + i] = Suffix[i];
         }
+
+        charsWritten += Suffix.Length;
+
+        return charsWritten;
     }
 
     /// <inheritdoc />
@@ -172,126 +288,46 @@ public struct ExpandableBlockquoteNode<TInner> : INode
     public static ExpandableBlockquoteNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
 
     /// <summary>
-    /// Calculates the length of the expandable blockquote syntax based on the number of lines in the inner text.
-    /// Does this in the most efficient way possible. No heap allocations.
+    /// Calculates the total and escaped character counts for the given inner text.
+    /// It also caches the inner and syntax lengths.
     /// </summary>
     /// <param name="innerText">
-    /// The inner text whose lines will be counted to determine the syntax length.
+    /// The inner text to calculate lengths for.
     /// </param>
     /// <returns>
-    /// The total length of the expandable blockquote syntax, which is the number of lines.
+    /// A tuple containing different lengths:
+    /// 1. Inner text total length;
+    /// 2. Number of escaped characters (i.e., added line prefixes);
+    /// 3. Total length including syntax;
     /// </returns>
-    private static int CalculateSyntaxLength(TInner innerText)
+    private ValueTuple<int, int, int> CalculateLength(TInner innerText)
     {
-        var lines = 1;
+        var result = innerText.GetTotalAndEscapedCharsCounts(
+            IsLineSeparator,
+            StringEnricherSettings.Extensions.StringBuilder
+        );
 
-        for (var i = 0; innerText.TryGetChar(i, out var ch); i++)
-        {
-            if (ch == LineSeparator)
-            {
-                lines++;
-            }
-        }
+        // Each line gets a '>' prefix, so the number of syntax characters is equal to the number of line separators
+        // plus one for the first line prefix. Also add the length of the suffix.
+        var syntaxLength = result.EscapedCount + 1 + Suffix.Length;
 
-        return lines + Suffix.Length;
+        _innerLength = result.TotalCount;
+        _syntaxLength = syntaxLength;
+        _totalLength = _innerLength + _syntaxLength;
+
+        return ValueTuple.Create(_innerLength.Value, _syntaxLength.Value, _totalLength!.Value);
     }
 
     /// <summary>
-    /// Creates a new character iterator for efficient sequential access to all characters.
-    /// Use this when you need to iterate through all characters sequentially for O(n) performance.
+    /// Determines if the given character is a line separator.
     /// </summary>
-    /// <returns>A new <see cref="CharacterIterator"/> instance.</returns>
-    private CharacterIterator GetCharacterIterator() => new(this);
-
-    /// <summary>
-    /// A stateful iterator that maintains internal state for efficient sequential character access.
-    /// This allows O(n) iteration through all characters instead of O(n²) in case of <see cref="TryGetChar"/>.
-    /// </summary>
-    private struct CharacterIterator
-    {
-        private readonly ExpandableBlockquoteNode<TInner> _expandableBlockquoteNode;
-        private int _currentVirtualIndex;
-        private int _currentOriginalIndex;
-        private int _addedNewLinePrefixes;
-        private bool _isAtLinePrefix;
-        private bool _hasReachedEnd;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CharacterIterator"/> struct.
-        /// </summary>
-        /// <param name="ExpandableBlockquoteNode">The expandable blockquote style to iterate through.</param>
-        public CharacterIterator(ExpandableBlockquoteNode<TInner> ExpandableBlockquoteNode)
-        {
-            _expandableBlockquoteNode = ExpandableBlockquoteNode;
-            _currentVirtualIndex = 0;
-            _currentOriginalIndex = 0;
-            _addedNewLinePrefixes = 1; // Start with 1 to account for the first line prefix
-            _isAtLinePrefix = true; // Start with the first line prefix
-            _hasReachedEnd = false;
-        }
-
-        /// <summary>
-        /// Moves to the next character and returns it.
-        /// Returns true if a character was successfully retrieved, false if the end was reached.
-        /// </summary>
-        /// <param name="character">When this method returns, contains the character at the current position.</param>
-        /// <returns>true if a character was successfully retrieved; otherwise, false.</returns>
-        public bool MoveNext(out char character)
-        {
-            if (_hasReachedEnd)
-            {
-                character = '\0';
-                return false;
-            }
-
-            // Handle the first line prefix
-            if (_currentVirtualIndex == 0)
-            {
-                character = LinePrefix;
-                _currentVirtualIndex++;
-                _isAtLinePrefix = false;
-                return true;
-            }
-
-            // If we're currently at a line prefix position after a line separator
-            if (_isAtLinePrefix)
-            {
-                character = LinePrefix;
-                _currentVirtualIndex++;
-                _addedNewLinePrefixes++;
-                _isAtLinePrefix = false;
-                return true;
-            }
-
-            // Try to get the next character from the inner text
-            if (_expandableBlockquoteNode._innerText.TryGetChar(_currentOriginalIndex, out character))
-            {
-                _currentOriginalIndex++;
-                _currentVirtualIndex++;
-
-                // If this character is a line separator, the next character should be a line prefix
-                if (character == LineSeparator)
-                {
-                    _isAtLinePrefix = true;
-                }
-
-                return true;
-            }
-
-            // Now handle the suffix "||"
-            var suffixIndex = _currentVirtualIndex - _addedNewLinePrefixes - _currentOriginalIndex;
-
-            if (suffixIndex >= 0 && suffixIndex < Suffix.Length)
-            {
-                character = Suffix[suffixIndex];
-                _currentVirtualIndex++;
-                return true;
-            }
-
-            // No more characters available
-            _hasReachedEnd = true;
-            character = '\0';
-            return false;
-        }
-    }
+    /// <param name="character">
+    /// The character to check.
+    /// </param>
+    /// <returns>
+    /// ><c>true</c> if the character is a line separator; otherwise, <c>false</c>.
+    /// </returns>
+    [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool IsLineSeparator(char character) => character == LineSeparator;
 }

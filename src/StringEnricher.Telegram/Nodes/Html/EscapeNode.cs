@@ -1,4 +1,9 @@
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
+using System.Runtime.CompilerServices;
+using StringEnricher.Buffer;
+using StringEnricher.Configuration;
+using StringEnricher.Extensions;
 using StringEnricher.Nodes;
 
 namespace StringEnricher.Telegram.Nodes.Html;
@@ -40,43 +45,140 @@ public struct EscapeNode<TInner> : INode
     /// <returns>The created string representation</returns>
     public override string ToString() => string.Create(TotalLength, this, static (span, style) => style.CopyTo(span));
 
+    /// <inheritdoc />
+    public string ToString(string? format, IFormatProvider? formatProvider)
+    {
+        var charCountsResult = _innerText.GetCustomTotalAndEscapedCharsCounts(
+            ToEscape,
+            StringEnricherSettings.Extensions.StringBuilder,
+            format,
+            formatProvider
+        );
+
+        return string.Create(
+            charCountsResult.TotalCount + charCountsResult.EscapedCount, // Total length after escaping
+            ValueTuple.Create(_innerText, charCountsResult, format, formatProvider),
+            static (span, state) =>
+            {
+                BufferUtils.StreamBuffer(
+                    source: state.Item1,
+                    destination: span,
+                    streamWriter: static (c, _, destination) =>
+                    {
+                        var escapedEntity = ToEscape(c);
+
+                        if (escapedEntity is null)
+                        {
+                            destination[0] = c;
+                            return 1;
+                        }
+
+                        // Write the escaped entity to the destination span
+                        for (var i = 0; i < escapedEntity.Length; i++)
+                        {
+                            destination[i] = escapedEntity[i];
+                        }
+
+                        // Return the total number of characters written
+                        return escapedEntity.Length;
+                    },
+                    nodeSettings: (NodeSettingsInternal)StringEnricherSettings.Extensions.StringBuilder,
+                    format: state.Item3,
+                    provider: state.Item4,
+                    initialBufferLengthHint: state.Item2.TotalCount // Inner length before escaping
+                );
+            });
+    }
+
+    /// <inheritdoc />
+    public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format,
+        IFormatProvider? provider)
+    {
+        try
+        {
+            charsWritten = BufferUtils.StreamBuffer(
+                source: _innerText,
+                destination: destination,
+                streamWriter: static (c, _, destination) =>
+                {
+                    var escapedEntity = ToEscape(c);
+
+                    if (escapedEntity is null)
+                    {
+                        destination[0] = c;
+                        return 1;
+                    }
+
+                    // Write the escaped entity to the destination span
+                    for (var i = 0; i < escapedEntity.Length; i++)
+                    {
+                        destination[i] = escapedEntity[i];
+                    }
+
+                    // Return the total number of characters written
+                    return escapedEntity.Length;
+                },
+                nodeSettings: (NodeSettingsInternal)StringEnricherSettings.Extensions.StringBuilder,
+                format: format.IsEmpty ? null : format.ToString(),
+                provider: provider,
+                initialBufferLengthHint: _innerLength
+            );
+        }
+        catch (IndexOutOfRangeException)
+        {
+            charsWritten = 0;
+            return false;
+        }
+
+        return true;
+    }
+
     /// <summary>
     /// Gets the length of the inner text.
     /// </summary>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public int InnerLength => _innerText.TotalLength;
+    public int InnerLength => _innerLength ??= CalculateLength(_innerText).Item1;
+
+    private int? _innerLength;
 
     /// <inheritdoc />
     /// Lazy evaluation of total length is needed to avoid unnecessary complex calculations
-    public int SyntaxLength => _syntaxLength ??= CalculateSyntaxLength(_innerText);
+    public int SyntaxLength => _syntaxLength ??= CalculateLength(_innerText).Item2;
+
     private int? _syntaxLength;
 
     /// <inheritdoc />
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public int TotalLength => SyntaxLength + InnerLength;
+    public int TotalLength => _totalLength ??= CalculateLength(_innerText).Item3;
+
+    private int? _totalLength;
 
     /// <inheritdoc />
-    public int CopyTo(Span<char> destination)
-    {
-        try
+    public int CopyTo(Span<char> destination) => BufferUtils.StreamBuffer(
+        source: _innerText,
+        destination: destination,
+        streamWriter: static (c, _, destination) =>
         {
-            var writtenChars = 0;
+            var escapedEntity = ToEscape(c);
 
-            // the iterator is needed because the inner text is processed on the fly
-            var iterator = new CharacterIterator(this);
-
-            while (iterator.MoveNext(out var character))
+            if (escapedEntity is null)
             {
-                destination[writtenChars++] = character;
+                destination[0] = c;
+                return 1;
             }
 
-            return writtenChars;
-        }
-        catch (IndexOutOfRangeException e)
-        {
-            throw new ArgumentException("The destination span is too small to hold the escaped text.", e);
-        }
-    }
+            // Write the escaped entity to the destination span
+            for (var i = 0; i < escapedEntity.Length; i++)
+            {
+                destination[i] = escapedEntity[i];
+            }
+
+            // Return the total number of characters written
+            return escapedEntity.Length;
+        },
+        nodeSettings: (NodeSettingsInternal)StringEnricherSettings.Extensions.StringBuilder,
+        initialBufferLengthHint: _innerLength
+    );
 
     /// <inheritdoc />
     public bool TryGetChar(int index, out char character)
@@ -146,127 +248,51 @@ public struct EscapeNode<TInner> : INode
     /// </returns>
     public static EscapeNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
 
-
     /// <summary>
-    /// Calculates the length of the escape syntax for the HTML string.
-    /// Does this in the most efficient way possible. No heap allocations.
+    /// Calculates the total and escaped character counts for the given inner text.
+    /// It also caches the inner and syntax lengths.
     /// </summary>
     /// <param name="innerText">
-    /// The inner text to determine the syntax length.
+    /// The inner text to calculate lengths for.
     /// </param>
     /// <returns>
-    /// The total length of HTML escape syntax, which is the additional characters needed for HTML entities.
+    /// A tuple containing different lengths:
+    /// 1. Inner text total length;
+    /// 2. Number of escaped characters (i.e., added line prefixes);
+    /// 3. Total length including syntax;
     /// </returns>
-    private static int CalculateSyntaxLength(TInner innerText)
+    private ValueTuple<int, int, int> CalculateLength(TInner innerText)
     {
-        var additionalLength = 0;
+        var result = innerText.GetCustomTotalAndEscapedCharsCounts(
+            ToEscape,
+            StringEnricherSettings.Extensions.StringBuilder
+        );
 
-        for (var i = 0; innerText.TryGetChar(i, out var character); i++)
-        {
-            var escapedEntity = character switch
-            {
-                LessThanChar => EscapedEntity,
-                GreaterThanChar => Entity,
-                AmpersandChar => Amp,
-                _ => null
-            };
+        var totalCountWithoutEscaped = result.TotalCount - result.ToEscapeCount;
 
-            if (escapedEntity != null)
-            {
-                // Add the additional length (entity length - 1, since the original character is replaced)
-                additionalLength += escapedEntity.Length - 1;
-            }
-        }
+        _innerLength = result.TotalCount;
+        _syntaxLength = result.EscapedCount;
+        _totalLength = totalCountWithoutEscaped + _syntaxLength;
 
-        return additionalLength;
+        return ValueTuple.Create(_innerLength.Value, _syntaxLength.Value, _totalLength!.Value);
     }
 
     /// <summary>
-    /// A stateful iterator that maintains internal state for efficient sequential character access.
-    /// This allows O(n) iteration through all characters instead of O(n²) in case of <see cref="TryGetChar"/>.
+    /// Converts a character to its corresponding HTML escaped entity if needed.
     /// </summary>
-    private struct CharacterIterator
+    /// <param name="c">
+    /// The character to convert.
+    /// </param>
+    /// <returns>
+    /// The HTML escaped entity as a string, or the original character as a string if no escaping is needed.
+    /// </returns>
+    [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string? ToEscape(char c) => c switch
     {
-        private readonly EscapeNode<TInner> _escapeNode;
-        private int _currentOriginalIndex;
-        private string? _currentEntity;
-        private int _currentEntityIndex;
-        private bool _hasReachedEnd;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CharacterIterator"/> struct.
-        /// </summary>
-        /// <param name="escapeNode">The escape style to iterate through.</param>
-        public CharacterIterator(EscapeNode<TInner> escapeNode)
-        {
-            _escapeNode = escapeNode;
-            _currentOriginalIndex = 0;
-            _currentEntity = null;
-            _currentEntityIndex = 0;
-            _hasReachedEnd = false;
-        }
-
-        /// <summary>
-        /// Moves to the next character and returns it.
-        /// Returns true if a character was successfully retrieved, false if the end was reached.
-        /// </summary>
-        /// <param name="character">When this method returns, contains the character at the current position.</param>
-        /// <returns>true if a character was successfully retrieved; otherwise, false.</returns>
-        public bool MoveNext(out char character)
-        {
-            if (_hasReachedEnd)
-            {
-                character = '\0';
-                return false;
-            }
-
-            // If we're currently outputting an HTML entity
-            if (_currentEntity != null)
-            {
-                character = _currentEntity[_currentEntityIndex];
-                _currentEntityIndex++;
-
-                // Check if we've finished the current entity
-                if (_currentEntityIndex >= _currentEntity.Length)
-                {
-                    _currentEntity = null;
-                    _currentEntityIndex = 0;
-                    _currentOriginalIndex++;
-                }
-
-                return true;
-            }
-
-            // Try to get the next character from the inner text
-            if (_escapeNode._innerText.TryGetChar(_currentOriginalIndex, out var originalChar))
-            {
-                var escapedEntity = originalChar switch
-                {
-                    LessThanChar => EscapedEntity,
-                    GreaterThanChar => Entity,
-                    AmpersandChar => Amp,
-                    _ => null
-                };
-
-                if (escapedEntity != null)
-                {
-                    // Start outputting the HTML entity
-                    _currentEntity = escapedEntity;
-                    _currentEntityIndex = 1; // We'll return the first character now
-                    character = escapedEntity[0];
-                    return true;
-                }
-
-                // Regular character, no escaping needed
-                character = originalChar;
-                _currentOriginalIndex++;
-                return true;
-            }
-
-            // No more characters available
-            _hasReachedEnd = true;
-            character = '\0';
-            return false;
-        }
-    }
+        LessThanChar => EscapedEntity,
+        GreaterThanChar => Entity,
+        AmpersandChar => Amp,
+        _ => null
+    };
 }
