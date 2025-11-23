@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using StringEnricher.Configuration;
+using StringEnricher.Debug;
 using StringEnricher.Extensions;
 
 namespace StringEnricher.Nodes.Shared;
@@ -43,6 +44,42 @@ public struct EnumNode<TEnum> : INode where TEnum : struct, Enum
     public override string ToString() => string.Create(TotalLength, this, static (span, node) => node.CopyTo(span));
 
     /// <inheritdoc />
+    public string ToString(string? format, IFormatProvider? provider)
+    {
+        format = string.IsNullOrEmpty(format) ? _format : format;
+
+        var length = _enum.GetSpanFormattableLength(
+            nodeSettings: StringEnricherSettings.Nodes.Shared.EnumNode,
+            format: format
+        );
+
+        return string.Create(
+            length: length,
+            state: ValueTuple.Create(_enum, format),
+            action: static (span, state) =>
+            {
+                if (!Enum.TryFormat(state.Item1, span, out _, state.Item2))
+                {
+                    throw new InvalidOperationException("Formatting failed unexpectedly.");
+                }
+            }
+        );
+    }
+
+    /// <inheritdoc />
+    public bool TryFormat(
+        Span<char> destination,
+        out int charsWritten,
+        ReadOnlySpan<char> format = default,
+        IFormatProvider? provider = null
+    ) => Enum.TryFormat(
+        value: _enum,
+        destination: destination,
+        charsWritten: out charsWritten,
+        format: format.IsEmpty ? _format : format
+    );
+
+    /// <inheritdoc />
     public int CopyTo(Span<char> destination) => Enum.TryFormat(_enum, destination, out var textLength, _format)
         ? textLength
         : throw new ArgumentException("The destination span is too small to hold the enum value.",
@@ -60,6 +97,9 @@ public struct EnumNode<TEnum> : INode where TEnum : struct, Enum
         // if we already have the total length cached, use it to quickly determine if the index is valid
         if (_totalLength.HasValue && index >= _totalLength.Value)
         {
+#if UNIT_TESTS
+            DebugCounters.EnumNode_TryGetChar_CachedTotalLengthEvaluation++;
+#endif
             character = '\0';
             return false;
         }

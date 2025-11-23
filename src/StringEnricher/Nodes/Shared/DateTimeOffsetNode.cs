@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using StringEnricher.Configuration;
+using StringEnricher.Debug;
 using StringEnricher.Extensions;
 
 namespace StringEnricher.Nodes.Shared;
@@ -51,6 +52,44 @@ public struct DateTimeOffsetNode : INode
     public override string ToString() => string.Create(TotalLength, this, static (span, node) => node.CopyTo(span));
 
     /// <inheritdoc />
+    public string ToString(string? format, IFormatProvider? provider)
+    {
+        format = string.IsNullOrEmpty(format) ? _format : format;
+        provider ??= _provider;
+
+        var length = _dateTimeOffset.GetSpanFormattableLength(
+            nodeSettings: StringEnricherSettings.Nodes.Shared.DateTimeOffsetNode,
+            format: format,
+            provider: provider
+        );
+
+        return string.Create(
+            length: length,
+            state: ValueTuple.Create(_dateTimeOffset, format, provider),
+            action: static (span, state) =>
+            {
+                if (!state.Item1.TryFormat(span, out _, state.Item2, state.Item3))
+                {
+                    throw new InvalidOperationException("Formatting failed unexpectedly.");
+                }
+            }
+        );
+    }
+
+    /// <inheritdoc />
+    public bool TryFormat(
+        Span<char> destination,
+        out int charsWritten,
+        ReadOnlySpan<char> format = default,
+        IFormatProvider? provider = null
+    ) => _dateTimeOffset.TryFormat(
+        destination: destination,
+        charsWritten: out charsWritten,
+        format: format.IsEmpty ? _format : format,
+        formatProvider: provider ?? _provider
+    );
+
+    /// <inheritdoc />
     public int CopyTo(Span<char> destination) =>
         _dateTimeOffset.TryFormat(destination, out var textLength, _format, _provider)
             ? textLength
@@ -69,6 +108,9 @@ public struct DateTimeOffsetNode : INode
         // if we already have the total length cached, use it to quickly determine if the index is valid
         if (_totalLength.HasValue && index >= _totalLength.Value)
         {
+#if UNIT_TESTS
+            DebugCounters.DateTimeOffsetNode_TryGetChar_CachedTotalLengthEvaluation++;
+#endif
             character = '\0';
             return false;
         }

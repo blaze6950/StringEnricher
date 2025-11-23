@@ -41,6 +41,31 @@ public struct TextCollectionNode<TCollection> : INode
     public override string ToString() => string.Create(TotalLength, this, static (span, node) => node.CopyTo(span));
 
     /// <inheritdoc />
+    /// Format and provider are ignored since bool has no custom formatting options
+    public string ToString(string? format, IFormatProvider? formatProvider) => ToString();
+
+    /// <inheritdoc />
+    /// Format and provider are ignored since bool has no custom formatting options
+    public bool TryFormat(
+        Span<char> destination,
+        out int charsWritten,
+        ReadOnlySpan<char> format = default,
+        IFormatProvider? provider = null
+    )
+    {
+        charsWritten = 0;
+        try
+        {
+            charsWritten = CopyTo(destination);
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    /// <inheritdoc />
     public int CopyTo(Span<char> destination)
     {
         try
