@@ -185,4 +185,85 @@ public class CharNodeTests
         Assert.Equal(0, new CharNode('1').SyntaxLength);
         Assert.Equal(0, new CharNode(' ').SyntaxLength);
     }
+
+    #region ISpanFormattable Tests
+
+    [Fact]
+    public void ToString_WithFormatAndProvider_IgnoresParametersAndReturnsChar()
+    {
+        // Arrange
+        const char value = 'X';
+        var node = new CharNode(value);
+        var expected = value.ToString();
+
+        // Act - format and provider should be ignored for char
+        var resultWithFormat = node.ToString("G", null);
+        var resultWithProvider = node.ToString(null, System.Globalization.CultureInfo.InvariantCulture);
+
+        // Assert
+        Assert.Equal(expected, resultWithFormat);
+        Assert.Equal(expected, resultWithProvider);
+    }
+
+    [Fact]
+    public void TryFormat_WithSufficientSpace_FormatsCorrectly()
+    {
+        // Arrange
+        const char value = 'A';
+        var node = new CharNode(value);
+        Span<char> destination = stackalloc char[5];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(1, charsWritten);
+        Assert.Equal(value.ToString(), destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithExactSpace_FormatsCorrectly()
+    {
+        // Arrange
+        const char value = 'Z';
+        var node = new CharNode(value);
+        Span<char> destination = stackalloc char[1];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(1, charsWritten);
+        Assert.Equal(value.ToString(), destination.ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithInsufficientSpace_ReturnsFalse()
+    {
+        // Arrange
+        const char value = 'B';
+        var node = new CharNode(value);
+        Span<char> destination = stackalloc char[0];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.False(success);
+        Assert.Equal(0, charsWritten);
+    }
+
+    [Fact]
+    public void TotalLength_IsAlwaysOne()
+    {
+        // Arrange & Act & Assert - char always has length of 1
+        Assert.Equal(1, new CharNode('A').TotalLength);
+        Assert.Equal(1, new CharNode('z').TotalLength);
+        Assert.Equal(1, new CharNode('9').TotalLength);
+        Assert.Equal(1, new CharNode(' ').TotalLength);
+    }
+
+    #endregion
 }

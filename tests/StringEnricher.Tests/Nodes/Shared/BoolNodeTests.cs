@@ -292,4 +292,132 @@ public class BoolNodeTests
         Assert.Equal(0, new BoolNode(true).SyntaxLength);
         Assert.Equal(0, new BoolNode(false).SyntaxLength);
     }
+
+    #region ISpanFormattable Tests
+
+    [Theory]
+    [InlineData(true, "True")]
+    [InlineData(false, "False")]
+    public void ToString_WithFormatAndProvider_IgnoresParametersAndReturnsCorrectValue(bool value, string expected)
+    {
+        // Arrange
+        var node = new BoolNode(value);
+
+        // Act - format and provider should be ignored for bool
+        var resultWithFormat = node.ToString("G", null);
+        var resultWithProvider = node.ToString(null, System.Globalization.CultureInfo.InvariantCulture);
+        var resultWithBoth = node.ToString("D", System.Globalization.CultureInfo.GetCultureInfo("fr-FR"));
+
+        // Assert
+        Assert.Equal(expected, resultWithFormat);
+        Assert.Equal(expected, resultWithProvider);
+        Assert.Equal(expected, resultWithBoth);
+    }
+
+    [Theory]
+    [InlineData(true, "True")]
+    [InlineData(false, "False")]
+    public void TryFormat_WithDefaultParameters_FormatsCorrectly(bool value, string expected)
+    {
+        // Arrange
+        var node = new BoolNode(value);
+        Span<char> destination = stackalloc char[10];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Theory]
+    [InlineData(true, "True")]
+    [InlineData(false, "False")]
+    public void TryFormat_WithFormatAndProvider_IgnoresParametersAndFormatsCorrectly(bool value, string expected)
+    {
+        // Arrange
+        var node = new BoolNode(value);
+        Span<char> destination = stackalloc char[10];
+
+        // Act - format and provider should be ignored for bool
+        var success = node.TryFormat(
+            destination, 
+            out var charsWritten, 
+            "G".AsSpan(), 
+            System.Globalization.CultureInfo.InvariantCulture);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Theory]
+    [InlineData(true, 3)] // "True" needs 4, but only 3 available
+    [InlineData(false, 4)] // "False" needs 5, but only 4 available
+    public void TryFormat_WithInsufficientSpace_ReturnsFalse(bool value, int destinationSize)
+    {
+        // Arrange
+        var node = new BoolNode(value);
+        Span<char> destination = stackalloc char[destinationSize];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.False(success);
+        Assert.Equal(0, charsWritten);
+    }
+
+    [Theory]
+    [InlineData(true, 4, "True")]
+    [InlineData(false, 5, "False")]
+    public void TryFormat_WithExactSpace_FormatsCorrectly(bool value, int destinationSize, string expected)
+    {
+        // Arrange
+        var node = new BoolNode(value);
+        Span<char> destination = stackalloc char[destinationSize];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination.ToString());
+    }
+
+    [Fact]
+    public void TotalLength_IsCachedOnCreation()
+    {
+        // Arrange & Act
+        var nodeTrue = new BoolNode(true);
+        var nodeFalse = new BoolNode(false);
+
+        // Assert - TotalLength should be precomputed in constructor
+        Assert.Equal(4, nodeTrue.TotalLength);
+        Assert.Equal(5, nodeFalse.TotalLength);
+
+        // Multiple accesses should return the same value (demonstrating it's cached)
+        Assert.Equal(4, nodeTrue.TotalLength);
+        Assert.Equal(4, nodeTrue.TotalLength);
+        Assert.Equal(5, nodeFalse.TotalLength);
+        Assert.Equal(5, nodeFalse.TotalLength);
+    }
+
+    [Fact]
+    public void SyntaxLength_IsAlwaysZero()
+    {
+        // Arrange & Act
+        var nodeTrue = new BoolNode(true);
+        var nodeFalse = new BoolNode(false);
+
+        // Assert - BoolNode has no syntax characters
+        Assert.Equal(0, nodeTrue.SyntaxLength);
+        Assert.Equal(0, nodeFalse.SyntaxLength);
+    }
+
+    #endregion
 }

@@ -219,4 +219,122 @@ public class PlainTextNodeTests
         Assert.Equal(5, bytesWritten);
         Assert.Equal(value, destination.ToString());
     }
+
+    #region ISpanFormattable Tests
+
+    [Fact]
+    public void ToString_WithFormatAndProvider_IgnoresParametersAndReturnsText()
+    {
+        // Arrange
+        const string value = "Plain text";
+        var node = new PlainTextNode(value);
+
+        // Act - format and provider should be ignored for plain text
+        var resultWithFormat = node.ToString("G", null);
+        var resultWithProvider = node.ToString(null, System.Globalization.CultureInfo.InvariantCulture);
+        var resultWithBoth = node.ToString("D", System.Globalization.CultureInfo.GetCultureInfo("fr-FR"));
+
+        // Assert
+        Assert.Equal(value, resultWithFormat);
+        Assert.Equal(value, resultWithProvider);
+        Assert.Equal(value, resultWithBoth);
+    }
+
+    [Fact]
+    public void TryFormat_WithSufficientSpace_FormatsCorrectly()
+    {
+        // Arrange
+        const string value = "Hello World";
+        var node = new PlainTextNode(value);
+        Span<char> destination = stackalloc char[50];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(value.Length, charsWritten);
+        Assert.Equal(value, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithFormatAndProvider_IgnoresParameters()
+    {
+        // Arrange
+        const string value = "Test";
+        var node = new PlainTextNode(value);
+        Span<char> destination = stackalloc char[20];
+
+        // Act - format and provider should be ignored
+        var success = node.TryFormat(
+            destination, 
+            out var charsWritten, 
+            "G".AsSpan(), 
+            System.Globalization.CultureInfo.InvariantCulture);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(value.Length, charsWritten);
+        Assert.Equal(value, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithExactSpace_FormatsCorrectly()
+    {
+        // Arrange
+        const string value = "Exact";
+        var node = new PlainTextNode(value);
+        Span<char> destination = stackalloc char[5];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(value.Length, charsWritten);
+        Assert.Equal(value, destination.ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithInsufficientSpace_ReturnsFalse()
+    {
+        // Arrange
+        const string value = "Too long";
+        var node = new PlainTextNode(value);
+        Span<char> destination = stackalloc char[3];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.False(success);
+        Assert.Equal(0, charsWritten);
+    }
+
+    [Fact]
+    public void TotalLength_EqualsStringLength()
+    {
+        // Arrange & Act & Assert
+        Assert.Equal(0, new PlainTextNode("").TotalLength);
+        Assert.Equal(5, new PlainTextNode("Hello").TotalLength);
+        Assert.Equal(23, new PlainTextNode("Long string with spaces").TotalLength);
+    }
+
+    [Fact]
+    public void TotalLength_IsNotCached_DirectlyReturnsStringLength()
+    {
+        // Arrange
+        const string value = "Test string";
+        var node = new PlainTextNode(value);
+        
+        // Act - PlainTextNode directly returns string length, no caching needed
+        var length1 = node.TotalLength;
+        var length2 = node.TotalLength;
+
+        // Assert
+        Assert.Equal(value.Length, length1);
+        Assert.Equal(length1, length2);
+    }
+
+    #endregion
 }

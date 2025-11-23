@@ -1,5 +1,6 @@
-﻿﻿﻿using StringEnricher.Nodes.Shared;
+﻿using StringEnricher.Nodes.Shared;
 using System.Globalization;
+using StringEnricher.Debug;
 
 namespace StringEnricher.Tests.Nodes.Shared;
 
@@ -225,6 +226,23 @@ public class DateOnlyNodeTests
     }
 
     [Fact]
+    public void TryGetChar_OutOfRightRangeIndexWhenTotalLengthWasCalculated_ReturnsFalseAndNullChar()
+    {
+        // Arrange
+        var node = new DateOnlyNode(TestDate, provider: CultureInfo.InvariantCulture);
+        var totalLength = node.TotalLength;
+        DebugCounters.ResetAllCounters();
+
+        // Act
+        var result = node.TryGetChar(totalLength, out var ch);
+
+        // Assert
+        Assert.False(result);
+        Assert.Equal('\0', ch);
+        Assert.Equal(1, DebugCounters.DateOnlyNode_TryGetChar_CachedTotalLengthEvaluation);
+    }
+
+    [Fact]
     public void TryGetChar_WithFormat_ReturnsTrueAndCorrectChar()
     {
         // Arrange
@@ -352,4 +370,73 @@ public class DateOnlyNodeTests
         Assert.Equal(expectedString.Length, bytesWritten);
         Assert.Equal(expectedString, destination.ToString());
     }
+
+    #region ISpanFormattable Tests
+
+    [Fact]
+    public void ToString_WithFormatParameter_OverridesNodeFormat()
+    {
+        // Arrange
+        var value = TestDate;
+        var node = new DateOnlyNode(value, "d", CultureInfo.InvariantCulture);
+        var expected = value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+        // Act
+        var result = node.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void TryFormat_WithSufficientSpace_FormatsCorrectly()
+    {
+        // Arrange
+        var value = TestDate;
+        var node = new DateOnlyNode(value, provider: CultureInfo.InvariantCulture);
+        Span<char> destination = stackalloc char[50];
+        var expected = value.ToString(CultureInfo.InvariantCulture);
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithFormatOverride_UsesOverrideFormat()
+    {
+        // Arrange
+        var value = TestDate;
+        var node = new DateOnlyNode(value, "d", CultureInfo.InvariantCulture);
+        Span<char> destination = stackalloc char[50];
+        var expected = value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, "yyyy-MM-dd".AsSpan(), CultureInfo.InvariantCulture);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TotalLength_IsCachedAfterFirstAccess()
+    {
+        // Arrange
+        var node = new DateOnlyNode(TestDate, "d", CultureInfo.InvariantCulture);
+        
+        // Act
+        var length1 = node.TotalLength;
+        var length2 = node.TotalLength;
+
+        // Assert
+        Assert.Equal(length1, length2);
+    }
+
+    #endregion
 }

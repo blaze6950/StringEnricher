@@ -1,5 +1,6 @@
-﻿﻿﻿using StringEnricher.Nodes.Shared;
+﻿using StringEnricher.Nodes.Shared;
 using System.Globalization;
+using StringEnricher.Debug;
 
 namespace StringEnricher.Tests.Nodes.Shared;
 
@@ -411,6 +412,23 @@ public class LongNodeTests
     }
 
     [Fact]
+    public void TryGetChar_OutOfRightRangeIndexWhenTotalLengthWasCalculated_ReturnsFalseAndNullChar()
+    {
+        // Arrange
+        var node = new LongNode(123L, provider: CultureInfo.InvariantCulture);
+        var totalLength = node.TotalLength;
+        DebugCounters.ResetAllCounters();
+
+        // Act
+        var result = node.TryGetChar(totalLength, out var ch);
+
+        // Assert
+        Assert.False(result);
+        Assert.Equal('\0', ch);
+        Assert.Equal(1, DebugCounters.LongNode_TryGetChar_CachedTotalLengthEvaluation);
+    }
+
+    [Fact]
     public void TryGetChar_ZeroValue_ReturnsTrueAndCorrectChar()
     {
         // Arrange
@@ -588,4 +606,309 @@ public class LongNodeTests
         // Assert
         Assert.Equal(expectedLength, node.TotalLength);
     }
+
+    #region ISpanFormattable Tests - ToString with Format Override
+
+    [Fact]
+    public void ToString_WithFormatParameter_OverridesNodeFormat()
+    {
+        // Arrange
+        const long value = TestLong;
+        var node = new LongNode(value, "D", CultureInfo.InvariantCulture);
+        var expected = value.ToString("X", CultureInfo.InvariantCulture);
+
+        // Act
+        var result = node.ToString("X", CultureInfo.InvariantCulture);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void ToString_WithProviderParameter_OverridesNodeProvider()
+    {
+        // Arrange
+        const long value = TestLong;
+        var nodeProvider = CultureInfo.GetCultureInfo("en-US");
+        var overrideProvider = CultureInfo.GetCultureInfo("fr-FR");
+        var node = new LongNode(value, "N0", nodeProvider);
+        var expected = value.ToString("N0", overrideProvider);
+
+        // Act
+        var result = node.ToString(null, overrideProvider);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void ToString_WithBothFormatAndProvider_OverridesBothNodeValues()
+    {
+        // Arrange
+        const long value = TestLong;
+        var node = new LongNode(value, "D", CultureInfo.GetCultureInfo("en-US"));
+        var overrideProvider = CultureInfo.GetCultureInfo("de-DE");
+        var expected = value.ToString("N2", overrideProvider);
+
+        // Act
+        var result = node.ToString("N2", overrideProvider);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void ToString_WithNullFormat_UsesNodeFormat()
+    {
+        // Arrange
+        const long value = TestLong;
+        const string nodeFormat = "X8";
+        var node = new LongNode(value, nodeFormat, CultureInfo.InvariantCulture);
+        var expected = value.ToString(nodeFormat, CultureInfo.InvariantCulture);
+
+        // Act
+        var result = node.ToString(null, CultureInfo.InvariantCulture);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void ToString_WithEmptyFormat_UsesNodeFormat()
+    {
+        // Arrange
+        const long value = TestLong;
+        const string nodeFormat = "D10";
+        var node = new LongNode(value, nodeFormat, CultureInfo.InvariantCulture);
+        var expected = value.ToString(nodeFormat, CultureInfo.InvariantCulture);
+
+        // Act
+        var result = node.ToString(string.Empty, CultureInfo.InvariantCulture);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    #endregion
+
+    #region ISpanFormattable Tests - TryFormat
+
+    [Fact]
+    public void TryFormat_WithSufficientSpace_FormatsCorrectly()
+    {
+        // Arrange
+        const long value = TestLong;
+        var node = new LongNode(value, provider: CultureInfo.InvariantCulture);
+        Span<char> destination = stackalloc char[30];
+        var expected = value.ToString(CultureInfo.InvariantCulture);
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithFormatOverride_UsesOverrideFormat()
+    {
+        // Arrange
+        const long value = 255L;
+        var node = new LongNode(value, "D", CultureInfo.InvariantCulture);
+        Span<char> destination = stackalloc char[20];
+        var expected = value.ToString("X", CultureInfo.InvariantCulture);
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, "X".AsSpan(), CultureInfo.InvariantCulture);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithProviderOverride_UsesOverrideProvider()
+    {
+        // Arrange
+        const long value = TestLong;
+        var nodeProvider = CultureInfo.GetCultureInfo("en-US");
+        var overrideProvider = CultureInfo.GetCultureInfo("fr-FR");
+        var node = new LongNode(value, "N0", nodeProvider);
+        Span<char> destination = stackalloc char[50];
+        var expected = value.ToString("N0", overrideProvider);
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, default, overrideProvider);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithEmptyFormat_UsesNodeFormat()
+    {
+        // Arrange
+        const long value = TestLong;
+        const string nodeFormat = "N2";
+        var node = new LongNode(value, nodeFormat, CultureInfo.InvariantCulture);
+        Span<char> destination = stackalloc char[50];
+        var expected = value.ToString(nodeFormat, CultureInfo.InvariantCulture);
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, ReadOnlySpan<char>.Empty, CultureInfo.InvariantCulture);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithInsufficientSpace_ReturnsFalse()
+    {
+        // Arrange
+        const long value = TestLong;
+        var node = new LongNode(value, provider: CultureInfo.InvariantCulture);
+        Span<char> destination = stackalloc char[3];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.False(success);
+    }
+
+    [Fact]
+    public void TryFormat_WithExactSpace_FormatsCorrectly()
+    {
+        // Arrange
+        const long value = 123L;
+        var node = new LongNode(value, provider: CultureInfo.InvariantCulture);
+        var expected = value.ToString(CultureInfo.InvariantCulture);
+        Span<char> destination = stackalloc char[expected.Length];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination.ToString());
+    }
+
+    [Theory]
+    [InlineData("D15", "000001234567890")]
+    [InlineData("X", "499602D2")]
+    [InlineData("x", "499602d2")]
+    [InlineData("N0", "1,234,567,890")]
+    public void TryFormat_WithVariousFormats_FormatsCorrectly(string format, string expected)
+    {
+        // Arrange
+        const long value = TestLong;
+        var node = new LongNode(value, provider: CultureInfo.InvariantCulture);
+        Span<char> destination = stackalloc char[50];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, format.AsSpan(), CultureInfo.InvariantCulture);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    #endregion
+
+    #region Length Caching Tests
+
+    [Fact]
+    public void TotalLength_IsCachedAfterFirstAccess()
+    {
+        // Arrange
+        var node = new LongNode(TestLong, "N0", CultureInfo.InvariantCulture);
+        
+        // Act
+        var length1 = node.TotalLength;
+        var length2 = node.TotalLength;
+        var length3 = node.TotalLength;
+
+        // Assert
+        Assert.Equal(length1, length2);
+        Assert.Equal(length2, length3);
+        Assert.Equal(TestLong.ToString("N0", CultureInfo.InvariantCulture).Length, length1);
+    }
+
+    [Fact]
+    public void TotalLength_WithNoFormat_IsCached()
+    {
+        // Arrange
+        var node = new LongNode(TestLong, provider: CultureInfo.InvariantCulture);
+        
+        // Act
+        var length1 = node.TotalLength;
+        var length2 = node.TotalLength;
+
+        // Assert
+        Assert.Equal(length1, length2);
+        Assert.Equal(10, length1);
+    }
+
+    [Fact]
+    public void TotalLength_WithComplexFormat_IsCached()
+    {
+        // Arrange
+        var node = new LongNode(TestLong, "C2", CultureInfo.GetCultureInfo("en-US"));
+        
+        // Act
+        var length1 = node.TotalLength;
+        var length2 = node.TotalLength;
+        var expected = TestLong.ToString("C2", CultureInfo.GetCultureInfo("en-US"));
+
+        // Assert
+        Assert.Equal(length1, length2);
+        Assert.Equal(expected.Length, length1);
+    }
+
+    #endregion
+
+    #region ToString vs TryFormat Behavior Tests
+
+    [Fact]
+    public void ToString_CallsStringCreate_WhichInternallyUsesTryFormat()
+    {
+        // Arrange
+        const long value = TestLong;
+        var node = new LongNode(value, "D", CultureInfo.InvariantCulture);
+        var expected = value.ToString("D", CultureInfo.InvariantCulture);
+
+        // Act
+        var result = node.ToString();
+
+        // Assert
+        Assert.Equal(expected, result);
+        Assert.Equal(expected.Length, node.TotalLength);
+    }
+
+    [Fact]
+    public void TryFormat_DirectlyWritesToSpan_MoreEfficientThanToString()
+    {
+        // Arrange
+        const long value = TestLong;
+        var node = new LongNode(value, provider: CultureInfo.InvariantCulture);
+        Span<char> buffer = stackalloc char[30];
+
+        // Act
+        var success = node.TryFormat(buffer, out var charsWritten);
+        var stringResult = node.ToString();
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(stringResult, buffer[..charsWritten].ToString());
+    }
+
+    #endregion
 }

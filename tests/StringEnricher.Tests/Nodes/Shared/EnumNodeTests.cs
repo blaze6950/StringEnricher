@@ -1,4 +1,5 @@
-﻿using StringEnricher.Nodes.Shared;
+﻿using StringEnricher.Debug;
+ using StringEnricher.Nodes.Shared;
 
 namespace StringEnricher.Tests.Nodes.Shared;
 
@@ -279,6 +280,23 @@ public class EnumNodeTests
     }
 
     [Fact]
+    public void TryGetChar_OutOfRightRangeIndexWhenTotalLengthWasCalculated_ReturnsFalseAndNullChar()
+    {
+        // Arrange
+        var node = new EnumNode<TestEnum>(TestEnum.First);
+        var totalLength = node.TotalLength;
+        DebugCounters.ResetAllCounters();
+
+        // Act
+        var result = node.TryGetChar(totalLength, out var ch);
+
+        // Assert
+        Assert.False(result);
+        Assert.Equal('\0', ch);
+        Assert.Equal(1, DebugCounters.EnumNode_TryGetChar_CachedTotalLengthEvaluation);
+    }
+
+    [Fact]
     public void TryGetChar_WithFlagsEnum_ReturnsTrueAndCorrectChar()
     {
         // Arrange
@@ -545,4 +563,109 @@ public class EnumNodeTests
         // Assert
         Assert.Equal(expectedLength, node.TotalLength);
     }
+
+    #region ISpanFormattable Tests
+
+    [Fact]
+    public void ToString_WithFormatParameter_OverridesNodeFormat()
+    {
+        // Arrange
+        const TestEnumWithValues value = TestEnumWithValues.Medium;
+        var node = new EnumNode<TestEnumWithValues>(value, "G");
+        var expected = value.ToString("X");
+
+        // Act
+        var result = node.ToString("X", null);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void TryFormat_WithSufficientSpace_FormatsCorrectly()
+    {
+        // Arrange
+        const TestEnum value = TestEnum.Second;
+        var node = new EnumNode<TestEnum>(value);
+        Span<char> destination = stackalloc char[50];
+        var expected = value.ToString();
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithFormatOverride_UsesOverrideFormat()
+    {
+        // Arrange
+        const TestEnumWithValues value = TestEnumWithValues.High;
+        var node = new EnumNode<TestEnumWithValues>(value, "G");
+        Span<char> destination = stackalloc char[50];
+        var expected = value.ToString("D");
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, "D".AsSpan(), null);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithInsufficientSpace_ReturnsFalse()
+    {
+        // Arrange
+        const TestEnum value = TestEnum.Second;
+        var node = new EnumNode<TestEnum>(value);
+        Span<char> destination = stackalloc char[2];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.False(success);
+    }
+
+    [Theory]
+    [InlineData("G")]
+    [InlineData("F")]
+    [InlineData("D")]
+    [InlineData("X")]
+    public void TryFormat_WithVariousFormats_FormatsCorrectly(string format)
+    {
+        // Arrange
+        const TestEnumWithValues value = TestEnumWithValues.Medium;
+        var node = new EnumNode<TestEnumWithValues>(value);
+        Span<char> destination = stackalloc char[50];
+        var expected = value.ToString(format);
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, format.AsSpan(), null);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TotalLength_IsCachedAfterFirstAccess()
+    {
+        // Arrange
+        var node = new EnumNode<TestEnum>(TestEnum.Second, "G");
+        
+        // Act
+        var length1 = node.TotalLength;
+        var length2 = node.TotalLength;
+
+        // Assert
+        Assert.Equal(length1, length2);
+    }
+
+    #endregion
 }

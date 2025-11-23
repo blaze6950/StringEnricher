@@ -359,7 +359,7 @@ public class EscapeNodeTests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() => escapeStyle.CopyTo(destination));
-        Assert.Contains("destination span is too small", exception.Message);
+        Assert.Contains("Destination span is not large enough to hold the written characters.", exception.Message);
     }
 
     [Fact]

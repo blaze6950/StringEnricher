@@ -1,5 +1,6 @@
-﻿﻿﻿using StringEnricher.Nodes.Shared;
+﻿using StringEnricher.Nodes.Shared;
 using System.Globalization;
+using StringEnricher.Debug;
 
 namespace StringEnricher.Tests.Nodes.Shared;
 
@@ -285,6 +286,23 @@ public class TimeSpanNodeTests
     }
 
     [Fact]
+    public void TryGetChar_OutOfRightRangeIndexWhenTotalLengthWasCalculated_ReturnsFalseAndNullChar()
+    {
+        // Arrange
+        var node = new TimeSpanNode(TestTimeSpan, provider: CultureInfo.InvariantCulture);
+        var totalLength = node.TotalLength;
+        DebugCounters.ResetAllCounters();
+
+        // Act
+        var result = node.TryGetChar(totalLength, out var ch);
+
+        // Assert
+        Assert.False(result);
+        Assert.Equal('\0', ch);
+        Assert.Equal(1, DebugCounters.TimeSpanNode_TryGetChar_CachedTotalLengthEvaluation);
+    }
+
+    [Fact]
     public void TryGetChar_WithFormat_ReturnsTrueAndCorrectChar()
     {
         // Arrange
@@ -446,4 +464,73 @@ public class TimeSpanNodeTests
         Assert.Equal(expectedTotalLength, node.TotalLength);
         Assert.Equal(expectedSyntaxLength, node.SyntaxLength);
     }
+
+    #region ISpanFormattable Tests
+
+    [Fact]
+    public void ToString_WithFormatParameter_OverridesNodeFormat()
+    {
+        // Arrange
+        var value = TestTimeSpan;
+        var node = new TimeSpanNode(value, "c", CultureInfo.InvariantCulture);
+        var expected = value.ToString("g", CultureInfo.InvariantCulture);
+
+        // Act
+        var result = node.ToString("g", CultureInfo.InvariantCulture);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void TryFormat_WithSufficientSpace_FormatsCorrectly()
+    {
+        // Arrange
+        var value = TestTimeSpan;
+        var node = new TimeSpanNode(value, provider: CultureInfo.InvariantCulture);
+        Span<char> destination = stackalloc char[50];
+        var expected = value.ToString(format: null, formatProvider: CultureInfo.InvariantCulture);
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithFormatOverride_UsesOverrideFormat()
+    {
+        // Arrange
+        var value = TestTimeSpan;
+        var node = new TimeSpanNode(value, "c", CultureInfo.InvariantCulture);
+        Span<char> destination = stackalloc char[50];
+        var expected = value.ToString("g", CultureInfo.InvariantCulture);
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, "g".AsSpan(), CultureInfo.InvariantCulture);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TotalLength_IsCachedAfterFirstAccess()
+    {
+        // Arrange
+        var node = new TimeSpanNode(TestTimeSpan, "c", CultureInfo.InvariantCulture);
+        
+        // Act
+        var length1 = node.TotalLength;
+        var length2 = node.TotalLength;
+
+        // Assert
+        Assert.Equal(length1, length2);
+    }
+
+    #endregion
 }

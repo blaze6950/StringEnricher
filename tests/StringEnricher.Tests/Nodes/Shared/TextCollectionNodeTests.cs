@@ -413,4 +413,208 @@ public class TextCollectionNodeTests
         Assert.Equal("Hello World", node.ToString());
         Assert.Equal(11, node.TotalLength);
     }
+
+    #region ISpanFormattable Tests
+
+    [Fact]
+    public void ToString_WithFormatAndProvider_IgnoresParametersAndReturnsText()
+    {
+        // Arrange
+        var texts = new List<string> { "Hello", "World" };
+        var node = new TextCollectionNode<List<string>>(texts, " ");
+
+        // Act - format and provider should be ignored for text collection
+        var resultWithFormat = node.ToString("G", null);
+        var resultWithProvider = node.ToString(null, System.Globalization.CultureInfo.InvariantCulture);
+        var resultWithBoth = node.ToString("D", System.Globalization.CultureInfo.GetCultureInfo("fr-FR"));
+
+        // Assert
+        Assert.Equal("Hello World", resultWithFormat);
+        Assert.Equal("Hello World", resultWithProvider);
+        Assert.Equal("Hello World", resultWithBoth);
+    }
+
+    [Fact]
+    public void TryFormat_WithSufficientSpace_FormatsCorrectly()
+    {
+        // Arrange
+        var texts = new List<string> { "One", "Two", "Three" };
+        var node = new TextCollectionNode<List<string>>(texts, ", ");
+        Span<char> destination = stackalloc char[50];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal("One, Two, Three", destination[..charsWritten].ToString());
+        Assert.Equal(15, charsWritten);
+    }
+
+    [Fact]
+    public void TryFormat_WithNoSeparator_FormatsCorrectly()
+    {
+        // Arrange
+        var texts = new List<string> { "A", "B", "C" };
+        var node = new TextCollectionNode<List<string>>(texts);
+        Span<char> destination = stackalloc char[10];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal("ABC", destination[..charsWritten].ToString());
+        Assert.Equal(3, charsWritten);
+    }
+
+    [Fact]
+    public void TryFormat_WithEmptySeparator_FormatsCorrectly()
+    {
+        // Arrange
+        var texts = new List<string> { "X", "Y", "Z" };
+        var node = new TextCollectionNode<List<string>>(texts, "");
+        Span<char> destination = stackalloc char[10];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal("XYZ", destination[..charsWritten].ToString());
+        Assert.Equal(3, charsWritten);
+    }
+
+    [Fact]
+    public void TryFormat_WithFormatAndProvider_IgnoresParameters()
+    {
+        // Arrange
+        var texts = new List<string> { "Test", "Data" };
+        var node = new TextCollectionNode<List<string>>(texts, "-");
+        Span<char> destination = stackalloc char[20];
+
+        // Act - format and provider should be ignored
+        var success = node.TryFormat(
+            destination, 
+            out var charsWritten, 
+            "G".AsSpan(), 
+            System.Globalization.CultureInfo.InvariantCulture);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal("Test-Data", destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithExactSpace_FormatsCorrectly()
+    {
+        // Arrange
+        var texts = new List<string> { "Hi" };
+        var node = new TextCollectionNode<List<string>>(texts);
+        Span<char> destination = stackalloc char[2];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(2, charsWritten);
+        Assert.Equal("Hi", destination.ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithInsufficientSpace_ReturnsFalse()
+    {
+        // Arrange
+        var texts = new List<string> { "Very", "Long", "Collection" };
+        var node = new TextCollectionNode<List<string>>(texts, " ");
+        Span<char> destination = stackalloc char[5]; // Too small
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.False(success);
+        Assert.Equal(0, charsWritten);
+    }
+
+    [Fact]
+    public void TryFormat_WithNullValuesInCollection_SkipsNulls()
+    {
+        // Arrange
+        var texts = new List<string?> { "Start", null, "End" };
+        var node = new TextCollectionNode<List<string?>>(texts, "-");
+        Span<char> destination = stackalloc char[20];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal("Start-End", destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithEmptyCollection_WritesNothing()
+    {
+        // Arrange
+        var texts = new List<string>();
+        var node = new TextCollectionNode<List<string>>(texts, ", ");
+        Span<char> destination = stackalloc char[10];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(0, charsWritten);
+    }
+
+    [Fact]
+    public void TotalLength_IsCachedAfterFirstAccess()
+    {
+        // Arrange
+        var texts = new List<string> { "First", "Second", "Third" };
+        var node = new TextCollectionNode<List<string>>(texts, ", ");
+        
+        // Act
+        var length1 = node.TotalLength;
+        var length2 = node.TotalLength;
+        var length3 = node.TotalLength;
+
+        // Assert
+        Assert.Equal(length1, length2);
+        Assert.Equal(length2, length3);
+        Assert.Equal(20, length1); // "First, Second, Third"
+    }
+
+    [Fact]
+    public void TotalLength_WithMultiCharSeparator_CalculatesCorrectly()
+    {
+        // Arrange
+        var texts = new List<string> { "A", "B" };
+        var node = new TextCollectionNode<List<string>>(texts, " -> ");
+        
+        // Act
+        var totalLength = node.TotalLength;
+
+        // Assert
+        Assert.Equal(6, totalLength); // "A -> B" = 6 characters
+    }
+
+    [Fact]
+    public void TotalLength_EqualsCollectionLength_WhenNoSeparator()
+    {
+        // Arrange
+        var texts = new List<string> { "One", "Two" };
+        var node = new TextCollectionNode<List<string>>(texts);
+        
+        // Act
+        var totalLength = node.TotalLength;
+
+        // Assert
+        Assert.Equal(6, totalLength); // "OneTwo"
+    }
+
+    #endregion
 }

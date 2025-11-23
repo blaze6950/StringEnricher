@@ -1,5 +1,6 @@
 ﻿using StringEnricher.Nodes.Shared;
 using System.Globalization;
+using StringEnricher.Debug;
 
 namespace StringEnricher.Tests.Nodes.Shared;
 
@@ -232,6 +233,23 @@ public class DateTimeOffsetNodeTests
     }
 
     [Fact]
+    public void TryGetChar_OutOfRightRangeIndexWhenTotalLengthWasCalculated_ReturnsFalseAndNullChar()
+    {
+        // Arrange
+        var node = new DateTimeOffsetNode(TestDateTimeOffset);
+        var totalLength = node.TotalLength;
+        DebugCounters.ResetAllCounters();
+
+        // Act
+        var result = node.TryGetChar(totalLength, out var ch);
+
+        // Assert
+        Assert.False(result);
+        Assert.Equal('\0', ch);
+        Assert.Equal(1, DebugCounters.DateTimeOffsetNode_TryGetChar_CachedTotalLengthEvaluation);
+    }
+
+    [Fact]
     public void ImplicitConversion_FromDateTimeOffset_CreatesDateTimeOffsetNode()
     {
         // Arrange
@@ -339,4 +357,73 @@ public class DateTimeOffsetNodeTests
         Assert.Equal(expectedTotalLength, node.TotalLength);
         Assert.Equal(expectedSyntaxLength, node.SyntaxLength);
     }
+
+    #region ISpanFormattable Tests
+
+    [Fact]
+    public void ToString_WithFormatParameter_OverridesNodeFormat()
+    {
+        // Arrange
+        var value = new DateTimeOffset(2023, 5, 15, 10, 30, 0, TimeSpan.FromHours(2));
+        var node = new DateTimeOffsetNode(value, "d", CultureInfo.InvariantCulture);
+        var expected = value.ToString("o", CultureInfo.InvariantCulture);
+
+        // Act
+        var result = node.ToString("o", CultureInfo.InvariantCulture);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void TryFormat_WithSufficientSpace_FormatsCorrectly()
+    {
+        // Arrange
+        var value = new DateTimeOffset(2023, 5, 15, 10, 30, 0, TimeSpan.FromHours(2));
+        var node = new DateTimeOffsetNode(value, provider: CultureInfo.InvariantCulture);
+        Span<char> destination = stackalloc char[100];
+        var expected = value.ToString(CultureInfo.InvariantCulture);
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithFormatOverride_UsesOverrideFormat()
+    {
+        // Arrange
+        var value = new DateTimeOffset(2023, 5, 15, 10, 30, 0, TimeSpan.FromHours(2));
+        var node = new DateTimeOffsetNode(value, "d", CultureInfo.InvariantCulture);
+        Span<char> destination = stackalloc char[100];
+        var expected = value.ToString("o", CultureInfo.InvariantCulture);
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, "o".AsSpan(), CultureInfo.InvariantCulture);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TotalLength_IsCachedAfterFirstAccess()
+    {
+        // Arrange
+        var node = new DateTimeOffsetNode(DateTimeOffset.Now, "d", CultureInfo.InvariantCulture);
+        
+        // Act
+        var length1 = node.TotalLength;
+        var length2 = node.TotalLength;
+
+        // Assert
+        Assert.Equal(length1, length2);
+    }
+
+    #endregion
 }

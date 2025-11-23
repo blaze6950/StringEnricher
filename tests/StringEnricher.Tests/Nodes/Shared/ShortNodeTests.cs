@@ -1,5 +1,6 @@
-﻿﻿﻿using StringEnricher.Nodes.Shared;
+﻿using StringEnricher.Nodes.Shared;
 using System.Globalization;
+using StringEnricher.Debug;
 
 namespace StringEnricher.Tests.Nodes.Shared;
 
@@ -288,6 +289,23 @@ public class ShortNodeTests
     }
 
     [Fact]
+    public void TryGetChar_OutOfRightRangeIndexWhenTotalLengthWasCalculated_ReturnsFalseAndNullChar()
+    {
+        // Arrange
+        var node = new ShortNode(123, provider: CultureInfo.InvariantCulture);
+        var totalLength = node.TotalLength;
+        DebugCounters.ResetAllCounters();
+
+        // Act
+        var result = node.TryGetChar(totalLength, out var ch);
+
+        // Assert
+        Assert.False(result);
+        Assert.Equal('\0', ch);
+        Assert.Equal(1, DebugCounters.ShortNode_TryGetChar_CachedTotalLengthEvaluation);
+    }
+
+    [Fact]
     public void ImplicitConversion_FromShort_CreatesShortNode()
     {
         // Arrange
@@ -388,4 +406,148 @@ public class ShortNodeTests
         // Assert
         Assert.Equal(expectedLength, node.TotalLength);
     }
+
+    #region ISpanFormattable Tests - ToString with Format Override
+
+    [Fact]
+    public void ToString_WithFormatParameter_OverridesNodeFormat()
+    {
+        // Arrange
+        const short value = 1234;
+        var node = new ShortNode(value, "D", CultureInfo.InvariantCulture);
+        var expected = value.ToString("X", CultureInfo.InvariantCulture);
+
+        // Act
+        var result = node.ToString("X", CultureInfo.InvariantCulture);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void ToString_WithProviderParameter_OverridesNodeProvider()
+    {
+        // Arrange
+        const short value = 1234;
+        var nodeProvider = CultureInfo.GetCultureInfo("en-US");
+        var overrideProvider = CultureInfo.GetCultureInfo("fr-FR");
+        var node = new ShortNode(value, "N0", nodeProvider);
+        var expected = value.ToString("N0", overrideProvider);
+
+        // Act
+        var result = node.ToString(null, overrideProvider);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void ToString_WithNullFormat_UsesNodeFormat()
+    {
+        // Arrange
+        const short value = 1234;
+        const string nodeFormat = "X4";
+        var node = new ShortNode(value, nodeFormat, CultureInfo.InvariantCulture);
+        var expected = value.ToString(nodeFormat, CultureInfo.InvariantCulture);
+
+        // Act
+        var result = node.ToString(null, CultureInfo.InvariantCulture);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    #endregion
+
+    #region ISpanFormattable Tests - TryFormat
+
+    [Fact]
+    public void TryFormat_WithSufficientSpace_FormatsCorrectly()
+    {
+        // Arrange
+        const short value = 1234;
+        var node = new ShortNode(value, provider: CultureInfo.InvariantCulture);
+        Span<char> destination = stackalloc char[10];
+        var expected = value.ToString(CultureInfo.InvariantCulture);
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithFormatOverride_UsesOverrideFormat()
+    {
+        // Arrange
+        const short value = 255;
+        var node = new ShortNode(value, "D", CultureInfo.InvariantCulture);
+        Span<char> destination = stackalloc char[10];
+        var expected = value.ToString("X", CultureInfo.InvariantCulture);
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, "X".AsSpan(), CultureInfo.InvariantCulture);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithInsufficientSpace_ReturnsFalse()
+    {
+        // Arrange
+        const short value = 1234;
+        var node = new ShortNode(value, provider: CultureInfo.InvariantCulture);
+        Span<char> destination = stackalloc char[2];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.False(success);
+    }
+
+    [Theory]
+    [InlineData("D6", "001234")]
+    [InlineData("X", "4D2")]
+    [InlineData("N0", "1,234")]
+    public void TryFormat_WithVariousFormats_FormatsCorrectly(string format, string expected)
+    {
+        // Arrange
+        const short value = 1234;
+        var node = new ShortNode(value, provider: CultureInfo.InvariantCulture);
+        Span<char> destination = stackalloc char[20];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, format.AsSpan(), CultureInfo.InvariantCulture);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    #endregion
+
+    #region Length Caching Tests
+
+    [Fact]
+    public void TotalLength_IsCachedAfterFirstAccess()
+    {
+        // Arrange
+        var node = new ShortNode(1234, "N0", CultureInfo.InvariantCulture);
+        
+        // Act
+        var length1 = node.TotalLength;
+        var length2 = node.TotalLength;
+
+        // Assert
+        Assert.Equal(length1, length2);
+    }
+
+    #endregion
 }

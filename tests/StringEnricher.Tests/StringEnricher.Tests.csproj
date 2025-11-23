@@ -5,6 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
     </PropertyGroup>
 
     <ItemGroup>
@@ -13,6 +14,10 @@
         <PackageReference Include="xunit" Version="2.9.2"/>
         <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2"/>
     </ItemGroup>
+
+    <PropertyGroup>
+        <DefineConstants>$(DefineConstants);UNIT_TESTS</DefineConstants>
+    </PropertyGroup>
 
     <ItemGroup>
         <Using Include="Xunit"/>
@@ -24,63 +29,63 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="Configuration\StringEnricherSettingsTests.Extensions.StringBuilder.cs">
-        <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.ByteNode.cs">
-        <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.DateOnlyNode.cs">
-        <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.DateTimeNode.cs">
-        <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.DateTimeOffsetNode.cs">
-        <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.DecimalNode.cs">
-        <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.DoubleNode.cs">
-        <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.EnumNode.cs">
-        <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.FloatNode.cs">
-        <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.GuidNode.cs">
-        <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.IntegerNode.cs">
-        <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.LongNode.cs">
-        <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.SByteNode.cs">
-        <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.ShortNode.cs">
-        <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.TimeOnlyNode.cs">
-        <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.TimeSpanNode.cs">
-        <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.UIntegerNode.cs">
-        <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.ULongNode.cs">
-        <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.UShortNode.cs">
-        <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
-      </Compile>
+        <Compile Update="Configuration\StringEnricherSettingsTests.Extensions.StringBuilder.cs">
+            <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.ByteNode.cs">
+            <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.DateOnlyNode.cs">
+            <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.DateTimeNode.cs">
+            <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.DateTimeOffsetNode.cs">
+            <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.DecimalNode.cs">
+            <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.DoubleNode.cs">
+            <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.EnumNode.cs">
+            <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.FloatNode.cs">
+            <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.GuidNode.cs">
+            <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.IntegerNode.cs">
+            <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.LongNode.cs">
+            <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.SByteNode.cs">
+            <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.ShortNode.cs">
+            <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.TimeOnlyNode.cs">
+            <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.TimeSpanNode.cs">
+            <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.UIntegerNode.cs">
+            <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.ULongNode.cs">
+            <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.UShortNode.cs">
+            <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
 </Project>

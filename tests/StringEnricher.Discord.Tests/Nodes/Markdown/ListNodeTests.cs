@@ -299,7 +299,7 @@ public class ListNodeTests
         // Act & Assert
         var exception =
             Assert.Throws<ArgumentException>(() => list.CopyTo(insufficientBuffer.AsSpan()));
-        Assert.Contains("destination span is too small", exception.Message);
+        Assert.Contains("Destination span is not large enough to hold the written characters.", exception.Message);
     }
 
     [Fact]

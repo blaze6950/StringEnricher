@@ -1,5 +1,6 @@
 ﻿using StringEnricher.Nodes.Shared;
 using System.Globalization;
+using StringEnricher.Debug;
 
 namespace StringEnricher.Tests.Nodes.Shared;
 
@@ -255,6 +256,23 @@ public class UIntegerNodeTests
     }
 
     [Fact]
+    public void TryGetChar_OutOfRightRangeIndexWhenTotalLengthWasCalculated_ReturnsFalseAndNullChar()
+    {
+        // Arrange
+        var node = new UIntegerNode(123U, provider: CultureInfo.InvariantCulture);
+        var totalLength = node.TotalLength;
+        DebugCounters.ResetAllCounters();
+
+        // Act
+        var result = node.TryGetChar(totalLength, out var ch);
+
+        // Assert
+        Assert.False(result);
+        Assert.Equal('\0', ch);
+        Assert.Equal(1, DebugCounters.UIntegerNode_TryGetChar_CachedTotalLengthEvaluation);
+    }
+
+    [Fact]
     public void ImplicitConversion_FromUInteger_CreatesUIntegerNode()
     {
         // Arrange
@@ -357,4 +375,148 @@ public class UIntegerNodeTests
         // Assert
         Assert.Equal(expectedLength, node.TotalLength);
     }
+
+    #region ISpanFormattable Tests - ToString with Format Override
+
+    [Fact]
+    public void ToString_WithFormatParameter_OverridesNodeFormat()
+    {
+        // Arrange
+        const uint value = 12345U;
+        var node = new UIntegerNode(value, "D", CultureInfo.InvariantCulture);
+        var expected = value.ToString("X", CultureInfo.InvariantCulture);
+
+        // Act
+        var result = node.ToString("X", CultureInfo.InvariantCulture);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void ToString_WithProviderParameter_OverridesNodeProvider()
+    {
+        // Arrange
+        const uint value = 12345U;
+        var nodeProvider = CultureInfo.GetCultureInfo("en-US");
+        var overrideProvider = CultureInfo.GetCultureInfo("fr-FR");
+        var node = new UIntegerNode(value, "N0", nodeProvider);
+        var expected = value.ToString("N0", overrideProvider);
+
+        // Act
+        var result = node.ToString(null, overrideProvider);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void ToString_WithNullFormat_UsesNodeFormat()
+    {
+        // Arrange
+        const uint value = 12345U;
+        const string nodeFormat = "X8";
+        var node = new UIntegerNode(value, nodeFormat, CultureInfo.InvariantCulture);
+        var expected = value.ToString(nodeFormat, CultureInfo.InvariantCulture);
+
+        // Act
+        var result = node.ToString(null, CultureInfo.InvariantCulture);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    #endregion
+
+    #region ISpanFormattable Tests - TryFormat
+
+    [Fact]
+    public void TryFormat_WithSufficientSpace_FormatsCorrectly()
+    {
+        // Arrange
+        const uint value = 12345U;
+        var node = new UIntegerNode(value, provider: CultureInfo.InvariantCulture);
+        Span<char> destination = stackalloc char[20];
+        var expected = value.ToString(CultureInfo.InvariantCulture);
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithFormatOverride_UsesOverrideFormat()
+    {
+        // Arrange
+        const uint value = 255U;
+        var node = new UIntegerNode(value, "D", CultureInfo.InvariantCulture);
+        Span<char> destination = stackalloc char[20];
+        var expected = value.ToString("X", CultureInfo.InvariantCulture);
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, "X".AsSpan(), CultureInfo.InvariantCulture);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithInsufficientSpace_ReturnsFalse()
+    {
+        // Arrange
+        const uint value = 12345U;
+        var node = new UIntegerNode(value, provider: CultureInfo.InvariantCulture);
+        Span<char> destination = stackalloc char[3];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.False(success);
+    }
+
+    [Theory]
+    [InlineData("D8", "00012345")]
+    [InlineData("X", "3039")]
+    [InlineData("N0", "12,345")]
+    public void TryFormat_WithVariousFormats_FormatsCorrectly(string format, string expected)
+    {
+        // Arrange
+        const uint value = 12345U;
+        var node = new UIntegerNode(value, provider: CultureInfo.InvariantCulture);
+        Span<char> destination = stackalloc char[50];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, format.AsSpan(), CultureInfo.InvariantCulture);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    #endregion
+
+    #region Length Caching Tests
+
+    [Fact]
+    public void TotalLength_IsCachedAfterFirstAccess()
+    {
+        // Arrange
+        var node = new UIntegerNode(12345U, "N0", CultureInfo.InvariantCulture);
+        
+        // Act
+        var length1 = node.TotalLength;
+        var length2 = node.TotalLength;
+
+        // Assert
+        Assert.Equal(length1, length2);
+    }
+
+    #endregion
 }

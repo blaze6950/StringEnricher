@@ -1,5 +1,6 @@
 ﻿using StringEnricher.Nodes.Shared;
 using System.Globalization;
+using StringEnricher.Debug;
 
 namespace StringEnricher.Tests.Nodes.Shared;
 
@@ -231,6 +232,23 @@ public class DateTimeNodeTests
     }
 
     [Fact]
+    public void TryGetChar_OutOfRightRangeIndexWhenTotalLengthWasCalculated_ReturnsFalseAndNullChar()
+    {
+        // Arrange
+        var node = new DateTimeNode(TestDateTime, provider: CultureInfo.InvariantCulture);
+        var totalLength = node.TotalLength;
+        DebugCounters.ResetAllCounters();
+
+        // Act
+        var result = node.TryGetChar(totalLength, out var ch);
+
+        // Assert
+        Assert.False(result);
+        Assert.Equal('\0', ch);
+        Assert.Equal(1, DebugCounters.DateTimeNode_TryGetChar_CachedTotalLengthEvaluation);
+    }
+
+    [Fact]
     public void TryGetChar_WithFormat_ReturnsTrueAndCorrectChar()
     {
         // Arrange
@@ -358,4 +376,105 @@ public class DateTimeNodeTests
         Assert.Equal(expectedString.Length, bytesWritten);
         Assert.Equal(expectedString, destination.ToString());
     }
+
+    #region ISpanFormattable Tests
+
+    [Fact]
+    public void ToString_WithFormatParameter_OverridesNodeFormat()
+    {
+        // Arrange
+        var value = TestDateTime;
+        var node = new DateTimeNode(value, "d", CultureInfo.InvariantCulture);
+        var expected = value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+        // Act
+        var result = node.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void ToString_WithProviderParameter_OverridesNodeProvider()
+    {
+        // Arrange
+        var value = TestDateTime;
+        var nodeProvider = CultureInfo.GetCultureInfo("en-US");
+        var overrideProvider = CultureInfo.GetCultureInfo("fr-FR");
+        var node = new DateTimeNode(value, "d", nodeProvider);
+        var expected = value.ToString("d", overrideProvider);
+
+        // Act
+        var result = node.ToString(null, overrideProvider);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void TryFormat_WithSufficientSpace_FormatsCorrectly()
+    {
+        // Arrange
+        var value = TestDateTime;
+        var node = new DateTimeNode(value, provider: CultureInfo.InvariantCulture);
+        Span<char> destination = stackalloc char[100];
+        var expected = value.ToString(CultureInfo.InvariantCulture);
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithFormatOverride_UsesOverrideFormat()
+    {
+        // Arrange
+        var value = TestDateTime;
+        var node = new DateTimeNode(value, "d", CultureInfo.InvariantCulture);
+        Span<char> destination = stackalloc char[50];
+        var expected = value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, "yyyy-MM-dd".AsSpan(), CultureInfo.InvariantCulture);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithInsufficientSpace_ReturnsFalse()
+    {
+        // Arrange
+        var value = TestDateTime;
+        var node = new DateTimeNode(value, provider: CultureInfo.InvariantCulture);
+        Span<char> destination = stackalloc char[5];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.False(success);
+    }
+
+    [Fact]
+    public void TotalLength_IsCachedAfterFirstAccess()
+    {
+        // Arrange
+        var node = new DateTimeNode(TestDateTime, "d", CultureInfo.InvariantCulture);
+        
+        // Act
+        var length1 = node.TotalLength;
+        var length2 = node.TotalLength;
+
+        // Assert
+        Assert.Equal(length1, length2);
+    }
+
+    #endregion
 }

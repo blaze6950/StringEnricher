@@ -296,7 +296,7 @@ public class ExpandableBlockquoteNodeTests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() => expandableBlockquote.CopyTo(insufficientBuffer.AsSpan()));
-        Assert.Contains("destination span is too small", exception.Message);
+        Assert.Contains("Destination span is not large enough to hold the written characters.", exception.Message);
     }
 
     [Fact]

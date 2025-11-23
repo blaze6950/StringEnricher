@@ -341,8 +341,8 @@ public class EscapeNodeTests
     {
         // Arrange
         var escapeStyle = EscapeHtml.Apply("<>&");
-        // < becomes &lt; (+3 chars), > becomes &gt; (+3 chars), & becomes &amp; (+4 chars)
-        const int expectedSyntaxLength = 3 + 3 + 4;
+        // < becomes &lt; (4 chars), > becomes &gt; (4 chars), & becomes &amp; (5 chars)
+        const int expectedSyntaxLength = 4 + 4 + 5;
 
         // Act
         var syntaxLength = escapeStyle.SyntaxLength;
@@ -356,6 +356,15 @@ public class EscapeNodeTests
     {
         // Arrange
         const string input = "Hello<World>&";
+        // Count how many characters are replaced (\<, \>, &)
+        var escapedCount = 0;
+        foreach (var ch in input)
+        {
+            if (ch is '<' or '>' or '&')
+            {
+                escapedCount++;
+            }
+        }
         var escapeStyle = EscapeHtml.Apply(input);
         
         // Act
@@ -364,7 +373,7 @@ public class EscapeNodeTests
         var syntaxLength = escapeStyle.SyntaxLength;
 
         // Assert
-        Assert.Equal(innerLength + syntaxLength, totalLength);
+        Assert.Equal(innerLength - escapedCount + syntaxLength, totalLength);
         Assert.Equal(input.Length, innerLength);
     }
 
@@ -393,6 +402,6 @@ public class EscapeNodeTests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() => escapeStyle.CopyTo(destination));
-        Assert.Contains("too small", exception.Message);
+        Assert.Contains("Destination span is not large enough to hold the written characters.", exception.Message);
     }
 }

@@ -14,7 +14,7 @@ public partial class StringEnricherSettingsTests
             var settings = StringEnricherSettings.Extensions.StringBuilder;
 
             // Assert
-            Assert.Equal(512, settings.MaxStackAllocLength);
+            Assert.Equal(2048, settings.MaxStackAllocLength);
             Assert.Equal(1_000_000, settings.MaxPooledArrayLength);
         }
 
@@ -49,7 +49,7 @@ public partial class StringEnricherSettingsTests
             StringEnricherSettings.Extensions.ResetStringBuilderSettings();
 
             // Assert
-            Assert.Equal(512, StringEnricherSettings.Extensions.StringBuilder.MaxStackAllocLength);
+            Assert.Equal(2048, StringEnricherSettings.Extensions.StringBuilder.MaxStackAllocLength);
             Assert.Equal(1_000_000, StringEnricherSettings.Extensions.StringBuilder.MaxPooledArrayLength);
         }
 
@@ -62,7 +62,7 @@ public partial class StringEnricherSettingsTests
             var settings = StringEnricherSettings.Extensions.StringBuilder;
 
             // Assert
-            Assert.Equal(512, settings.MaxStackAllocLength);
+            Assert.Equal(2048, settings.MaxStackAllocLength);
             Assert.Equal(1_000_000, settings.MaxPooledArrayLength);
         }
 
@@ -84,6 +84,26 @@ public partial class StringEnricherSettingsTests
 
             // Cleanup
             StringEnricherSettings.Extensions.ResetStringBuilderSettings();
+        }
+
+        [Fact]
+        public void StringBuilder_Defaults_AllValuesAreExpected()
+        {
+            // Arrange
+            StringEnricherSettings.Extensions.ResetStringBuilderSettings();
+
+            // Act
+            var settings = StringEnricherSettings.Extensions.StringBuilder;
+
+            // Assert - all defaults from GetDefaultStringBuilderSettings
+            Assert.Equal(4, settings.InitialBufferSize);
+            Assert.Equal(1_000_000, settings.MaxBufferSize);
+            Assert.Equal(2f, settings.GrowthFactor);
+            Assert.Equal(2048, settings.MaxStackAllocLength);
+            Assert.Equal(1_000_000, settings.MaxPooledArrayLength);
+
+            // StringEnricherSettings.Name is private; assert against the known composed literal
+            Assert.Equal("StringEnricherSettings.Extensions.StringBuilder", settings.Name);
         }
     }
 }

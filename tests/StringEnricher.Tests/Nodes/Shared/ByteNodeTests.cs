@@ -1,5 +1,6 @@
 ﻿using StringEnricher.Nodes.Shared;
 using System.Globalization;
+using StringEnricher.Debug;
 
 namespace StringEnricher.Tests.Nodes.Shared;
 
@@ -356,6 +357,23 @@ public class ByteNodeTests
     }
 
     [Fact]
+    public void TryGetChar_OutOfRightRangeIndexWhenTotalLengthWasCalculated_ReturnsFalseAndNullChar()
+    {
+        // Arrange
+        var node = new ByteNode(123, provider: CultureInfo.InvariantCulture);
+        var totalLength = node.TotalLength;
+        DebugCounters.ResetAllCounters();
+
+        // Act
+        var result = node.TryGetChar(totalLength, out var ch);
+
+        // Assert
+        Assert.False(result);
+        Assert.Equal('\0', ch);
+        Assert.Equal(1, DebugCounters.ByteNode_TryGetChar_CachedTotalLengthEvaluation);
+    }
+
+    [Fact]
     public void TryGetChar_ZeroValue_ReturnsTrueAndCorrectChar()
     {
         // Arrange
@@ -504,4 +522,107 @@ public class ByteNodeTests
         // Assert
         Assert.Equal(expectedLength, node.TotalLength);
     }
+
+    #region ISpanFormattable Tests
+
+    [Fact]
+    public void ToString_WithFormatParameter_OverridesNodeFormat()
+    {
+        // Arrange
+        const byte value = 123;
+        var node = new ByteNode(value, "D", CultureInfo.InvariantCulture);
+        var expected = value.ToString("X", CultureInfo.InvariantCulture);
+
+        // Act
+        var result = node.ToString("X", CultureInfo.InvariantCulture);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void TryFormat_WithSufficientSpace_FormatsCorrectly()
+    {
+        // Arrange
+        const byte value = 123;
+        var node = new ByteNode(value, provider: CultureInfo.InvariantCulture);
+        Span<char> destination = stackalloc char[5];
+        var expected = value.ToString(CultureInfo.InvariantCulture);
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithFormatOverride_UsesOverrideFormat()
+    {
+        // Arrange
+        const byte value = 255;
+        var node = new ByteNode(value, "D", CultureInfo.InvariantCulture);
+        Span<char> destination = stackalloc char[5];
+        var expected = value.ToString("X", CultureInfo.InvariantCulture);
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, "X".AsSpan(), CultureInfo.InvariantCulture);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithInsufficientSpace_ReturnsFalse()
+    {
+        // Arrange
+        const byte value = 123;
+        var node = new ByteNode(value, provider: CultureInfo.InvariantCulture);
+        Span<char> destination = stackalloc char[1];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.False(success);
+    }
+
+    [Theory]
+    [InlineData("D3", "123")]
+    [InlineData("X2", "7B")]
+    [InlineData("x2", "7b")]
+    public void TryFormat_WithVariousFormats_FormatsCorrectly(string format, string expected)
+    {
+        // Arrange
+        const byte value = 123;
+        var node = new ByteNode(value, provider: CultureInfo.InvariantCulture);
+        Span<char> destination = stackalloc char[10];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, format.AsSpan(), CultureInfo.InvariantCulture);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TotalLength_IsCachedAfterFirstAccess()
+    {
+        // Arrange
+        var node = new ByteNode(123, "D3", CultureInfo.InvariantCulture);
+        
+        // Act
+        var length1 = node.TotalLength;
+        var length2 = node.TotalLength;
+
+        // Assert
+        Assert.Equal(length1, length2);
+    }
+
+    #endregion
 }
