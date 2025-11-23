@@ -394,4 +394,69 @@ public class ListNodeTests
         Assert.Equal(expected, result);
         Assert.Equal(expected.Length, list.TotalLength);
     }
+
+    [Fact]
+    public void ToString_WithFormatAndProvider_ReturnsCorrectString()
+    {
+        // Arrange
+        const int value = 123;
+        var node = ListMarkdown.Apply(value);
+        const string expected = "- 123";
+
+        // Act
+        var result = node.ToString(null, null);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void TryFormat_WithSufficientSpace_FormatsCorrectly()
+    {
+        // Arrange
+        const string innerText = "test";
+        var node = ListMarkdown.Apply(innerText);
+        Span<char> destination = stackalloc char[20];
+        const string expected = "- test";
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, default, null);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithMultiLineContent_FormatsCorrectly()
+    {
+        // Arrange
+        const string innerText = "line1\nline2";
+        var node = ListMarkdown.Apply(innerText);
+        Span<char> destination = stackalloc char[30];
+        const string expected = "- line1\n- line2";
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, default, null);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithInsufficientSpace_ReturnsFalse()
+    {
+        // Arrange
+        var node = ListMarkdown.Apply("test");
+        Span<char> destination = stackalloc char[3]; // Too small for "- test"
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, default, null);
+
+        // Assert
+        Assert.False(success);
+    }
 }

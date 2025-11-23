@@ -78,7 +78,7 @@ public readonly struct BoldNode<TInner> : INode
         charsWritten = 0;
 
         // Copy prefix
-        if (!Prefix.AsSpan().TryCopyTo(destination.Slice(charsWritten, Prefix.Length)))
+        if (!Prefix.AsSpan().TryCopyTo(destination.SliceSafe(charsWritten, Prefix.Length)))
         {
             return false;
         }
@@ -87,7 +87,7 @@ public readonly struct BoldNode<TInner> : INode
 
         // Copy inner text
         var isInnerTextFormatSuccess = _innerText.TryFormat(
-            destination[charsWritten..],
+            destination.SliceSafe(charsWritten),
             out var innerCharsWritten,
             format,
             provider
@@ -101,7 +101,7 @@ public readonly struct BoldNode<TInner> : INode
         charsWritten += innerCharsWritten;
 
         // Copy suffix
-        if (!Suffix.AsSpan().TryCopyTo(destination.Slice(charsWritten, Suffix.Length)))
+        if (!Suffix.AsSpan().TryCopyTo(destination.SliceSafe(charsWritten, Suffix.Length)))
         {
             return false;
         }

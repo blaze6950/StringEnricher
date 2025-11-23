@@ -79,18 +79,26 @@ public readonly struct HeaderNode<TInner> : INode
     {
         charsWritten = 0;
 
-        // Copy prefix (# characters)
-        for (var i = 0; i < _level; i++)
+        try
         {
-            destination[charsWritten++] = '#';
-        }
+            // Copy prefix (# characters)
+            for (var i = 0; i < _level; i++)
+            {
+                destination[charsWritten++] = '#';
+            }
 
-        // Add space
-        destination[charsWritten++] = ' ';
+            // Add space
+            destination[charsWritten++] = ' ';
+        }
+        catch (Exception)
+        {
+            charsWritten = 0;
+            return false;
+        }
 
         // Copy inner text
         var isInnerTextFormatSuccess = _innerText.TryFormat(
-            destination[charsWritten..],
+            destination.SliceSafe(charsWritten),
             out var innerCharsWritten,
             format,
             provider

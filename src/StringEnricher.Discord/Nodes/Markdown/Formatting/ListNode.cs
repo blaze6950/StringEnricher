@@ -53,7 +53,7 @@ public struct ListNode<TInner> : INode
     /// <inheritdoc />
     public string ToString(string? format, IFormatProvider? formatProvider)
     {
-        var charCountsResult = _innerText.GetTotalAndEscapedCharsCounts(
+        var charCountsResult = this.GetTotalAndEscapedCharsCounts(
             IsLineSeparator,
             StringEnricherSettings.Extensions.StringBuilder,
             format,
@@ -74,7 +74,7 @@ public struct ListNode<TInner> : INode
                 BufferUtils.StreamBuffer(
                     source: state.Item1,
                     destination: span[LinePrefix.Length..],
-                    streamWriter: static (c, index, destination) =>
+                    streamWriter: static (c, _, destination) =>
                     {
                         if (!IsLineSeparator(c))
                         {
@@ -121,7 +121,7 @@ public struct ListNode<TInner> : INode
 
             charsWritten += BufferUtils.StreamBuffer(
                 source: _innerText,
-                destination: destination[LinePrefix.Length..],
+                destination: destination.SliceSafe(LinePrefix.Length),
                 streamWriter: static (c, _, destination) =>
                 {
                     if (!IsLineSeparator(c))
@@ -149,7 +149,7 @@ public struct ListNode<TInner> : INode
                 initialBufferLengthHint: _innerLength
             );
         }
-        catch (IndexOutOfRangeException)
+        catch (Exception)
         {
             charsWritten = 0;
             return false;

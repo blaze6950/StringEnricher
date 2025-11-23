@@ -60,7 +60,7 @@ public struct EscapeNode<TInner> : INode
                 BufferUtils.StreamBuffer(
                     source: state.Item1,
                     destination: span,
-                    streamWriter: static (c, index, destination) =>
+                    streamWriter: static (c, _, destination) =>
                     {
                         if (!IsCharacterToEscape(c))
                         {
@@ -89,7 +89,7 @@ public struct EscapeNode<TInner> : INode
             BufferUtils.StreamBuffer(
                 source: _innerText,
                 destination: destination,
-                streamWriter: static (c, index, destination) =>
+                streamWriter: static (c, _, destination) =>
                 {
                     if (!IsCharacterToEscape(c))
                     {
@@ -142,7 +142,7 @@ public struct EscapeNode<TInner> : INode
     public int CopyTo(Span<char> destination) => BufferUtils.StreamBuffer(
         source: _innerText,
         destination: destination,
-        streamWriter: static (c, index, destination) =>
+        streamWriter: static (c, _, destination) =>
         {
             if (!IsCharacterToEscape(c))
             {

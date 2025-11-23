@@ -62,6 +62,8 @@ public static class BufferUtils
             ? Math.Max(nodeSettings.BufferSizes.InitialBufferLength, initialBufferLengthHint.Value)
             : nodeSettings.BufferSizes.InitialBufferLength;
 
+        var bufferSizesInternal = nodeSettings.BufferSizes;
+
         while (true)
         {
             if (
@@ -76,8 +78,6 @@ public static class BufferUtils
             {
                 return result!;
             }
-
-            var bufferSizesInternal = nodeSettings.BufferSizes;
 
             bufferSize = GetNewBufferSize(bufferSize, bufferSizesInternal.GrowthFactor);
 

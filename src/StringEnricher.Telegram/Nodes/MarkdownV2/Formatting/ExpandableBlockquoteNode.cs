@@ -179,7 +179,7 @@ public struct ExpandableBlockquoteNode<TInner> : INode
         charsWritten += BufferUtils.StreamBuffer(
             source: _innerText,
             destination: destination[1..], // Start writing after the first line prefix
-            streamWriter: static (c, index, destination) =>
+            streamWriter: static (c, _, destination) =>
             {
                 if (!IsLineSeparator(c))
                 {

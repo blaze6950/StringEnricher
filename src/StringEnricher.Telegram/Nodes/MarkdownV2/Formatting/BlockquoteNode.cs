@@ -70,7 +70,7 @@ public struct BlockquoteNode<TInner> : INode
                 BufferUtils.StreamBuffer(
                     source: state.Item1,
                     destination: span[1..], // Offset by 1 to account for the initial line prefix
-                    streamWriter: static (c, index, destination) =>
+                    streamWriter: static (c, _, destination) =>
                     {
                         if (!IsLineSeparator(c))
                         {
