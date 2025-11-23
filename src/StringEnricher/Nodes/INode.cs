@@ -29,8 +29,7 @@ public interface INode : ISpanFormattable
     /// Use this method for small texts or when you need to avoid heap allocations. The best use case is when
     /// you need to get a random character from a small styled text.
     /// This method does not allocate any garbage in heap memory.
-    /// Consider using GetCharacterIterator() as it allows to iterate through the characters in O(n) time complexity, but not so good to get a character at a random index.
-    /// Another alternative is to use <see cref="CopyTo"/> to copy the style syntax into a char array or span and then index that array/span.
+    /// Consider using <see cref="CopyTo"/> or <see cref="ISpanFormattable.TryFormat"/> to copy the style syntax into a char array or span and then index that array/span.
     /// Also, another option is to use <see cref="object.ToString()"/> and then indexing the resulting string, but this will allocate the string object on heap.
     /// </summary>
     /// <param name="index">
