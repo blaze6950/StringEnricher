@@ -3,7 +3,7 @@
 /// <summary>
 /// Interface representing a text style
 /// </summary>
-public interface INode
+public interface INode : ISpanFormattable
 {
     /// <summary>
     /// Gets the syntax length of the style (e.g., for markdown, "*bold*" has a syntax length of 2).
