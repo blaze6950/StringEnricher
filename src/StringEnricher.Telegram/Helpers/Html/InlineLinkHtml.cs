@@ -1,4 +1,5 @@
-﻿using StringEnricher.Nodes;
+﻿using System.Runtime.CompilerServices;
+using StringEnricher.Nodes;
 using StringEnricher.Nodes.Shared;
 using StringEnricher.Telegram.Nodes.Html.Formatting;
 
@@ -25,6 +26,7 @@ public static class InlineLinkHtml
     /// <returns>
     /// A new instance of <see cref="InlineLinkNode{TInner}"/> wrapping the provided inner style.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineLinkNode<T> Apply<T>(T style, string url) where T : INode =>
         InlineLinkNode<T>.Apply(style, url);
 
@@ -42,6 +44,7 @@ public static class InlineLinkHtml
     /// <returns>
     /// A new instance of <see cref="InlineLinkNode{TInner}"/> wrapping the provided text.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineLinkNode<PlainTextNode> Apply(string text, string url) =>
         InlineLinkNode<PlainTextNode>.Apply(text, url);
 
@@ -57,6 +60,7 @@ public static class InlineLinkHtml
     /// <returns>
     /// A new instance of <see cref="InlineLinkNode{TInner}"/> containing the styled boolean.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineLinkNode<BoolNode> Apply(bool boolean, string url) =>
         InlineLinkNode<BoolNode>.Apply(boolean, url);
 
@@ -72,6 +76,7 @@ public static class InlineLinkHtml
     /// <returns>
     /// A new instance of <see cref="InlineLinkNode{TInner}"/> containing the styled character.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineLinkNode<CharNode> Apply(char character, string url) =>
         InlineLinkNode<CharNode>.Apply(character, url);
 
@@ -87,6 +92,7 @@ public static class InlineLinkHtml
     /// <returns>
     /// A new instance of <see cref="InlineLinkNode{TInner}"/> containing the styled GUID.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineLinkNode<GuidNode> Apply(Guid guid, string url) =>
         InlineLinkNode<GuidNode>.Apply(guid, url);
 
@@ -112,6 +118,7 @@ public static class InlineLinkHtml
     /// <returns>
     /// A new instance of <see cref="InlineLinkNode{TInner}"/> containing the styled integer.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineLinkNode<IntegerNode> Apply(int integer, string url, string? format = null,
         IFormatProvider? provider = null) =>
         InlineLinkNode<IntegerNode>.Apply(new IntegerNode(integer, format, provider), url);
@@ -134,6 +141,7 @@ public static class InlineLinkHtml
     /// <returns>
     /// A new instance of <see cref="InlineLinkNode{TInner}"/> containing the styled long integer.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineLinkNode<LongNode> Apply(long @long, string url, string? format = null,
         IFormatProvider? provider = null) =>
         InlineLinkNode<LongNode>.Apply(new LongNode(@long, format, provider), url);
@@ -156,6 +164,7 @@ public static class InlineLinkHtml
     /// <returns>
     /// A new instance of <see cref="InlineLinkNode{TInner}"/> containing the styled decimal.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineLinkNode<DecimalNode> Apply(decimal @decimal, string url, string? format = null,
         IFormatProvider? provider = null) =>
         InlineLinkNode<DecimalNode>.Apply(new DecimalNode(@decimal, format, provider), url);
@@ -178,6 +187,7 @@ public static class InlineLinkHtml
     /// <returns>
     /// A new instance of <see cref="InlineLinkNode{TInner}"/> containing the styled double.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineLinkNode<DoubleNode> Apply(double @double, string url, string? format = null,
         IFormatProvider? provider = null) =>
         InlineLinkNode<DoubleNode>.Apply(new DoubleNode(@double, format, provider), url);
@@ -200,6 +210,7 @@ public static class InlineLinkHtml
     /// <returns>
     /// A new instance of <see cref="InlineLinkNode{TInner}"/> containing the styled float.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineLinkNode<FloatNode> Apply(float @float, string url, string? format = null,
         IFormatProvider? provider = null) =>
         InlineLinkNode<FloatNode>.Apply(new FloatNode(@float, format, provider), url);
@@ -226,6 +237,7 @@ public static class InlineLinkHtml
     /// <returns>
     /// A new instance of <see cref="InlineLinkNode{TInner}"/> containing the styled DateTime.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineLinkNode<DateTimeNode> Apply(DateTime dateTime, string url, string? format = null,
         IFormatProvider? provider = null) =>
         InlineLinkNode<DateTimeNode>.Apply(new DateTimeNode(dateTime, format, provider), url);
@@ -248,6 +260,7 @@ public static class InlineLinkHtml
     /// <returns>
     /// A new instance of <see cref="InlineLinkNode{TInner}"/> containing the styled DateTimeOffset.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineLinkNode<DateTimeOffsetNode> Apply(DateTimeOffset dateTimeOffset, string url,
         string? format = null, IFormatProvider? provider = null) =>
         InlineLinkNode<DateTimeOffsetNode>.Apply(new DateTimeOffsetNode(dateTimeOffset, format, provider), url);
@@ -270,6 +283,7 @@ public static class InlineLinkHtml
     /// <returns>
     /// A new instance of <see cref="InlineLinkNode{TInner}"/> containing the styled DateOnly.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineLinkNode<DateOnlyNode> Apply(DateOnly dateOnly, string url, string? format = null,
         IFormatProvider? provider = null) =>
         InlineLinkNode<DateOnlyNode>.Apply(new DateOnlyNode(dateOnly, format, provider), url);
@@ -292,6 +306,7 @@ public static class InlineLinkHtml
     /// <returns>
     /// A new instance of <see cref="InlineLinkNode{TInner}"/> containing the styled TimeOnly.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineLinkNode<TimeOnlyNode> Apply(TimeOnly timeOnly, string url, string? format = null,
         IFormatProvider? provider = null) =>
         InlineLinkNode<TimeOnlyNode>.Apply(new TimeOnlyNode(timeOnly, format, provider), url);
@@ -314,6 +329,7 @@ public static class InlineLinkHtml
     /// <returns>
     /// A new instance of <see cref="InlineLinkNode{TInner}"/> containing the styled TimeSpan.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineLinkNode<TimeSpanNode> Apply(TimeSpan timeSpan, string url, string? format = null,
         IFormatProvider? provider = null) =>
         InlineLinkNode<TimeSpanNode>.Apply(new TimeSpanNode(timeSpan, format, provider), url);

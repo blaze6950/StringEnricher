@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using StringEnricher.Configuration;
 using StringEnricher.Extensions;
 using StringEnricher.Nodes;
@@ -156,5 +157,6 @@ public readonly struct BlockquoteNode<TInner> : INode
     /// <returns>
     /// A new instance of <see cref="BlockquoteNode{TInner}"/> containing the inner style.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BlockquoteNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
 }

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using StringEnricher.Configuration;
 using StringEnricher.Extensions;
 using StringEnricher.Nodes;
@@ -227,5 +228,6 @@ public readonly struct TgEmojiNode : INode
     /// <param name="defaultEmoji">The default emoji to be wrapped with Telegram emoji HTML tags.</param>
     /// <param name="customEmoji">The custom emoji ID to be used in the emoji-id attribute.</param>
     /// <returns>A new instance of <see cref="TgEmojiNode"/> wrapping the provided emoji and ID.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static TgEmojiNode Apply(PlainTextNode defaultEmoji, LongNode customEmoji) => new(defaultEmoji, customEmoji);
 }

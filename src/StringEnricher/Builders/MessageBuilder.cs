@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Runtime.CompilerServices;
+using System.Text;
 using StringEnricher.Helpers;
 using StringEnricher.Nodes;
 
@@ -30,6 +31,7 @@ public readonly struct MessageBuilder
     /// Initializes a new instance of the <see cref="MessageBuilder"/> struct with the specified total length.
     /// </summary>
     /// <param name="totalLength"></param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public MessageBuilder(int totalLength)
     {
         _totalLength = totalLength;
@@ -64,6 +66,7 @@ public readonly struct MessageBuilder
     /// The constructed message as a string with the exact length specified during initialization.
     /// The returned string is the only object that was allocated on the heap during this process, except for any allocations made within the build action itself.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public string Create<TState>(TState state, Action<TState, MessageWriter> buildAction) =>
         string.Create(_totalLength, ValueTuple.Create(state, buildAction), static (span, s) =>
         {
@@ -87,6 +90,7 @@ public readonly struct MessageBuilder
         /// This span should have a length equal to the total length specified during the initialization of the <see cref="MessageBuilder"/>.
         /// The <see cref="MessageWriter"/> will append text and nodes directly to this span.
         /// </param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal MessageWriter(Span<char> destination)
         {
             _destination = destination;
@@ -99,6 +103,7 @@ public readonly struct MessageBuilder
         /// <param name="stringBuilder">
         /// The StringBuilder whose content will be appended to the message.
         /// </param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Append(StringBuilder stringBuilder)
         {
             stringBuilder.CopyTo(0, _destination.Slice(_position, stringBuilder.Length), stringBuilder.Length);
@@ -112,6 +117,7 @@ public readonly struct MessageBuilder
         /// <param name="span">
         /// The span of characters to append to the message.
         /// </param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Append(ReadOnlySpan<char> span)
         {
             span.CopyTo(_destination.Slice(_position, span.Length));
@@ -128,6 +134,7 @@ public readonly struct MessageBuilder
         /// <typeparam name="TNode">
         /// The type of the node to append. Must implement <see cref="INode"/>.
         /// </typeparam>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Append<TNode>(TNode node) where TNode : struct, INode
         {
             _position += node.CopyTo(_destination[_position..]);
@@ -140,6 +147,7 @@ public readonly struct MessageBuilder
         /// <param name="value">
         /// The text to append to the message.
         /// </param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Append(string value) => Append(value.ToNode());
 
         /// <summary>
@@ -149,6 +157,7 @@ public readonly struct MessageBuilder
         /// <param name="value">
         /// The character to append to the message.
         /// </param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Append(char value) => Append(value.ToNode());
 
         /// <summary>
@@ -169,6 +178,7 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the integer could not be formatted into the destination span.
         /// </exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Append(int value, string? format = null, IFormatProvider? provider = null) =>
             Append(value.ToNode(format, provider));
 
@@ -190,6 +200,7 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the long integer could not be formatted into the destination span.
         /// </exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Append(long value, string? format = null, IFormatProvider? provider = null) =>
             Append(value.ToNode(format, provider));
 
@@ -211,6 +222,7 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the double could not be formatted into the destination span.
         /// </exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Append(double value, string? format = null, IFormatProvider? provider = null) =>
             Append(value.ToNode(format, provider));
 
@@ -232,6 +244,7 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the float could not be formatted into the destination span.
         /// </exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Append(float value, string? format = null, IFormatProvider? provider = null) =>
             Append(value.ToNode(format, provider));
 
@@ -253,6 +266,7 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the decimal could not be formatted into the destination span.
         /// </exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Append(decimal value, string? format = null, IFormatProvider? provider = null) =>
             Append(value.ToNode(format, provider));
 
@@ -266,6 +280,7 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the boolean could not be formatted into the destination span.
         /// </exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Append(bool value) => Append(value.ToNode());
 
         /// <summary>
@@ -286,6 +301,7 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the DateTime could not be formatted into the destination span.
         /// </exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Append(DateTime value, string? format = null, IFormatProvider? provider = null) =>
             Append(value.ToNode(format, provider));
 
@@ -307,6 +323,7 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the DateTimeOffset could not be formatted into the destination span.
         /// </exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Append(DateTimeOffset value, string? format = null, IFormatProvider? provider = null) =>
             Append(value.ToNode(format, provider));
 
@@ -324,6 +341,7 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the Guid could not be formatted into the destination span.
         /// </exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Append(Guid value, string? format = null) => Append(value.ToNode(format));
 
         /// <summary>
@@ -344,6 +362,7 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the TimeSpan could not be formatted into the destination span.
         /// </exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Append(TimeSpan value, string? format = null, IFormatProvider? provider = null) =>
             Append(value.ToNode(format, provider));
 
@@ -365,6 +384,7 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the DateOnly could not be formatted into the destination span.
         /// </exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Append(DateOnly value, string? format = null, IFormatProvider? provider = null) =>
             Append(value.ToNode(format, provider));
 
@@ -386,6 +406,7 @@ public readonly struct MessageBuilder
         /// <exception cref="InvalidOperationException">
         /// Thrown if the TimeOnly could not be formatted into the destination span.
         /// </exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Append(TimeOnly value, string? format = null, IFormatProvider? provider = null) =>
             Append(value.ToNode(format, provider));
 
@@ -404,6 +425,7 @@ public readonly struct MessageBuilder
         /// An optional format provider to customize the byte representation.
         /// If not provided, the current culture's format provider will be used.
         /// </param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Append(byte value, string? format = null, IFormatProvider? provider = null) =>
             Append(value.ToNode(format, provider));
 
@@ -422,6 +444,7 @@ public readonly struct MessageBuilder
         /// An optional format provider to customize the signed byte representation.
         /// If not provided, the current culture's format provider will be used.
         /// </param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Append(sbyte value, string? format = null, IFormatProvider? provider = null) =>
             Append(value.ToNode(format, provider));
 
@@ -440,6 +463,7 @@ public readonly struct MessageBuilder
         /// An optional format provider to customize the short integer representation.
         /// If not provided, the current culture's format provider will be used.
         /// </param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Append(short value, string? format = null, IFormatProvider? provider = null) =>
             Append(value.ToNode(format, provider));
 
@@ -458,6 +482,7 @@ public readonly struct MessageBuilder
         /// An optional format provider to customize the unsigned integer representation.
         /// If not provided, the current culture's format provider will be used.
         /// </param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Append(uint value, string? format = null, IFormatProvider? provider = null) =>
             Append(value.ToNode(format, provider));
 
@@ -476,6 +501,7 @@ public readonly struct MessageBuilder
         /// An optional format provider to customize the unsigned long integer representation.
         /// If not provided, the current culture's format provider will be used.
         /// </param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Append(ulong value, string? format = null, IFormatProvider? provider = null) =>
             Append(value.ToNode(format, provider));
 
@@ -494,6 +520,7 @@ public readonly struct MessageBuilder
         /// An optional format provider to customize the unsigned short integer representation.
         /// If not provided, the current culture's format provider will be used.
         /// </param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Append(ushort value, string? format = null, IFormatProvider? provider = null) =>
             Append(value.ToNode(format, provider));
 
@@ -512,6 +539,7 @@ public readonly struct MessageBuilder
         /// If null or empty, the values are appended without any separation.
         /// Default is null.
         /// </param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AppendJoin<TCollection>(TCollection values, string? separator = null)
             where TCollection : IReadOnlyList<string> => Append(values.ToNode(separator));
 
@@ -529,6 +557,7 @@ public readonly struct MessageBuilder
         /// <typeparam name="TEnum">
         /// The type of the enum to append. Must be a struct and an Enum.
         /// </typeparam>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Append<TEnum>(TEnum value, string? format = null)
             where TEnum : struct, Enum => Append(value.ToNode(format));
     }

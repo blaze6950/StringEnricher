@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using StringEnricher.Configuration;
 using StringEnricher.Extensions;
 using StringEnricher.Nodes;
@@ -236,6 +237,6 @@ public readonly struct InlineLinkNode<TInner> : INode
     /// <returns>
     /// A new instance of the <see cref="InlineLinkNode{TInner}"/> struct.
     /// </returns>
-    public static InlineLinkNode<TInner> Apply(TInner linkTitle, string linkUrl) =>
-        new(linkTitle, linkUrl);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static InlineLinkNode<TInner> Apply(TInner linkTitle, string linkUrl) => new(linkTitle, linkUrl);
 }

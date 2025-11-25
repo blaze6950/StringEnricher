@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using StringEnricher.Configuration;
 using StringEnricher.Extensions;
 using StringEnricher.Nodes;
@@ -222,5 +223,6 @@ public readonly struct SpecificCodeBlockNode<TInner> : INode
     /// <param name="codeBlock">The code block text.</param>
     /// <param name="language">The language to be used in the class attribute.</param>
     /// <returns>A new instance of <see cref="SpecificCodeBlockNode{TInner}"/> wrapping the provided code block and language.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SpecificCodeBlockNode<TInner> Apply(TInner codeBlock, string language) => new(codeBlock, language);
 }

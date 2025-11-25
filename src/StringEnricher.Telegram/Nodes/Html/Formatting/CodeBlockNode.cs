@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using StringEnricher.Configuration;
 using StringEnricher.Extensions;
 using StringEnricher.Nodes;
@@ -168,5 +169,15 @@ public readonly struct CodeBlockNode<TInner> : INode
         return true;
     }
 
+    /// <summary>
+    /// Applies the code block style to the given inner code block.
+    /// </summary>
+    /// <param name="innerCodeBlock">
+    /// The inner style to be wrapped with code block syntax.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="CodeBlockNode{TInner}"/> with the specified inner code block.
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static CodeBlockNode<TInner> Apply(TInner innerCodeBlock) => new(innerCodeBlock);
 }

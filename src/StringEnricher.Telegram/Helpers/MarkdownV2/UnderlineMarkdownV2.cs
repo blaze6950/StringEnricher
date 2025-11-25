@@ -1,4 +1,5 @@
-﻿using StringEnricher.Nodes;
+﻿using System.Runtime.CompilerServices;
+using StringEnricher.Nodes;
 using StringEnricher.Nodes.Shared;
 using StringEnricher.Telegram.Nodes.MarkdownV2.Formatting;
 
@@ -22,6 +23,7 @@ public static class UnderlineMarkdownV2
     /// <returns>
     /// A new instance of <see cref="UnderlineNode{TInner}"/> that wraps the provided style.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static UnderlineNode<T> Apply<T>(T style) where T : INode =>
         UnderlineNode<T>.Apply(style);
 
@@ -36,6 +38,7 @@ public static class UnderlineMarkdownV2
     /// <returns>
     /// A new instance of <see cref="UnderlineNode{TInner}"/> that wraps the provided text.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static UnderlineNode<PlainTextNode> Apply(string text) =>
         UnderlineNode<PlainTextNode>.Apply(text);
 
@@ -48,6 +51,7 @@ public static class UnderlineMarkdownV2
     /// <returns>
     /// A new instance of <see cref="UnderlineNode{TInner}"/> containing the styled boolean.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static UnderlineNode<BoolNode> Apply(bool boolean) =>
         UnderlineNode<BoolNode>.Apply(boolean);
 
@@ -60,6 +64,7 @@ public static class UnderlineMarkdownV2
     /// <returns>
     /// A new instance of <see cref="UnderlineNode{TInner}"/> containing the styled character.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static UnderlineNode<CharNode> Apply(char character) =>
         UnderlineNode<CharNode>.Apply(character);
 
@@ -72,6 +77,7 @@ public static class UnderlineMarkdownV2
     /// <returns>
     /// A new instance of <see cref="UnderlineNode{TInner}"/> containing the styled GUID.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static UnderlineNode<GuidNode> Apply(Guid guid) =>
         UnderlineNode<GuidNode>.Apply(guid);
 
@@ -94,6 +100,7 @@ public static class UnderlineMarkdownV2
     /// <returns>
     /// A new instance of <see cref="UnderlineNode{TInner}"/> containing the styled integer.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static UnderlineNode<IntegerNode> Apply(int integer, string? format = null, IFormatProvider? provider = null) =>
         UnderlineNode<IntegerNode>.Apply(new IntegerNode(integer, format, provider));
 
@@ -112,6 +119,7 @@ public static class UnderlineMarkdownV2
     /// <returns>
     /// A new instance of <see cref="UnderlineNode{TInner}"/> containing the styled long integer.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static UnderlineNode<LongNode> Apply(long @long, string? format = null, IFormatProvider? provider = null) =>
         UnderlineNode<LongNode>.Apply(new LongNode(@long, format, provider));
 
@@ -130,6 +138,7 @@ public static class UnderlineMarkdownV2
     /// <returns>
     /// A new instance of <see cref="UnderlineNode{TInner}"/> containing the styled decimal.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static UnderlineNode<DecimalNode> Apply(decimal @decimal, string? format = null,
         IFormatProvider? provider = null) =>
         UnderlineNode<DecimalNode>.Apply(new DecimalNode(@decimal, format, provider));
@@ -149,6 +158,7 @@ public static class UnderlineMarkdownV2
     /// <returns>
     /// A new instance of <see cref="UnderlineNode{TInner}"/> containing the styled double.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static UnderlineNode<DoubleNode> Apply(double @double, string? format = null, IFormatProvider? provider = null) =>
         UnderlineNode<DoubleNode>.Apply(new DoubleNode(@double, format, provider));
 
@@ -167,6 +177,7 @@ public static class UnderlineMarkdownV2
     /// <returns>
     /// A new instance of <see cref="UnderlineNode{TInner}"/> containing the styled float.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static UnderlineNode<FloatNode> Apply(float @float, string? format = null, IFormatProvider? provider = null) =>
         UnderlineNode<FloatNode>.Apply(new FloatNode(@float, format, provider));
 
@@ -189,6 +200,7 @@ public static class UnderlineMarkdownV2
     /// <returns>
     /// A new instance of <see cref="UnderlineNode{TInner}"/> containing the styled DateTime.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static UnderlineNode<DateTimeNode> Apply(DateTime dateTime, string? format = null,
         IFormatProvider? provider = null) =>
         UnderlineNode<DateTimeNode>.Apply(new DateTimeNode(dateTime, format, provider));
@@ -208,6 +220,7 @@ public static class UnderlineMarkdownV2
     /// <returns>
     /// A new instance of <see cref="UnderlineNode{TInner}"/> containing the styled DateTimeOffset.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static UnderlineNode<DateTimeOffsetNode> Apply(DateTimeOffset dateTimeOffset, string? format = null,
         IFormatProvider? provider = null) =>
         UnderlineNode<DateTimeOffsetNode>.Apply(new DateTimeOffsetNode(dateTimeOffset, format, provider));
@@ -227,6 +240,7 @@ public static class UnderlineMarkdownV2
     /// <returns>
     /// A new instance of <see cref="UnderlineNode{TInner}"/> containing the styled DateOnly.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static UnderlineNode<DateOnlyNode> Apply(DateOnly dateOnly, string? format = null,
         IFormatProvider? provider = null) =>
         UnderlineNode<DateOnlyNode>.Apply(new DateOnlyNode(dateOnly, format, provider));
@@ -246,6 +260,7 @@ public static class UnderlineMarkdownV2
     /// <returns>
     /// A new instance of <see cref="UnderlineNode{TInner}"/> containing the styled TimeOnly.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static UnderlineNode<TimeOnlyNode> Apply(TimeOnly timeOnly, string? format = null,
         IFormatProvider? provider = null) =>
         UnderlineNode<TimeOnlyNode>.Apply(new TimeOnlyNode(timeOnly, format, provider));
@@ -265,6 +280,7 @@ public static class UnderlineMarkdownV2
     /// <returns>
     /// A new instance of <see cref="UnderlineNode{TInner}"/> containing the styled TimeSpan.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static UnderlineNode<TimeSpanNode> Apply(TimeSpan timeSpan, string? format = null,
         IFormatProvider? provider = null) =>
         UnderlineNode<TimeSpanNode>.Apply(new TimeSpanNode(timeSpan, format, provider));

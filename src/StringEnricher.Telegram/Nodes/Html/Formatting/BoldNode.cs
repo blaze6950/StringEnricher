@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using StringEnricher.Configuration;
 using StringEnricher.Extensions;
 using StringEnricher.Nodes;
@@ -169,5 +170,15 @@ public readonly struct BoldNode<TInner> : INode
         return true;
     }
 
+    /// <summary>
+    /// Applies the bold HTML style to the given inner style.
+    /// </summary>
+    /// <param name="innerStyle">
+    /// The inner style to be wrapped with bold HTML tags.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="BoldNode{TInner}"/> wrapping the provided inner style.
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BoldNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
 }

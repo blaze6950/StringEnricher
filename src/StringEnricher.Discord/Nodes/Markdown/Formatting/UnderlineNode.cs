@@ -1,5 +1,6 @@
-﻿using System.Diagnostics;
-using StringEnricher.Configuration;
+﻿﻿﻿using System.Diagnostics;
+  using System.Runtime.CompilerServices;
+  using StringEnricher.Configuration;
 using StringEnricher.Extensions;
 using StringEnricher.Nodes;
 
@@ -181,5 +182,6 @@ public readonly struct UnderlineNode<TInner> : INode
     /// <returns>
     /// A new instance of <see cref="UnderlineNode{TInner}"/> that wraps the provided inner style.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static UnderlineNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
 }

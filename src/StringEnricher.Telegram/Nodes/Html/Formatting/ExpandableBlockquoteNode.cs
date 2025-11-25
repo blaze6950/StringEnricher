@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using StringEnricher.Configuration;
 using StringEnricher.Extensions;
 using StringEnricher.Nodes;
@@ -175,5 +176,15 @@ public readonly struct ExpandableBlockquoteNode<TInner> : INode
         return true;
     }
 
+    /// <summary>
+    /// Applies the expandable blockquote style to the given inner style.
+    /// </summary>
+    /// <param name="innerStyle">
+    /// The inner style to be wrapped with expandable blockquote syntax.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="ExpandableBlockquoteNode{TInner}"/> with the specified inner style.
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ExpandableBlockquoteNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
 }

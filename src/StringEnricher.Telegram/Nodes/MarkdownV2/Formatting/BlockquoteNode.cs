@@ -254,6 +254,7 @@ public struct BlockquoteNode<TInner> : INode
     /// <returns>
     /// A new instance of <see cref="BlockquoteNode{TInner}"/> containing the inner style.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BlockquoteNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
 
     /// <summary>

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using StringEnricher.Configuration;
 using StringEnricher.Extensions;
 using StringEnricher.Nodes;
@@ -168,5 +169,15 @@ public readonly struct InlineCodeNode<TInner> : INode
         return true;
     }
 
+    /// <summary>
+    /// Applies the inline code HTML formatting to the given inner style.
+    /// </summary>
+    /// <param name="innerStyle">
+    /// The inner style to be wrapped with inline code HTML tags.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="InlineCodeNode{TInner}"/> containing the specified inner style.
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineCodeNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
 }

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using StringEnricher.Configuration;
 using StringEnricher.Extensions;
 using StringEnricher.Nodes;
@@ -117,7 +118,8 @@ public readonly struct SpecificCodeBlockNode<TInner> : INode
         charsWritten += Separator.Length;
 
         // Copy code block
-        if (!_innerCodeBlock.TryFormat(destination.SliceSafe(charsWritten), out var innerCharsWritten, format, provider))
+        if (!_innerCodeBlock.TryFormat(destination.SliceSafe(charsWritten), out var innerCharsWritten, format,
+                provider))
         {
             return false;
         }
@@ -232,6 +234,6 @@ public readonly struct SpecificCodeBlockNode<TInner> : INode
     /// <returns>
     /// A new instance of the <see cref="SpecificCodeBlockNode{TInner}"/> struct.
     /// </returns>
-    public static SpecificCodeBlockNode<TInner> Apply(TInner codeBlock, string language) =>
-        new(codeBlock, language);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static SpecificCodeBlockNode<TInner> Apply(TInner codeBlock, string language) => new(codeBlock, language);
 }

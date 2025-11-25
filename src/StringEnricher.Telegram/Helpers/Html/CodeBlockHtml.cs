@@ -1,4 +1,5 @@
-﻿using StringEnricher.Nodes;
+﻿using System.Runtime.CompilerServices;
+using StringEnricher.Nodes;
 using StringEnricher.Nodes.Shared;
 using StringEnricher.Telegram.Nodes.Html.Formatting;
 
@@ -22,6 +23,7 @@ public static class CodeBlockHtml
     /// <returns>
     /// A new instance of <see cref="CodeBlockNode{TInner}"/> wrapping the provided inner style.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static CodeBlockNode<T> Apply<T>(T codeBlock) where T : INode =>
         CodeBlockNode<T>.Apply(codeBlock);
 
@@ -36,6 +38,7 @@ public static class CodeBlockHtml
     /// <returns>
     /// A new instance of <see cref="CodeBlockNode{TInner}"/> wrapping the provided text.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static CodeBlockNode<PlainTextNode> Apply(string text) =>
         CodeBlockNode<PlainTextNode>.Apply(text);
 
@@ -48,6 +51,7 @@ public static class CodeBlockHtml
     /// <returns>
     /// A new instance of <see cref="CodeBlockNode{TInner}"/> containing the styled boolean.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static CodeBlockNode<BoolNode> Apply(bool boolean) =>
         CodeBlockNode<BoolNode>.Apply(boolean);
 
@@ -60,6 +64,7 @@ public static class CodeBlockHtml
     /// <returns>
     /// A new instance of <see cref="CodeBlockNode{TInner}"/> containing the styled character.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static CodeBlockNode<CharNode> Apply(char character) =>
         CodeBlockNode<CharNode>.Apply(character);
 
@@ -72,6 +77,7 @@ public static class CodeBlockHtml
     /// <returns>
     /// A new instance of <see cref="CodeBlockNode{TInner}"/> containing the styled GUID.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static CodeBlockNode<GuidNode> Apply(Guid guid) =>
         CodeBlockNode<GuidNode>.Apply(guid);
 
@@ -94,6 +100,7 @@ public static class CodeBlockHtml
     /// <returns>
     /// A new instance of <see cref="CodeBlockNode{TInner}"/> containing the styled integer.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static CodeBlockNode<IntegerNode>
         Apply(int integer, string? format = null, IFormatProvider? provider = null) =>
         CodeBlockNode<IntegerNode>.Apply(new IntegerNode(integer, format, provider));
@@ -113,6 +120,7 @@ public static class CodeBlockHtml
     /// <returns>
     /// A new instance of <see cref="CodeBlockNode{TInner}"/> containing the styled long integer.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static CodeBlockNode<LongNode> Apply(long @long, string? format = null, IFormatProvider? provider = null) =>
         CodeBlockNode<LongNode>.Apply(new LongNode(@long, format, provider));
 
@@ -131,6 +139,7 @@ public static class CodeBlockHtml
     /// <returns>
     /// A new instance of <see cref="CodeBlockNode{TInner}"/> containing the styled decimal.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static CodeBlockNode<DecimalNode> Apply(decimal @decimal, string? format = null,
         IFormatProvider? provider = null) =>
         CodeBlockNode<DecimalNode>.Apply(new DecimalNode(@decimal, format, provider));
@@ -150,6 +159,7 @@ public static class CodeBlockHtml
     /// <returns>
     /// A new instance of <see cref="CodeBlockNode{TInner}"/> containing the styled double.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static CodeBlockNode<DoubleNode> Apply(double @double, string? format = null,
         IFormatProvider? provider = null) =>
         CodeBlockNode<DoubleNode>.Apply(new DoubleNode(@double, format, provider));
@@ -169,6 +179,7 @@ public static class CodeBlockHtml
     /// <returns>
     /// A new instance of <see cref="CodeBlockNode{TInner}"/> containing the styled float.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static CodeBlockNode<FloatNode>
         Apply(float @float, string? format = null, IFormatProvider? provider = null) =>
         CodeBlockNode<FloatNode>.Apply(new FloatNode(@float, format, provider));
@@ -192,6 +203,7 @@ public static class CodeBlockHtml
     /// <returns>
     /// A new instance of <see cref="CodeBlockNode{TInner}"/> containing the styled DateTime.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static CodeBlockNode<DateTimeNode> Apply(DateTime dateTime, string? format = null,
         IFormatProvider? provider = null) =>
         CodeBlockNode<DateTimeNode>.Apply(new DateTimeNode(dateTime, format, provider));
@@ -211,6 +223,7 @@ public static class CodeBlockHtml
     /// <returns>
     /// A new instance of <see cref="CodeBlockNode{TInner}"/> containing the styled DateTimeOffset.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static CodeBlockNode<DateTimeOffsetNode> Apply(DateTimeOffset dateTimeOffset, string? format = null,
         IFormatProvider? provider = null) =>
         CodeBlockNode<DateTimeOffsetNode>.Apply(new DateTimeOffsetNode(dateTimeOffset, format, provider));
@@ -230,6 +243,7 @@ public static class CodeBlockHtml
     /// <returns>
     /// A new instance of <see cref="CodeBlockNode{TInner}"/> containing the styled DateOnly.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static CodeBlockNode<DateOnlyNode> Apply(DateOnly dateOnly, string? format = null,
         IFormatProvider? provider = null) =>
         CodeBlockNode<DateOnlyNode>.Apply(new DateOnlyNode(dateOnly, format, provider));
@@ -249,6 +263,7 @@ public static class CodeBlockHtml
     /// <returns>
     /// A new instance of <see cref="CodeBlockNode{TInner}"/> containing the styled TimeOnly.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static CodeBlockNode<TimeOnlyNode> Apply(TimeOnly timeOnly, string? format = null,
         IFormatProvider? provider = null) =>
         CodeBlockNode<TimeOnlyNode>.Apply(new TimeOnlyNode(timeOnly, format, provider));
@@ -268,6 +283,7 @@ public static class CodeBlockHtml
     /// <returns>
     /// A new instance of <see cref="CodeBlockNode{TInner}"/> containing the styled TimeSpan.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static CodeBlockNode<TimeSpanNode> Apply(TimeSpan timeSpan, string? format = null,
         IFormatProvider? provider = null) =>
         CodeBlockNode<TimeSpanNode>.Apply(new TimeSpanNode(timeSpan, format, provider));

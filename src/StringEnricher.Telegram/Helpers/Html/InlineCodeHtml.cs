@@ -1,4 +1,5 @@
-﻿using StringEnricher.Nodes;
+﻿using System.Runtime.CompilerServices;
+using StringEnricher.Nodes;
 using StringEnricher.Nodes.Shared;
 using StringEnricher.Telegram.Nodes.Html.Formatting;
 
@@ -22,6 +23,7 @@ public static class InlineCodeHtml
     /// <returns>
     /// A new instance of <see cref="InlineCodeNode{TInner}"/> wrapping the provided inner style.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineCodeNode<T> Apply<T>(T style) where T : INode =>
         InlineCodeNode<T>.Apply(style);
 
@@ -36,6 +38,7 @@ public static class InlineCodeHtml
     /// <returns>
     /// A new instance of <see cref="InlineCodeNode{TInner}"/> wrapping the provided text.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineCodeNode<PlainTextNode> Apply(string text) =>
         InlineCodeNode<PlainTextNode>.Apply(text);
 
@@ -48,6 +51,7 @@ public static class InlineCodeHtml
     /// <returns>
     /// A new instance of <see cref="InlineCodeNode{TInner}"/> containing the styled boolean.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineCodeNode<BoolNode> Apply(bool boolean) =>
         InlineCodeNode<BoolNode>.Apply(boolean);
 
@@ -60,6 +64,7 @@ public static class InlineCodeHtml
     /// <returns>
     /// A new instance of <see cref="InlineCodeNode{TInner}"/> containing the styled character.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineCodeNode<CharNode> Apply(char character) =>
         InlineCodeNode<CharNode>.Apply(character);
 
@@ -72,6 +77,7 @@ public static class InlineCodeHtml
     /// <returns>
     /// A new instance of <see cref="InlineCodeNode{TInner}"/> containing the styled GUID.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineCodeNode<GuidNode> Apply(Guid guid) =>
         InlineCodeNode<GuidNode>.Apply(guid);
 
@@ -94,6 +100,7 @@ public static class InlineCodeHtml
     /// <returns>
     /// A new instance of <see cref="InlineCodeNode{TInner}"/> containing the styled integer.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineCodeNode<IntegerNode> Apply(int integer, string? format = null,
         IFormatProvider? provider = null) =>
         InlineCodeNode<IntegerNode>.Apply(new IntegerNode(integer, format, provider));
@@ -113,6 +120,7 @@ public static class InlineCodeHtml
     /// <returns>
     /// A new instance of <see cref="InlineCodeNode{TInner}"/> containing the styled long integer.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineCodeNode<LongNode> Apply(long @long, string? format = null, IFormatProvider? provider = null) =>
         InlineCodeNode<LongNode>.Apply(new LongNode(@long, format, provider));
 
@@ -131,6 +139,7 @@ public static class InlineCodeHtml
     /// <returns>
     /// A new instance of <see cref="InlineCodeNode{TInner}"/> containing the styled decimal.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineCodeNode<DecimalNode> Apply(decimal @decimal, string? format = null,
         IFormatProvider? provider = null) =>
         InlineCodeNode<DecimalNode>.Apply(new DecimalNode(@decimal, format, provider));
@@ -150,6 +159,7 @@ public static class InlineCodeHtml
     /// <returns>
     /// A new instance of <see cref="InlineCodeNode{TInner}"/> containing the styled double.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineCodeNode<DoubleNode> Apply(double @double, string? format = null,
         IFormatProvider? provider = null) =>
         InlineCodeNode<DoubleNode>.Apply(new DoubleNode(@double, format, provider));
@@ -169,6 +179,7 @@ public static class InlineCodeHtml
     /// <returns>
     /// A new instance of <see cref="InlineCodeNode{TInner}"/> containing the styled float.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineCodeNode<FloatNode>
         Apply(float @float, string? format = null, IFormatProvider? provider = null) =>
         InlineCodeNode<FloatNode>.Apply(new FloatNode(@float, format, provider));
@@ -192,6 +203,7 @@ public static class InlineCodeHtml
     /// <returns>
     /// A new instance of <see cref="InlineCodeNode{TInner}"/> containing the styled DateTime.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineCodeNode<DateTimeNode> Apply(DateTime dateTime, string? format = null,
         IFormatProvider? provider = null) =>
         InlineCodeNode<DateTimeNode>.Apply(new DateTimeNode(dateTime, format, provider));
@@ -211,6 +223,7 @@ public static class InlineCodeHtml
     /// <returns>
     /// A new instance of <see cref="InlineCodeNode{TInner}"/> containing the styled DateTimeOffset.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineCodeNode<DateTimeOffsetNode> Apply(DateTimeOffset dateTimeOffset, string? format = null,
         IFormatProvider? provider = null) =>
         InlineCodeNode<DateTimeOffsetNode>.Apply(new DateTimeOffsetNode(dateTimeOffset, format, provider));
@@ -230,6 +243,7 @@ public static class InlineCodeHtml
     /// <returns>
     /// A new instance of <see cref="InlineCodeNode{TInner}"/> containing the styled DateOnly.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineCodeNode<DateOnlyNode> Apply(DateOnly dateOnly, string? format = null,
         IFormatProvider? provider = null) =>
         InlineCodeNode<DateOnlyNode>.Apply(new DateOnlyNode(dateOnly, format, provider));
@@ -249,6 +263,7 @@ public static class InlineCodeHtml
     /// <returns>
     /// A new instance of <see cref="InlineCodeNode{TInner}"/> containing the styled TimeOnly.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineCodeNode<TimeOnlyNode> Apply(TimeOnly timeOnly, string? format = null,
         IFormatProvider? provider = null) =>
         InlineCodeNode<TimeOnlyNode>.Apply(new TimeOnlyNode(timeOnly, format, provider));
@@ -268,6 +283,7 @@ public static class InlineCodeHtml
     /// <returns>
     /// A new instance of <see cref="InlineCodeNode{TInner}"/> containing the styled TimeSpan.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineCodeNode<TimeSpanNode> Apply(TimeSpan timeSpan, string? format = null,
         IFormatProvider? provider = null) =>
         InlineCodeNode<TimeSpanNode>.Apply(new TimeSpanNode(timeSpan, format, provider));

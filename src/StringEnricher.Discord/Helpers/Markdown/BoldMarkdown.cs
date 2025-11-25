@@ -1,4 +1,5 @@
-﻿using StringEnricher.Discord.Nodes.Markdown.Formatting;
+﻿using System.Runtime.CompilerServices;
+using StringEnricher.Discord.Nodes.Markdown.Formatting;
 using StringEnricher.Nodes;
 using StringEnricher.Nodes.Shared;
 
@@ -22,6 +23,7 @@ public static class BoldMarkdown
     /// <returns>
     /// A new instance of <see cref="BoldNode{TInner}"/> wrapping the provided inner style.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BoldNode<T> Apply<T>(T style) where T : INode =>
         BoldNode<T>.Apply(style);
 
@@ -36,6 +38,7 @@ public static class BoldMarkdown
     /// <returns>
     /// A new instance of <see cref="BoldNode{TInner}"/> wrapping the provided text.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BoldNode<PlainTextNode> Apply(string text) =>
         BoldNode<PlainTextNode>.Apply(text);
 
@@ -48,6 +51,7 @@ public static class BoldMarkdown
     /// <returns>
     /// A new instance of <see cref="BoldNode{TInner}"/> containing the styled boolean.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BoldNode<BoolNode> Apply(bool boolean) =>
         BoldNode<BoolNode>.Apply(boolean);
 
@@ -60,6 +64,7 @@ public static class BoldMarkdown
     /// <returns>
     /// A new instance of <see cref="BoldNode{TInner}"/> containing the styled character.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BoldNode<CharNode> Apply(char character) =>
         BoldNode<CharNode>.Apply(character);
 
@@ -72,6 +77,7 @@ public static class BoldMarkdown
     /// <returns>
     /// A new instance of <see cref="BoldNode{TInner}"/> containing the styled GUID.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BoldNode<GuidNode> Apply(Guid guid) =>
         BoldNode<GuidNode>.Apply(guid);
 
@@ -94,6 +100,7 @@ public static class BoldMarkdown
     /// <returns>
     /// A new instance of <see cref="BoldNode{TInner}"/> containing the styled integer.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BoldNode<IntegerNode> Apply(int integer, string? format = null, IFormatProvider? provider = null) =>
         BoldNode<IntegerNode>.Apply(new IntegerNode(integer, format, provider));
 
@@ -112,6 +119,7 @@ public static class BoldMarkdown
     /// <returns>
     /// A new instance of <see cref="BoldNode{TInner}"/> containing the styled long integer.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BoldNode<LongNode> Apply(long @long, string? format = null, IFormatProvider? provider = null) =>
         BoldNode<LongNode>.Apply(new LongNode(@long, format, provider));
 
@@ -130,6 +138,7 @@ public static class BoldMarkdown
     /// <returns>
     /// A new instance of <see cref="BoldNode{TInner}"/> containing the styled decimal.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BoldNode<DecimalNode>
         Apply(decimal @decimal, string? format = null, IFormatProvider? provider = null) =>
         BoldNode<DecimalNode>.Apply(new DecimalNode(@decimal, format, provider));
@@ -149,6 +158,7 @@ public static class BoldMarkdown
     /// <returns>
     /// A new instance of <see cref="BoldNode{TInner}"/> containing the styled double.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BoldNode<DoubleNode> Apply(double @double, string? format = null, IFormatProvider? provider = null) =>
         BoldNode<DoubleNode>.Apply(new DoubleNode(@double, format, provider));
 
@@ -167,6 +177,7 @@ public static class BoldMarkdown
     /// <returns>
     /// A new instance of <see cref="BoldNode{TInner}"/> containing the styled float.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BoldNode<FloatNode> Apply(float @float, string? format = null, IFormatProvider? provider = null) =>
         BoldNode<FloatNode>.Apply(new FloatNode(@float, format, provider));
 
@@ -189,6 +200,7 @@ public static class BoldMarkdown
     /// <returns>
     /// A new instance of <see cref="BoldNode{TInner}"/> containing the styled DateTime.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BoldNode<DateTimeNode> Apply(DateTime dateTime, string? format = null,
         IFormatProvider? provider = null) =>
         BoldNode<DateTimeNode>.Apply(new DateTimeNode(dateTime, format, provider));
@@ -208,6 +220,7 @@ public static class BoldMarkdown
     /// <returns>
     /// A new instance of <see cref="BoldNode{TInner}"/> containing the styled DateTimeOffset.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BoldNode<DateTimeOffsetNode> Apply(DateTimeOffset dateTimeOffset, string? format = null,
         IFormatProvider? provider = null) =>
         BoldNode<DateTimeOffsetNode>.Apply(new DateTimeOffsetNode(dateTimeOffset, format, provider));
@@ -227,6 +240,7 @@ public static class BoldMarkdown
     /// <returns>
     /// A new instance of <see cref="BoldNode{TInner}"/> containing the styled DateOnly.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BoldNode<DateOnlyNode> Apply(DateOnly dateOnly, string? format = null,
         IFormatProvider? provider = null) =>
         BoldNode<DateOnlyNode>.Apply(new DateOnlyNode(dateOnly, format, provider));
@@ -246,6 +260,7 @@ public static class BoldMarkdown
     /// <returns>
     /// A new instance of <see cref="BoldNode{TInner}"/> containing the styled TimeOnly.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BoldNode<TimeOnlyNode> Apply(TimeOnly timeOnly, string? format = null,
         IFormatProvider? provider = null) =>
         BoldNode<TimeOnlyNode>.Apply(new TimeOnlyNode(timeOnly, format, provider));
@@ -265,6 +280,7 @@ public static class BoldMarkdown
     /// <returns>
     /// A new instance of <see cref="BoldNode{TInner}"/> containing the styled TimeSpan.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BoldNode<TimeSpanNode> Apply(TimeSpan timeSpan, string? format = null,
         IFormatProvider? provider = null) =>
         BoldNode<TimeSpanNode>.Apply(new TimeSpanNode(timeSpan, format, provider));

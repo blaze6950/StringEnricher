@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using StringEnricher.Configuration;
 using StringEnricher.Extensions;
 using StringEnricher.Nodes;
@@ -185,5 +186,6 @@ public readonly struct HeaderNode<TInner> : INode
     /// <returns>
     /// A new instance of <see cref="HeaderNode{TInner}"/> containing the inner style.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static HeaderNode<TInner> Apply(TInner innerStyle, int level = 1) => new(innerStyle, level);
 }

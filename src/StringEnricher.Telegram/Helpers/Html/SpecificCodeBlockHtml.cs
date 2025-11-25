@@ -1,4 +1,5 @@
-﻿using StringEnricher.Nodes;
+﻿using System.Runtime.CompilerServices;
+using StringEnricher.Nodes;
 using StringEnricher.Nodes.Shared;
 using StringEnricher.Telegram.Nodes.Html.Formatting;
 
@@ -25,6 +26,7 @@ public static class SpecificCodeBlockHtml
     /// <returns>
     /// A new instance of <see cref="SpecificCodeBlockNode{TInner}"/> wrapping the provided inner style.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SpecificCodeBlockNode<T> Apply<T>(T style, string language) where T : INode =>
         SpecificCodeBlockNode<T>.Apply(style, language);
 
@@ -42,6 +44,7 @@ public static class SpecificCodeBlockHtml
     /// <returns>
     /// A new instance of <see cref="SpecificCodeBlockNode{TInner}"/> wrapping the provided text.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SpecificCodeBlockNode<PlainTextNode> Apply(string text, string language) =>
         SpecificCodeBlockNode<PlainTextNode>.Apply(text, language);
 
@@ -57,6 +60,7 @@ public static class SpecificCodeBlockHtml
     /// <returns>
     /// A new instance of <see cref="SpecificCodeBlockNode{TInner}"/> containing the styled boolean.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SpecificCodeBlockNode<BoolNode> Apply(bool boolean, string language) =>
         SpecificCodeBlockNode<BoolNode>.Apply(boolean, language);
 
@@ -72,6 +76,7 @@ public static class SpecificCodeBlockHtml
     /// <returns>
     /// A new instance of <see cref="SpecificCodeBlockNode{TInner}"/> containing the styled character.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SpecificCodeBlockNode<CharNode> Apply(char character, string language) =>
         SpecificCodeBlockNode<CharNode>.Apply(character, language);
 
@@ -87,6 +92,7 @@ public static class SpecificCodeBlockHtml
     /// <returns>
     /// A new instance of <see cref="SpecificCodeBlockNode{TInner}"/> containing the styled GUID.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SpecificCodeBlockNode<GuidNode> Apply(Guid guid, string language) =>
         SpecificCodeBlockNode<GuidNode>.Apply(guid, language);
 
@@ -112,6 +118,7 @@ public static class SpecificCodeBlockHtml
     /// <returns>
     /// A new instance of <see cref="SpecificCodeBlockNode{TInner}"/> containing the styled integer.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SpecificCodeBlockNode<IntegerNode> Apply(int integer, string language, string? format = null,
         IFormatProvider? provider = null) =>
         SpecificCodeBlockNode<IntegerNode>.Apply(new IntegerNode(integer, format, provider), language);
@@ -134,6 +141,7 @@ public static class SpecificCodeBlockHtml
     /// <returns>
     /// A new instance of <see cref="SpecificCodeBlockNode{TInner}"/> containing the styled long integer.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SpecificCodeBlockNode<LongNode> Apply(long @long, string language, string? format = null,
         IFormatProvider? provider = null) =>
         SpecificCodeBlockNode<LongNode>.Apply(new LongNode(@long, format, provider), language);
@@ -156,6 +164,7 @@ public static class SpecificCodeBlockHtml
     /// <returns>
     /// A new instance of <see cref="SpecificCodeBlockNode{TInner}"/> containing the styled decimal.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SpecificCodeBlockNode<DecimalNode> Apply(decimal @decimal, string language, string? format = null,
         IFormatProvider? provider = null) =>
         SpecificCodeBlockNode<DecimalNode>.Apply(new DecimalNode(@decimal, format, provider), language);
@@ -178,6 +187,7 @@ public static class SpecificCodeBlockHtml
     /// <returns>
     /// A new instance of <see cref="SpecificCodeBlockNode{TInner}"/> containing the styled double.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SpecificCodeBlockNode<DoubleNode> Apply(double @double, string language, string? format = null,
         IFormatProvider? provider = null) =>
         SpecificCodeBlockNode<DoubleNode>.Apply(new DoubleNode(@double, format, provider), language);
@@ -200,6 +210,7 @@ public static class SpecificCodeBlockHtml
     /// <returns>
     /// A new instance of <see cref="SpecificCodeBlockNode{TInner}"/> containing the styled float.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SpecificCodeBlockNode<FloatNode> Apply(float @float, string language, string? format = null,
         IFormatProvider? provider = null) =>
         SpecificCodeBlockNode<FloatNode>.Apply(new FloatNode(@float, format, provider), language);
@@ -226,6 +237,7 @@ public static class SpecificCodeBlockHtml
     /// <returns>
     /// A new instance of <see cref="SpecificCodeBlockNode{TInner}"/> containing the styled DateTime.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SpecificCodeBlockNode<DateTimeNode> Apply(DateTime dateTime, string language, string? format = null,
         IFormatProvider? provider = null) =>
         SpecificCodeBlockNode<DateTimeNode>.Apply(new DateTimeNode(dateTime, format, provider), language);
@@ -248,6 +260,7 @@ public static class SpecificCodeBlockHtml
     /// <returns>
     /// A new instance of <see cref="SpecificCodeBlockNode{TInner}"/> containing the styled DateTimeOffset.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SpecificCodeBlockNode<DateTimeOffsetNode> Apply(DateTimeOffset dateTimeOffset, string language,
         string? format = null, IFormatProvider? provider = null) =>
         SpecificCodeBlockNode<DateTimeOffsetNode>.Apply(new DateTimeOffsetNode(dateTimeOffset, format, provider),
@@ -271,6 +284,7 @@ public static class SpecificCodeBlockHtml
     /// <returns>
     /// A new instance of <see cref="SpecificCodeBlockNode{TInner}"/> containing the styled DateOnly.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SpecificCodeBlockNode<DateOnlyNode> Apply(DateOnly dateOnly, string language, string? format = null,
         IFormatProvider? provider = null) =>
         SpecificCodeBlockNode<DateOnlyNode>.Apply(new DateOnlyNode(dateOnly, format, provider), language);
@@ -293,6 +307,7 @@ public static class SpecificCodeBlockHtml
     /// <returns>
     /// A new instance of <see cref="SpecificCodeBlockNode{TInner}"/> containing the styled TimeOnly.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SpecificCodeBlockNode<TimeOnlyNode> Apply(TimeOnly timeOnly, string language, string? format = null,
         IFormatProvider? provider = null) =>
         SpecificCodeBlockNode<TimeOnlyNode>.Apply(new TimeOnlyNode(timeOnly, format, provider), language);
@@ -315,6 +330,7 @@ public static class SpecificCodeBlockHtml
     /// <returns>
     /// A new instance of <see cref="SpecificCodeBlockNode{TInner}"/> containing the styled TimeSpan.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SpecificCodeBlockNode<TimeSpanNode> Apply(TimeSpan timeSpan, string language, string? format = null,
         IFormatProvider? provider = null) =>
         SpecificCodeBlockNode<TimeSpanNode>.Apply(new TimeSpanNode(timeSpan, format, provider), language);

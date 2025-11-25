@@ -1,4 +1,5 @@
-﻿using StringEnricher.Discord.Nodes.Markdown.Formatting;
+﻿using System.Runtime.CompilerServices;
+using StringEnricher.Discord.Nodes.Markdown.Formatting;
 using StringEnricher.Nodes;
 using StringEnricher.Nodes.Shared;
 
@@ -26,6 +27,7 @@ public static class InlineLinkMarkdown
     /// A new instance of the <see cref="InlineLinkNode{TInner}"/> struct
     /// with the specified link title and link URL.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineLinkNode<T> Apply<T>(T linkTitle, string linkUrl) where T : INode =>
         InlineLinkNode<T>.Apply(linkTitle, linkUrl);
 
@@ -44,6 +46,7 @@ public static class InlineLinkMarkdown
     /// A new instance of the <see cref="InlineLinkNode{TInner}"/> struct
     /// with the specified link title and link URL.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineLinkNode<PlainTextNode> Apply(string linkTitle, string linkUrl) =>
         InlineLinkNode<PlainTextNode>.Apply(linkTitle, linkUrl);
 
@@ -60,6 +63,7 @@ public static class InlineLinkMarkdown
     /// A new instance of the <see cref="InlineLinkNode{TInner}"/> struct
     /// with the specified boolean link title and link URL.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineLinkNode<BoolNode> Apply(bool linkTitle, string linkUrl) =>
         InlineLinkNode<BoolNode>.Apply(linkTitle, linkUrl);
 
@@ -76,6 +80,7 @@ public static class InlineLinkMarkdown
     /// A new instance of the <see cref="InlineLinkNode{TInner}"/> struct
     /// with the specified character link title and link URL.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineLinkNode<CharNode> Apply(char linkTitle, string linkUrl) =>
         InlineLinkNode<CharNode>.Apply(linkTitle, linkUrl);
 
@@ -92,6 +97,7 @@ public static class InlineLinkMarkdown
     /// A new instance of the <see cref="InlineLinkNode{TInner}"/> struct
     /// with the specified GUID link title and link URL.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineLinkNode<GuidNode> Apply(Guid linkTitle, string linkUrl) =>
         InlineLinkNode<GuidNode>.Apply(linkTitle, linkUrl);
 
@@ -118,7 +124,9 @@ public static class InlineLinkMarkdown
     /// A new instance of the <see cref="InlineLinkNode{TInner}"/> struct
     /// with the specified integer link title and link URL.
     /// </returns>
-    public static InlineLinkNode<IntegerNode> Apply(int linkTitle, string linkUrl, string? format = null, IFormatProvider? provider = null) =>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static InlineLinkNode<IntegerNode> Apply(int linkTitle, string linkUrl, string? format = null,
+        IFormatProvider? provider = null) =>
         InlineLinkNode<IntegerNode>.Apply(new IntegerNode(linkTitle, format, provider), linkUrl);
 
     /// <summary>
@@ -140,7 +148,9 @@ public static class InlineLinkMarkdown
     /// A new instance of the <see cref="InlineLinkNode{TInner}"/> struct
     /// with the specified long integer link title and link URL.
     /// </returns>
-    public static InlineLinkNode<LongNode> Apply(long linkTitle, string linkUrl, string? format = null, IFormatProvider? provider = null) =>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static InlineLinkNode<LongNode> Apply(long linkTitle, string linkUrl, string? format = null,
+        IFormatProvider? provider = null) =>
         InlineLinkNode<LongNode>.Apply(new LongNode(linkTitle, format, provider), linkUrl);
 
     /// <summary>
@@ -162,6 +172,7 @@ public static class InlineLinkMarkdown
     /// A new instance of the <see cref="InlineLinkNode{TInner}"/> struct
     /// with the specified decimal link title and link URL.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineLinkNode<DecimalNode> Apply(decimal linkTitle, string linkUrl, string? format = null,
         IFormatProvider? provider = null) =>
         InlineLinkNode<DecimalNode>.Apply(new DecimalNode(linkTitle, format, provider), linkUrl);
@@ -185,7 +196,9 @@ public static class InlineLinkMarkdown
     /// A new instance of the <see cref="InlineLinkNode{TInner}"/> struct
     /// with the specified double link title and link URL.
     /// </returns>
-    public static InlineLinkNode<DoubleNode> Apply(double linkTitle, string linkUrl, string? format = null, IFormatProvider? provider = null) =>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static InlineLinkNode<DoubleNode> Apply(double linkTitle, string linkUrl, string? format = null,
+        IFormatProvider? provider = null) =>
         InlineLinkNode<DoubleNode>.Apply(new DoubleNode(linkTitle, format, provider), linkUrl);
 
     /// <summary>
@@ -207,7 +220,9 @@ public static class InlineLinkMarkdown
     /// A new instance of the <see cref="InlineLinkNode{TInner}"/> struct
     /// with the specified float link title and link URL.
     /// </returns>
-    public static InlineLinkNode<FloatNode> Apply(float linkTitle, string linkUrl, string? format = null, IFormatProvider? provider = null) =>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static InlineLinkNode<FloatNode> Apply(float linkTitle, string linkUrl, string? format = null,
+        IFormatProvider? provider = null) =>
         InlineLinkNode<FloatNode>.Apply(new FloatNode(linkTitle, format, provider), linkUrl);
 
     #endregion
@@ -233,6 +248,7 @@ public static class InlineLinkMarkdown
     /// A new instance of the <see cref="InlineLinkNode{TInner}"/> struct
     /// with the specified DateTime link title and link URL.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineLinkNode<DateTimeNode> Apply(DateTime linkTitle, string linkUrl, string? format = null,
         IFormatProvider? provider = null) =>
         InlineLinkNode<DateTimeNode>.Apply(new DateTimeNode(linkTitle, format, provider), linkUrl);
@@ -256,7 +272,9 @@ public static class InlineLinkMarkdown
     /// A new instance of the <see cref="InlineLinkNode{TInner}"/> struct
     /// with the specified DateTimeOffset link title and link URL.
     /// </returns>
-    public static InlineLinkNode<DateTimeOffsetNode> Apply(DateTimeOffset linkTitle, string linkUrl, string? format = null,
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static InlineLinkNode<DateTimeOffsetNode> Apply(DateTimeOffset linkTitle, string linkUrl,
+        string? format = null,
         IFormatProvider? provider = null) =>
         InlineLinkNode<DateTimeOffsetNode>.Apply(new DateTimeOffsetNode(linkTitle, format, provider), linkUrl);
 
@@ -279,6 +297,7 @@ public static class InlineLinkMarkdown
     /// A new instance of the <see cref="InlineLinkNode{TInner}"/> struct
     /// with the specified DateOnly link title and link URL.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineLinkNode<DateOnlyNode> Apply(DateOnly linkTitle, string linkUrl, string? format = null,
         IFormatProvider? provider = null) =>
         InlineLinkNode<DateOnlyNode>.Apply(new DateOnlyNode(linkTitle, format, provider), linkUrl);
@@ -302,6 +321,7 @@ public static class InlineLinkMarkdown
     /// A new instance of the <see cref="InlineLinkNode{TInner}"/> struct
     /// with the specified TimeOnly link title and link URL.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineLinkNode<TimeOnlyNode> Apply(TimeOnly linkTitle, string linkUrl, string? format = null,
         IFormatProvider? provider = null) =>
         InlineLinkNode<TimeOnlyNode>.Apply(new TimeOnlyNode(linkTitle, format, provider), linkUrl);
@@ -325,6 +345,7 @@ public static class InlineLinkMarkdown
     /// A new instance of the <see cref="InlineLinkNode{TInner}"/> struct
     /// with the specified TimeSpan link title and link URL.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineLinkNode<TimeSpanNode> Apply(TimeSpan linkTitle, string linkUrl, string? format = null,
         IFormatProvider? provider = null) =>
         InlineLinkNode<TimeSpanNode>.Apply(new TimeSpanNode(linkTitle, format, provider), linkUrl);

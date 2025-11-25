@@ -1,4 +1,5 @@
-﻿using StringEnricher.Discord.Nodes.Markdown.Formatting;
+﻿using System.Runtime.CompilerServices;
+using StringEnricher.Discord.Nodes.Markdown.Formatting;
 using StringEnricher.Nodes;
 using StringEnricher.Nodes.Shared;
 
@@ -22,6 +23,7 @@ public static class ItalicMarkdown
     /// <returns>
     /// A new instance of <see cref="ItalicNode{TInner}"/> wrapping the provided inner style.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ItalicNode<T> Apply<T>(T style) where T : INode =>
         ItalicNode<T>.Apply(style);
 
@@ -36,6 +38,7 @@ public static class ItalicMarkdown
     /// <returns>
     /// A new instance of <see cref="ItalicNode{TInner}"/> wrapping the provided text.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ItalicNode<PlainTextNode> Apply(string text) =>
         ItalicNode<PlainTextNode>.Apply(text);
 
@@ -48,6 +51,7 @@ public static class ItalicMarkdown
     /// <returns>
     /// A new instance of <see cref="ItalicNode{TInner}"/> containing the styled boolean.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ItalicNode<BoolNode> Apply(bool boolean) =>
         ItalicNode<BoolNode>.Apply(boolean);
 
@@ -60,6 +64,7 @@ public static class ItalicMarkdown
     /// <returns>
     /// A new instance of <see cref="ItalicNode{TInner}"/> containing the styled character.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ItalicNode<CharNode> Apply(char character) =>
         ItalicNode<CharNode>.Apply(character);
 
@@ -72,6 +77,7 @@ public static class ItalicMarkdown
     /// <returns>
     /// A new instance of <see cref="ItalicNode{TInner}"/> containing the styled GUID.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ItalicNode<GuidNode> Apply(Guid guid) =>
         ItalicNode<GuidNode>.Apply(guid);
 
@@ -94,6 +100,7 @@ public static class ItalicMarkdown
     /// <returns>
     /// A new instance of <see cref="ItalicNode{TInner}"/> containing the styled integer.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ItalicNode<IntegerNode> Apply(int integer, string? format = null, IFormatProvider? provider = null) =>
         ItalicNode<IntegerNode>.Apply(new IntegerNode(integer, format, provider));
 
@@ -112,6 +119,7 @@ public static class ItalicMarkdown
     /// <returns>
     /// A new instance of <see cref="ItalicNode{TInner}"/> containing the styled long integer.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ItalicNode<LongNode> Apply(long @long, string? format = null, IFormatProvider? provider = null) =>
         ItalicNode<LongNode>.Apply(new LongNode(@long, format, provider));
 
@@ -130,6 +138,7 @@ public static class ItalicMarkdown
     /// <returns>
     /// A new instance of <see cref="ItalicNode{TInner}"/> containing the styled decimal.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ItalicNode<DecimalNode> Apply(decimal @decimal, string? format = null,
         IFormatProvider? provider = null) =>
         ItalicNode<DecimalNode>.Apply(new DecimalNode(@decimal, format, provider));
@@ -149,6 +158,7 @@ public static class ItalicMarkdown
     /// <returns>
     /// A new instance of <see cref="ItalicNode{TInner}"/> containing the styled double.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ItalicNode<DoubleNode>
         Apply(double @double, string? format = null, IFormatProvider? provider = null) =>
         ItalicNode<DoubleNode>.Apply(new DoubleNode(@double, format, provider));
@@ -168,6 +178,7 @@ public static class ItalicMarkdown
     /// <returns>
     /// A new instance of <see cref="ItalicNode{TInner}"/> containing the styled float.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ItalicNode<FloatNode> Apply(float @float, string? format = null, IFormatProvider? provider = null) =>
         ItalicNode<FloatNode>.Apply(new FloatNode(@float, format, provider));
 
@@ -190,6 +201,7 @@ public static class ItalicMarkdown
     /// <returns>
     /// A new instance of <see cref="ItalicNode{TInner}"/> containing the styled DateTime.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ItalicNode<DateTimeNode> Apply(DateTime dateTime, string? format = null,
         IFormatProvider? provider = null) =>
         ItalicNode<DateTimeNode>.Apply(new DateTimeNode(dateTime, format, provider));
@@ -209,6 +221,7 @@ public static class ItalicMarkdown
     /// <returns>
     /// A new instance of <see cref="ItalicNode{TInner}"/> containing the styled DateTimeOffset.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ItalicNode<DateTimeOffsetNode> Apply(DateTimeOffset dateTimeOffset, string? format = null,
         IFormatProvider? provider = null) =>
         ItalicNode<DateTimeOffsetNode>.Apply(new DateTimeOffsetNode(dateTimeOffset, format, provider));
@@ -228,6 +241,7 @@ public static class ItalicMarkdown
     /// <returns>
     /// A new instance of <see cref="ItalicNode{TInner}"/> containing the styled DateOnly.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ItalicNode<DateOnlyNode> Apply(DateOnly dateOnly, string? format = null,
         IFormatProvider? provider = null) =>
         ItalicNode<DateOnlyNode>.Apply(new DateOnlyNode(dateOnly, format, provider));
@@ -247,6 +261,7 @@ public static class ItalicMarkdown
     /// <returns>
     /// A new instance of <see cref="ItalicNode{TInner}"/> containing the styled TimeOnly.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ItalicNode<TimeOnlyNode> Apply(TimeOnly timeOnly, string? format = null,
         IFormatProvider? provider = null) =>
         ItalicNode<TimeOnlyNode>.Apply(new TimeOnlyNode(timeOnly, format, provider));
@@ -266,6 +281,7 @@ public static class ItalicMarkdown
     /// <returns>
     /// A new instance of <see cref="ItalicNode{TInner}"/> containing the styled TimeSpan.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ItalicNode<TimeSpanNode> Apply(TimeSpan timeSpan, string? format = null,
         IFormatProvider? provider = null) =>
         ItalicNode<TimeSpanNode>.Apply(new TimeSpanNode(timeSpan, format, provider));

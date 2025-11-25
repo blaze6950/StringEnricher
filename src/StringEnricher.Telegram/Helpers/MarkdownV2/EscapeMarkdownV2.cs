@@ -1,4 +1,5 @@
-﻿using StringEnricher.Nodes;
+﻿using System.Runtime.CompilerServices;
+using StringEnricher.Nodes;
 using StringEnricher.Nodes.Shared;
 using StringEnricher.Telegram.Nodes.MarkdownV2;
 
@@ -19,6 +20,7 @@ public static class EscapeMarkdownV2
     /// <returns>
     /// A new instance of <see cref="EscapeNode{TInner}"/> wrapping the provided text.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static EscapeNode<PlainTextNode> Apply(string text) =>
         EscapeNode<PlainTextNode>.Apply(text);
 
@@ -34,6 +36,7 @@ public static class EscapeMarkdownV2
     /// <returns>
     /// A new instance of <see cref="EscapeNode{TInner}"/> wrapping the provided inner style.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static EscapeNode<T> Apply<T>(T style) where T : INode =>
         EscapeNode<T>.Apply(style);
 }

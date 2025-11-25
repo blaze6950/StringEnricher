@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using StringEnricher.Configuration;
 using StringEnricher.Extensions;
 using StringEnricher.Nodes;
@@ -179,5 +180,6 @@ public readonly struct SpoilerNode<TInner> : INode
     /// <returns>
     /// A new instance of <see cref="SpoilerNode{TInner}"/> containing the specified inner style.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SpoilerNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
 }

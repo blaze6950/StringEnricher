@@ -1,4 +1,5 @@
-﻿using StringEnricher.Discord.Nodes.Markdown.Formatting;
+﻿using System.Runtime.CompilerServices;
+using StringEnricher.Discord.Nodes.Markdown.Formatting;
 using StringEnricher.Nodes;
 using StringEnricher.Nodes.Shared;
 
@@ -25,6 +26,7 @@ public static class HeaderMarkdown
     /// <returns>
     /// A new instance of <see cref="HeaderNode{TInner}"/> wrapping the provided inner style.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static HeaderNode<T> Apply<T>(T style, int level = 1) where T : INode =>
         HeaderNode<T>.Apply(style, level);
 
@@ -42,6 +44,7 @@ public static class HeaderMarkdown
     /// <returns>
     /// A new instance of <see cref="HeaderNode{TInner}"/> wrapping the provided text.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static HeaderNode<PlainTextNode> Apply(string text, int level = 1) =>
         HeaderNode<PlainTextNode>.Apply(new PlainTextNode(text), level);
 
@@ -57,6 +60,7 @@ public static class HeaderMarkdown
     /// <returns>
     /// A new instance of <see cref="HeaderNode{TInner}"/> containing the styled boolean.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static HeaderNode<BoolNode> Apply(bool boolean, int level = 1) =>
         HeaderNode<BoolNode>.Apply(new BoolNode(boolean), level);
 
@@ -72,6 +76,7 @@ public static class HeaderMarkdown
     /// <returns>
     /// A new instance of <see cref="HeaderNode{TInner}"/> containing the styled character.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static HeaderNode<CharNode> Apply(char character, int level = 1) =>
         HeaderNode<CharNode>.Apply(new CharNode(character), level);
 
@@ -87,6 +92,7 @@ public static class HeaderMarkdown
     /// <returns>
     /// A new instance of <see cref="HeaderNode{TInner}"/> containing the styled GUID.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static HeaderNode<GuidNode> Apply(Guid guid, int level = 1) =>
         HeaderNode<GuidNode>.Apply(new GuidNode(guid), level);
 
@@ -112,7 +118,9 @@ public static class HeaderMarkdown
     /// <returns>
     /// A new instance of <see cref="HeaderNode{TInner}"/> containing the styled integer.
     /// </returns>
-    public static HeaderNode<IntegerNode> Apply(int integer, int level = 1, string? format = null, IFormatProvider? provider = null) =>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static HeaderNode<IntegerNode> Apply(int integer, int level = 1, string? format = null,
+        IFormatProvider? provider = null) =>
         HeaderNode<IntegerNode>.Apply(new IntegerNode(integer, format, provider), level);
 
     /// <summary>
@@ -133,7 +141,9 @@ public static class HeaderMarkdown
     /// <returns>
     /// A new instance of <see cref="HeaderNode{TInner}"/> containing the styled long integer.
     /// </returns>
-    public static HeaderNode<LongNode> Apply(long @long, int level = 1, string? format = null, IFormatProvider? provider = null) =>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static HeaderNode<LongNode> Apply(long @long, int level = 1, string? format = null,
+        IFormatProvider? provider = null) =>
         HeaderNode<LongNode>.Apply(new LongNode(@long, format, provider), level);
 
     /// <summary>
@@ -154,7 +164,9 @@ public static class HeaderMarkdown
     /// <returns>
     /// A new instance of <see cref="HeaderNode{TInner}"/> containing the styled decimal.
     /// </returns>
-    public static HeaderNode<DecimalNode> Apply(decimal @decimal, int level = 1, string? format = null, IFormatProvider? provider = null) =>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static HeaderNode<DecimalNode> Apply(decimal @decimal, int level = 1, string? format = null,
+        IFormatProvider? provider = null) =>
         HeaderNode<DecimalNode>.Apply(new DecimalNode(@decimal, format, provider), level);
 
     /// <summary>
@@ -175,7 +187,9 @@ public static class HeaderMarkdown
     /// <returns>
     /// A new instance of <see cref="HeaderNode{TInner}"/> containing the styled double.
     /// </returns>
-    public static HeaderNode<DoubleNode> Apply(double @double, int level = 1, string? format = null, IFormatProvider? provider = null) =>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static HeaderNode<DoubleNode> Apply(double @double, int level = 1, string? format = null,
+        IFormatProvider? provider = null) =>
         HeaderNode<DoubleNode>.Apply(new DoubleNode(@double, format, provider), level);
 
     /// <summary>
@@ -196,7 +210,9 @@ public static class HeaderMarkdown
     /// <returns>
     /// A new instance of <see cref="HeaderNode{TInner}"/> containing the styled float.
     /// </returns>
-    public static HeaderNode<FloatNode> Apply(float @float, int level = 1, string? format = null, IFormatProvider? provider = null) =>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static HeaderNode<FloatNode> Apply(float @float, int level = 1, string? format = null,
+        IFormatProvider? provider = null) =>
         HeaderNode<FloatNode>.Apply(new FloatNode(@float, format, provider), level);
 
     #endregion
@@ -221,7 +237,9 @@ public static class HeaderMarkdown
     /// <returns>
     /// A new instance of <see cref="HeaderNode{TInner}"/> containing the styled DateTime.
     /// </returns>
-    public static HeaderNode<DateTimeNode> Apply(DateTime dateTime, int level = 1, string? format = null, IFormatProvider? provider = null) =>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static HeaderNode<DateTimeNode> Apply(DateTime dateTime, int level = 1, string? format = null,
+        IFormatProvider? provider = null) =>
         HeaderNode<DateTimeNode>.Apply(new DateTimeNode(dateTime, format, provider), level);
 
     /// <summary>
@@ -242,7 +260,9 @@ public static class HeaderMarkdown
     /// <returns>
     /// A new instance of <see cref="HeaderNode{TInner}"/> containing the styled DateTimeOffset.
     /// </returns>
-    public static HeaderNode<DateTimeOffsetNode> Apply(DateTimeOffset dateTimeOffset, int level = 1, string? format = null, IFormatProvider? provider = null) =>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static HeaderNode<DateTimeOffsetNode> Apply(DateTimeOffset dateTimeOffset, int level = 1,
+        string? format = null, IFormatProvider? provider = null) =>
         HeaderNode<DateTimeOffsetNode>.Apply(new DateTimeOffsetNode(dateTimeOffset, format, provider), level);
 
     /// <summary>
@@ -263,7 +283,9 @@ public static class HeaderMarkdown
     /// <returns>
     /// A new instance of <see cref="HeaderNode{TInner}"/> containing the styled DateOnly.
     /// </returns>
-    public static HeaderNode<DateOnlyNode> Apply(DateOnly dateOnly, int level = 1, string? format = null, IFormatProvider? provider = null) =>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static HeaderNode<DateOnlyNode> Apply(DateOnly dateOnly, int level = 1, string? format = null,
+        IFormatProvider? provider = null) =>
         HeaderNode<DateOnlyNode>.Apply(new DateOnlyNode(dateOnly, format, provider), level);
 
     /// <summary>
@@ -284,7 +306,9 @@ public static class HeaderMarkdown
     /// <returns>
     /// A new instance of <see cref="HeaderNode{TInner}"/> containing the styled TimeOnly.
     /// </returns>
-    public static HeaderNode<TimeOnlyNode> Apply(TimeOnly timeOnly, int level = 1, string? format = null, IFormatProvider? provider = null) =>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static HeaderNode<TimeOnlyNode> Apply(TimeOnly timeOnly, int level = 1, string? format = null,
+        IFormatProvider? provider = null) =>
         HeaderNode<TimeOnlyNode>.Apply(new TimeOnlyNode(timeOnly, format, provider), level);
 
     /// <summary>
@@ -305,7 +329,9 @@ public static class HeaderMarkdown
     /// <returns>
     /// A new instance of <see cref="HeaderNode{TInner}"/> containing the styled TimeSpan.
     /// </returns>
-    public static HeaderNode<TimeSpanNode> Apply(TimeSpan timeSpan, int level = 1, string? format = null, IFormatProvider? provider = null) =>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static HeaderNode<TimeSpanNode> Apply(TimeSpan timeSpan, int level = 1, string? format = null,
+        IFormatProvider? provider = null) =>
         HeaderNode<TimeSpanNode>.Apply(new TimeSpanNode(timeSpan, format, provider), level);
 
     #endregion

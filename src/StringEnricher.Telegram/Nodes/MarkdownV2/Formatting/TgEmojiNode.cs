@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using StringEnricher.Configuration;
 using StringEnricher.Extensions;
 using StringEnricher.Nodes;
@@ -238,6 +239,6 @@ public readonly struct TgEmojiNode : INode
     /// <returns>
     /// The created instance of the <see cref="TgEmojiNode"/> struct.
     /// </returns>
-    public static TgEmojiNode Apply(PlainTextNode defaultEmoji, LongNode customEmojiId) =>
-        new(defaultEmoji, customEmojiId);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static TgEmojiNode Apply(PlainTextNode defaultEmoji, LongNode customEmojiId) => new(defaultEmoji, customEmojiId);
 }

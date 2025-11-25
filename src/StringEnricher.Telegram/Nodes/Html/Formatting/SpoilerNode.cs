@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using StringEnricher.Configuration;
 using StringEnricher.Extensions;
 using StringEnricher.Nodes;
@@ -165,5 +166,15 @@ public readonly struct SpoilerNode<TInner> : INode
         return _innerText.TryGetChar(index - Prefix.Length, out character);
     }
 
+    /// <summary>
+    /// Applies the spoiler formatting to the given inner style.
+    /// </summary>
+    /// <param name="innerStyle">
+    /// The inner style to be wrapped with spoiler HTML tags.
+    /// </param>
+    /// <returns>
+    /// A new <see cref="SpoilerNode{TInner}"/> instance with the specified inner style.
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SpoilerNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
 }

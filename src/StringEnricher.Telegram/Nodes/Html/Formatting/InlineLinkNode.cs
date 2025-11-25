@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using StringEnricher.Configuration;
 using StringEnricher.Extensions;
 using StringEnricher.Nodes;
@@ -225,5 +226,6 @@ public readonly struct InlineLinkNode<TInner> : INode
     /// <param name="linkUrl">The link URL to be wrapped with inline link HTML tags.</param>
     /// <param name="linkTitle">The link title to be used as the link text.</param>
     /// <returns>A new instance of <see cref="InlineLinkNode{TInner}"/> wrapping the provided URL and title.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static InlineLinkNode<TInner> Apply(TInner linkTitle, string linkUrl) => new(linkTitle, linkUrl);
 }

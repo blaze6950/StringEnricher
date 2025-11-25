@@ -1,4 +1,5 @@
-﻿using StringEnricher.Nodes;
+﻿using System.Runtime.CompilerServices;
+using StringEnricher.Nodes;
 using StringEnricher.Nodes.Shared;
 using StringEnricher.Telegram.Nodes.MarkdownV2.Formatting;
 
@@ -25,6 +26,7 @@ public static class SpecificCodeBlockMarkdownV2
     /// <returns>
     /// The created instance of the <see cref="SpecificCodeBlockNode{TInner}"/> struct.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SpecificCodeBlockNode<T> Apply<T>(T codeBlock, string language) where T : INode =>
         SpecificCodeBlockNode<T>.Apply(codeBlock, language);
 
@@ -42,6 +44,7 @@ public static class SpecificCodeBlockMarkdownV2
     /// <returns>
     /// The created instance of the <see cref="SpecificCodeBlockNode{TInner}"/> struct.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SpecificCodeBlockNode<PlainTextNode> Apply(string codeBlock, string language) =>
         SpecificCodeBlockNode<PlainTextNode>.Apply(codeBlock, language);
 
@@ -57,6 +60,7 @@ public static class SpecificCodeBlockMarkdownV2
     /// <returns>
     /// The created instance of the <see cref="SpecificCodeBlockNode{TInner}"/> struct.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SpecificCodeBlockNode<BoolNode> Apply(bool codeBlock, string language) =>
         SpecificCodeBlockNode<BoolNode>.Apply(codeBlock, language);
 
@@ -72,6 +76,7 @@ public static class SpecificCodeBlockMarkdownV2
     /// <returns>
     /// The created instance of the <see cref="SpecificCodeBlockNode{TInner}"/> struct.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SpecificCodeBlockNode<CharNode> Apply(char codeBlock, string language) =>
         SpecificCodeBlockNode<CharNode>.Apply(codeBlock, language);
 
@@ -87,6 +92,7 @@ public static class SpecificCodeBlockMarkdownV2
     /// <returns>
     /// The created instance of the <see cref="SpecificCodeBlockNode{TInner}"/> struct.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SpecificCodeBlockNode<GuidNode> Apply(Guid codeBlock, string language) =>
         SpecificCodeBlockNode<GuidNode>.Apply(codeBlock, language);
 
@@ -112,7 +118,9 @@ public static class SpecificCodeBlockMarkdownV2
     /// <returns>
     /// The created instance of the <see cref="SpecificCodeBlockNode{TInner}"/> struct.
     /// </returns>
-    public static SpecificCodeBlockNode<IntegerNode> Apply(int codeBlock, string language, string? format = null, IFormatProvider? provider = null) =>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static SpecificCodeBlockNode<IntegerNode> Apply(int codeBlock, string language, string? format = null,
+        IFormatProvider? provider = null) =>
         SpecificCodeBlockNode<IntegerNode>.Apply(new IntegerNode(codeBlock, format, provider), language);
 
     /// <summary>
@@ -133,7 +141,9 @@ public static class SpecificCodeBlockMarkdownV2
     /// <returns>
     /// The created instance of the <see cref="SpecificCodeBlockNode{TInner}"/> struct.
     /// </returns>
-    public static SpecificCodeBlockNode<LongNode> Apply(long codeBlock, string language, string? format = null, IFormatProvider? provider = null) =>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static SpecificCodeBlockNode<LongNode> Apply(long codeBlock, string language, string? format = null,
+        IFormatProvider? provider = null) =>
         SpecificCodeBlockNode<LongNode>.Apply(new LongNode(codeBlock, format, provider), language);
 
     /// <summary>
@@ -154,6 +164,7 @@ public static class SpecificCodeBlockMarkdownV2
     /// <returns>
     /// The created instance of the <see cref="SpecificCodeBlockNode{TInner}"/> struct.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SpecificCodeBlockNode<DecimalNode> Apply(decimal @decimal, string language, string? format = null,
         IFormatProvider? provider = null) =>
         SpecificCodeBlockNode<DecimalNode>.Apply(new DecimalNode(@decimal, format, provider), language);
@@ -176,7 +187,9 @@ public static class SpecificCodeBlockMarkdownV2
     /// <returns>
     /// The created instance of the <see cref="SpecificCodeBlockNode{TInner}"/> struct.
     /// </returns>
-    public static SpecificCodeBlockNode<DoubleNode> Apply(double @double, string language, string? format = null, IFormatProvider? provider = null) =>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static SpecificCodeBlockNode<DoubleNode> Apply(double @double, string language, string? format = null,
+        IFormatProvider? provider = null) =>
         SpecificCodeBlockNode<DoubleNode>.Apply(new DoubleNode(@double, format, provider), language);
 
     /// <summary>
@@ -197,7 +210,9 @@ public static class SpecificCodeBlockMarkdownV2
     /// <returns>
     /// The created instance of the <see cref="SpecificCodeBlockNode{TInner}"/> struct.
     /// </returns>
-    public static SpecificCodeBlockNode<FloatNode> Apply(float @float, string language, string? format = null, IFormatProvider? provider = null) =>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static SpecificCodeBlockNode<FloatNode> Apply(float @float, string language, string? format = null,
+        IFormatProvider? provider = null) =>
         SpecificCodeBlockNode<FloatNode>.Apply(new FloatNode(@float, format, provider), language);
 
     #endregion
@@ -222,6 +237,7 @@ public static class SpecificCodeBlockMarkdownV2
     /// <returns>
     /// The created instance of the <see cref="SpecificCodeBlockNode{TInner}"/> struct.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SpecificCodeBlockNode<DateTimeNode> Apply(DateTime codeBlock, string language, string? format = null,
         IFormatProvider? provider = null) =>
         SpecificCodeBlockNode<DateTimeNode>.Apply(new DateTimeNode(codeBlock, format, provider), language);
@@ -244,7 +260,9 @@ public static class SpecificCodeBlockMarkdownV2
     /// <returns>
     /// The created instance of the <see cref="SpecificCodeBlockNode{TInner}"/> struct.
     /// </returns>
-    public static SpecificCodeBlockNode<DateTimeOffsetNode> Apply(DateTimeOffset codeBlock, string language, string? format = null,
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static SpecificCodeBlockNode<DateTimeOffsetNode> Apply(DateTimeOffset codeBlock, string language,
+        string? format = null,
         IFormatProvider? provider = null) =>
         SpecificCodeBlockNode<DateTimeOffsetNode>.Apply(new DateTimeOffsetNode(codeBlock, format, provider), language);
 
@@ -266,6 +284,7 @@ public static class SpecificCodeBlockMarkdownV2
     /// <returns>
     /// The created instance of the <see cref="SpecificCodeBlockNode{TInner}"/> struct.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SpecificCodeBlockNode<DateOnlyNode> Apply(DateOnly codeBlock, string language, string? format = null,
         IFormatProvider? provider = null) =>
         SpecificCodeBlockNode<DateOnlyNode>.Apply(new DateOnlyNode(codeBlock, format, provider), language);
@@ -288,6 +307,7 @@ public static class SpecificCodeBlockMarkdownV2
     /// <returns>
     /// The created instance of the <see cref="SpecificCodeBlockNode{TInner}"/> struct.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SpecificCodeBlockNode<TimeOnlyNode> Apply(TimeOnly codeBlock, string language, string? format = null,
         IFormatProvider? provider = null) =>
         SpecificCodeBlockNode<TimeOnlyNode>.Apply(new TimeOnlyNode(codeBlock, format, provider), language);
@@ -310,6 +330,7 @@ public static class SpecificCodeBlockMarkdownV2
     /// <returns>
     /// The created instance of the <see cref="SpecificCodeBlockNode{TInner}"/> struct.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SpecificCodeBlockNode<TimeSpanNode> Apply(TimeSpan codeBlock, string language, string? format = null,
         IFormatProvider? provider = null) =>
         SpecificCodeBlockNode<TimeSpanNode>.Apply(new TimeSpanNode(codeBlock, format, provider), language);

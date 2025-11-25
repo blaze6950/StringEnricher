@@ -1,4 +1,5 @@
-﻿using StringEnricher.Nodes.Shared;
+﻿using System.Runtime.CompilerServices;
+using StringEnricher.Nodes.Shared;
 using StringEnricher.Telegram.Nodes.MarkdownV2.Formatting;
 
 namespace StringEnricher.Telegram.Helpers.MarkdownV2;
@@ -21,6 +22,7 @@ public static class TgEmojiMarkdownV2
     /// <returns>
     /// The created instance of the <see cref="TgEmojiNode"/> struct.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static TgEmojiNode Apply(PlainTextNode defaultEmoji, LongNode customEmojiId) =>
         TgEmojiNode.Apply(defaultEmoji, customEmojiId);
 
@@ -36,6 +38,7 @@ public static class TgEmojiMarkdownV2
     /// <returns>
     /// The created instance of the <see cref="TgEmojiNode"/> struct.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static TgEmojiNode Apply(string defaultEmoji, long customEmojiId) =>
         TgEmojiNode.Apply(defaultEmoji, customEmojiId);
 
@@ -51,6 +54,7 @@ public static class TgEmojiMarkdownV2
     /// <returns>
     /// The created instance of the <see cref="TgEmojiNode"/> struct.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static TgEmojiNode Apply(PlainTextNode defaultEmoji, long customEmojiId) =>
         TgEmojiNode.Apply(defaultEmoji, customEmojiId);
 
@@ -66,6 +70,7 @@ public static class TgEmojiMarkdownV2
     /// <returns>
     /// The created instance of the <see cref="TgEmojiNode"/> struct.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static TgEmojiNode Apply(string defaultEmoji, LongNode customEmojiId) =>
         TgEmojiNode.Apply(defaultEmoji, customEmojiId);
 }

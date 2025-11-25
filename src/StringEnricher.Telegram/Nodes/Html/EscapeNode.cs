@@ -250,6 +250,7 @@ public struct EscapeNode<TInner> : INode
     /// <returns>
     /// A new instance of <see cref="EscapeNode{TInner}"/> wrapping the provided inner style.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static EscapeNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
 
     /// <summary>

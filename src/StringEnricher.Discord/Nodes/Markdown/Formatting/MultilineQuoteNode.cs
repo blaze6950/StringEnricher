@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using StringEnricher.Configuration;
 using StringEnricher.Extensions;
 using StringEnricher.Nodes;
@@ -156,5 +157,6 @@ public readonly struct MultilineQuoteNode<TInner> : INode
     /// <returns>
     /// A new instance of <see cref="MultilineQuoteNode{TInner}"/> containing the inner style.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static MultilineQuoteNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
 }

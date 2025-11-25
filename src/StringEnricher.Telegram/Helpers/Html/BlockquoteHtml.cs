@@ -1,4 +1,5 @@
-﻿using StringEnricher.Nodes;
+﻿using System.Runtime.CompilerServices;
+using StringEnricher.Nodes;
 using StringEnricher.Nodes.Shared;
 using StringEnricher.Telegram.Nodes.Html.Formatting;
 
@@ -22,6 +23,7 @@ public static class BlockquoteHtml
     /// <returns>
     /// A new instance of <see cref="BlockquoteNode{TInner}"/> wrapping the provided inner style.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BlockquoteNode<T> Apply<T>(T style) where T : INode =>
         BlockquoteNode<T>.Apply(style);
 
@@ -36,6 +38,7 @@ public static class BlockquoteHtml
     /// <returns>
     /// A new instance of <see cref="BlockquoteNode{TInner}"/> wrapping the provided text.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BlockquoteNode<PlainTextNode> Apply(string text) =>
         BlockquoteNode<PlainTextNode>.Apply(text);
 
@@ -48,6 +51,7 @@ public static class BlockquoteHtml
     /// <returns>
     /// A new instance of <see cref="BlockquoteNode{TInner}"/> containing the styled boolean.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BlockquoteNode<BoolNode> Apply(bool boolean) =>
         BlockquoteNode<BoolNode>.Apply(boolean);
 
@@ -60,6 +64,7 @@ public static class BlockquoteHtml
     /// <returns>
     /// A new instance of <see cref="BlockquoteNode{TInner}"/> containing the styled character.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BlockquoteNode<CharNode> Apply(char character) =>
         BlockquoteNode<CharNode>.Apply(character);
 
@@ -72,6 +77,7 @@ public static class BlockquoteHtml
     /// <returns>
     /// A new instance of <see cref="BlockquoteNode{TInner}"/> containing the styled GUID.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BlockquoteNode<GuidNode> Apply(Guid guid) =>
         BlockquoteNode<GuidNode>.Apply(guid);
 
@@ -94,7 +100,9 @@ public static class BlockquoteHtml
     /// <returns>
     /// A new instance of <see cref="BlockquoteNode{TInner}"/> containing the styled integer.
     /// </returns>
-    public static BlockquoteNode<IntegerNode> Apply(int integer, string? format = null, IFormatProvider? provider = null) =>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static BlockquoteNode<IntegerNode> Apply(int integer, string? format = null,
+        IFormatProvider? provider = null) =>
         BlockquoteNode<IntegerNode>.Apply(new IntegerNode(integer, format, provider));
 
     /// <summary>
@@ -112,6 +120,7 @@ public static class BlockquoteHtml
     /// <returns>
     /// A new instance of <see cref="BlockquoteNode{TInner}"/> containing the styled long integer.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BlockquoteNode<LongNode> Apply(long @long, string? format = null, IFormatProvider? provider = null) =>
         BlockquoteNode<LongNode>.Apply(new LongNode(@long, format, provider));
 
@@ -130,6 +139,7 @@ public static class BlockquoteHtml
     /// <returns>
     /// A new instance of <see cref="BlockquoteNode{TInner}"/> containing the styled decimal.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BlockquoteNode<DecimalNode> Apply(decimal @decimal, string? format = null,
         IFormatProvider? provider = null) =>
         BlockquoteNode<DecimalNode>.Apply(new DecimalNode(@decimal, format, provider));
@@ -149,7 +159,9 @@ public static class BlockquoteHtml
     /// <returns>
     /// A new instance of <see cref="BlockquoteNode{TInner}"/> containing the styled double.
     /// </returns>
-    public static BlockquoteNode<DoubleNode> Apply(double @double, string? format = null, IFormatProvider? provider = null) =>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static BlockquoteNode<DoubleNode> Apply(double @double, string? format = null,
+        IFormatProvider? provider = null) =>
         BlockquoteNode<DoubleNode>.Apply(new DoubleNode(@double, format, provider));
 
     /// <summary>
@@ -167,6 +179,7 @@ public static class BlockquoteHtml
     /// <returns>
     /// A new instance of <see cref="BlockquoteNode{TInner}"/> containing the styled float.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BlockquoteNode<FloatNode>
         Apply(float @float, string? format = null, IFormatProvider? provider = null) =>
         BlockquoteNode<FloatNode>.Apply(new FloatNode(@float, format, provider));
@@ -190,6 +203,7 @@ public static class BlockquoteHtml
     /// <returns>
     /// A new instance of <see cref="BlockquoteNode{TInner}"/> containing the styled DateTime.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BlockquoteNode<DateTimeNode> Apply(DateTime dateTime, string? format = null,
         IFormatProvider? provider = null) =>
         BlockquoteNode<DateTimeNode>.Apply(new DateTimeNode(dateTime, format, provider));
@@ -209,6 +223,7 @@ public static class BlockquoteHtml
     /// <returns>
     /// A new instance of <see cref="BlockquoteNode{TInner}"/> containing the styled DateTimeOffset.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BlockquoteNode<DateTimeOffsetNode> Apply(DateTimeOffset dateTimeOffset, string? format = null,
         IFormatProvider? provider = null) =>
         BlockquoteNode<DateTimeOffsetNode>.Apply(new DateTimeOffsetNode(dateTimeOffset, format, provider));
@@ -228,6 +243,7 @@ public static class BlockquoteHtml
     /// <returns>
     /// A new instance of <see cref="BlockquoteNode{TInner}"/> containing the styled DateOnly.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BlockquoteNode<DateOnlyNode> Apply(DateOnly dateOnly, string? format = null,
         IFormatProvider? provider = null) =>
         BlockquoteNode<DateOnlyNode>.Apply(new DateOnlyNode(dateOnly, format, provider));
@@ -247,7 +263,9 @@ public static class BlockquoteHtml
     /// <returns>
     /// A new instance of <see cref="BlockquoteNode{TInner}"/> containing the styled TimeOnly.
     /// </returns>
-    public static BlockquoteNode<TimeOnlyNode> Apply(TimeOnly timeOnly, string? format = null, IFormatProvider? provider = null) =>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static BlockquoteNode<TimeOnlyNode> Apply(TimeOnly timeOnly, string? format = null,
+        IFormatProvider? provider = null) =>
         BlockquoteNode<TimeOnlyNode>.Apply(new TimeOnlyNode(timeOnly, format, provider));
 
     /// <summary>
@@ -265,7 +283,9 @@ public static class BlockquoteHtml
     /// <returns>
     /// A new instance of <see cref="BlockquoteNode{TInner}"/> containing the styled TimeSpan.
     /// </returns>
-    public static BlockquoteNode<TimeSpanNode> Apply(TimeSpan timeSpan, string? format = null, IFormatProvider? provider = null) =>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static BlockquoteNode<TimeSpanNode> Apply(TimeSpan timeSpan, string? format = null,
+        IFormatProvider? provider = null) =>
         BlockquoteNode<TimeSpanNode>.Apply(new TimeSpanNode(timeSpan, format, provider));
 
     #endregion

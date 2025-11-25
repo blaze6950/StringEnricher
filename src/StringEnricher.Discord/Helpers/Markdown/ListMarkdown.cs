@@ -1,4 +1,5 @@
-﻿using StringEnricher.Discord.Nodes.Markdown.Formatting;
+﻿using System.Runtime.CompilerServices;
+using StringEnricher.Discord.Nodes.Markdown.Formatting;
 using StringEnricher.Nodes;
 using StringEnricher.Nodes.Shared;
 
@@ -22,6 +23,7 @@ public static class ListMarkdown
     /// <returns>
     /// A new instance of <see cref="ListNode{TInner}"/> containing the styled text.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ListNode<T> Apply<T>(T style) where T : INode =>
         ListNode<T>.Apply(style);
 
@@ -36,6 +38,7 @@ public static class ListMarkdown
     /// <returns>
     /// A new instance of <see cref="ListNode{TInner}"/> containing the styled text.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ListNode<PlainTextNode> Apply(string text) =>
         ListNode<PlainTextNode>.Apply(text);
 
@@ -48,6 +51,7 @@ public static class ListMarkdown
     /// <returns>
     /// A new instance of <see cref="ListNode{TInner}"/> containing the styled boolean.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ListNode<BoolNode> Apply(bool boolean) =>
         ListNode<BoolNode>.Apply(boolean);
 
@@ -60,6 +64,7 @@ public static class ListMarkdown
     /// <returns>
     /// A new instance of <see cref="ListNode{TInner}"/> containing the styled character.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ListNode<CharNode> Apply(char character) =>
         ListNode<CharNode>.Apply(character);
 
@@ -72,6 +77,7 @@ public static class ListMarkdown
     /// <returns>
     /// A new instance of <see cref="ListNode{TInner}"/> containing the styled GUID.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ListNode<GuidNode> Apply(Guid guid) =>
         ListNode<GuidNode>.Apply(guid);
 
@@ -94,6 +100,7 @@ public static class ListMarkdown
     /// <returns>
     /// A new instance of <see cref="ListNode{TInner}"/> containing the styled integer.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ListNode<IntegerNode> Apply(int integer, string? format = null, IFormatProvider? provider = null) =>
         ListNode<IntegerNode>.Apply(new IntegerNode(integer, format, provider));
 
@@ -112,6 +119,7 @@ public static class ListMarkdown
     /// <returns>
     /// A new instance of <see cref="ListNode{TInner}"/> containing the styled long integer.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ListNode<LongNode> Apply(long @long, string? format = null, IFormatProvider? provider = null) =>
         ListNode<LongNode>.Apply(new LongNode(@long, format, provider));
 
@@ -130,6 +138,7 @@ public static class ListMarkdown
     /// <returns>
     /// A new instance of <see cref="ListNode{TInner}"/> containing the styled decimal.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ListNode<DecimalNode> Apply(decimal @decimal, string? format = null,
         IFormatProvider? provider = null) =>
         ListNode<DecimalNode>.Apply(new DecimalNode(@decimal, format, provider));
@@ -149,6 +158,7 @@ public static class ListMarkdown
     /// <returns>
     /// A new instance of <see cref="ListNode{TInner}"/> containing the styled double.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ListNode<DoubleNode> Apply(double @double, string? format = null, IFormatProvider? provider = null) =>
         ListNode<DoubleNode>.Apply(new DoubleNode(@double, format, provider));
 
@@ -167,6 +177,7 @@ public static class ListMarkdown
     /// <returns>
     /// A new instance of <see cref="ListNode{TInner}"/> containing the styled float.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ListNode<FloatNode> Apply(float @float, string? format = null, IFormatProvider? provider = null) =>
         ListNode<FloatNode>.Apply(new FloatNode(@float, format, provider));
 
@@ -189,6 +200,7 @@ public static class ListMarkdown
     /// <returns>
     /// A new instance of <see cref="ListNode{TInner}"/> containing the styled DateTime.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ListNode<DateTimeNode> Apply(DateTime dateTime, string? format = null,
         IFormatProvider? provider = null) =>
         ListNode<DateTimeNode>.Apply(new DateTimeNode(dateTime, format, provider));
@@ -208,6 +220,7 @@ public static class ListMarkdown
     /// <returns>
     /// A new instance of <see cref="ListNode{TInner}"/> containing the styled DateTimeOffset.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ListNode<DateTimeOffsetNode> Apply(DateTimeOffset dateTimeOffset, string? format = null,
         IFormatProvider? provider = null) =>
         ListNode<DateTimeOffsetNode>.Apply(new DateTimeOffsetNode(dateTimeOffset, format, provider));
@@ -227,6 +240,7 @@ public static class ListMarkdown
     /// <returns>
     /// A new instance of <see cref="ListNode{TInner}"/> containing the styled DateOnly.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ListNode<DateOnlyNode> Apply(DateOnly dateOnly, string? format = null,
         IFormatProvider? provider = null) =>
         ListNode<DateOnlyNode>.Apply(new DateOnlyNode(dateOnly, format, provider));
@@ -246,6 +260,7 @@ public static class ListMarkdown
     /// <returns>
     /// A new instance of <see cref="ListNode{TInner}"/> containing the styled TimeOnly.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ListNode<TimeOnlyNode> Apply(TimeOnly timeOnly, string? format = null,
         IFormatProvider? provider = null) =>
         ListNode<TimeOnlyNode>.Apply(new TimeOnlyNode(timeOnly, format, provider));
@@ -265,6 +280,7 @@ public static class ListMarkdown
     /// <returns>
     /// A new instance of <see cref="ListNode{TInner}"/> containing the styled TimeSpan.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ListNode<TimeSpanNode> Apply(TimeSpan timeSpan, string? format = null,
         IFormatProvider? provider = null) =>
         ListNode<TimeSpanNode>.Apply(new TimeSpanNode(timeSpan, format, provider));

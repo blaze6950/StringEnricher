@@ -1,4 +1,5 @@
-﻿using StringEnricher.Discord.Nodes.Markdown.Formatting;
+﻿using System.Runtime.CompilerServices;
+using StringEnricher.Discord.Nodes.Markdown.Formatting;
 using StringEnricher.Nodes;
 using StringEnricher.Nodes.Shared;
 
@@ -22,6 +23,7 @@ public static class MultilineQuoteMarkdown
     /// <returns>
     /// A new instance of <see cref="MultilineQuoteNode{TInner}"/> containing the styled text.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static MultilineQuoteNode<T> Apply<T>(T style) where T : INode =>
         MultilineQuoteNode<T>.Apply(style);
 
@@ -36,6 +38,7 @@ public static class MultilineQuoteMarkdown
     /// <returns>
     /// A new instance of <see cref="MultilineQuoteNode{TInner}"/> containing the styled text.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static MultilineQuoteNode<PlainTextNode> Apply(string text) =>
         MultilineQuoteNode<PlainTextNode>.Apply(new PlainTextNode(text));
 
@@ -48,6 +51,7 @@ public static class MultilineQuoteMarkdown
     /// <returns>
     /// A new instance of <see cref="MultilineQuoteNode{TInner}"/> containing the styled boolean.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static MultilineQuoteNode<BoolNode> Apply(bool boolean) =>
         MultilineQuoteNode<BoolNode>.Apply(new BoolNode(boolean));
 
@@ -60,6 +64,7 @@ public static class MultilineQuoteMarkdown
     /// <returns>
     /// A new instance of <see cref="MultilineQuoteNode{TInner}"/> containing the styled character.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static MultilineQuoteNode<CharNode> Apply(char character) =>
         MultilineQuoteNode<CharNode>.Apply(new CharNode(character));
 
@@ -72,6 +77,7 @@ public static class MultilineQuoteMarkdown
     /// <returns>
     /// A new instance of <see cref="MultilineQuoteNode{TInner}"/> containing the styled GUID.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static MultilineQuoteNode<GuidNode> Apply(Guid guid) =>
         MultilineQuoteNode<GuidNode>.Apply(new GuidNode(guid));
 
@@ -94,7 +100,9 @@ public static class MultilineQuoteMarkdown
     /// <returns>
     /// A new instance of <see cref="MultilineQuoteNode{TInner}"/> containing the styled integer.
     /// </returns>
-    public static MultilineQuoteNode<IntegerNode> Apply(int integer, string? format = null, IFormatProvider? provider = null) =>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static MultilineQuoteNode<IntegerNode> Apply(int integer, string? format = null,
+        IFormatProvider? provider = null) =>
         MultilineQuoteNode<IntegerNode>.Apply(new IntegerNode(integer, format, provider));
 
     /// <summary>
@@ -112,7 +120,9 @@ public static class MultilineQuoteMarkdown
     /// <returns>
     /// A new instance of <see cref="MultilineQuoteNode{TInner}"/> containing the styled long integer.
     /// </returns>
-    public static MultilineQuoteNode<LongNode> Apply(long @long, string? format = null, IFormatProvider? provider = null) =>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static MultilineQuoteNode<LongNode> Apply(long @long, string? format = null,
+        IFormatProvider? provider = null) =>
         MultilineQuoteNode<LongNode>.Apply(new LongNode(@long, format, provider));
 
     /// <summary>
@@ -130,6 +140,7 @@ public static class MultilineQuoteMarkdown
     /// <returns>
     /// A new instance of <see cref="MultilineQuoteNode{TInner}"/> containing the styled decimal.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static MultilineQuoteNode<DecimalNode> Apply(decimal @decimal, string? format = null,
         IFormatProvider? provider = null) =>
         MultilineQuoteNode<DecimalNode>.Apply(new DecimalNode(@decimal, format, provider));
@@ -149,7 +160,9 @@ public static class MultilineQuoteMarkdown
     /// <returns>
     /// A new instance of <see cref="MultilineQuoteNode{TInner}"/> containing the styled double.
     /// </returns>
-    public static MultilineQuoteNode<DoubleNode> Apply(double @double, string? format = null, IFormatProvider? provider = null) =>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static MultilineQuoteNode<DoubleNode> Apply(double @double, string? format = null,
+        IFormatProvider? provider = null) =>
         MultilineQuoteNode<DoubleNode>.Apply(new DoubleNode(@double, format, provider));
 
     /// <summary>
@@ -167,7 +180,9 @@ public static class MultilineQuoteMarkdown
     /// <returns>
     /// A new instance of <see cref="MultilineQuoteNode{TInner}"/> containing the styled float.
     /// </returns>
-    public static MultilineQuoteNode<FloatNode> Apply(float @float, string? format = null, IFormatProvider? provider = null) =>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static MultilineQuoteNode<FloatNode> Apply(float @float, string? format = null,
+        IFormatProvider? provider = null) =>
         MultilineQuoteNode<FloatNode>.Apply(new FloatNode(@float, format, provider));
 
     #endregion
@@ -189,6 +204,7 @@ public static class MultilineQuoteMarkdown
     /// <returns>
     /// A new instance of <see cref="MultilineQuoteNode{TInner}"/> containing the styled DateTime.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static MultilineQuoteNode<DateTimeNode> Apply(DateTime dateTime, string? format = null,
         IFormatProvider? provider = null) =>
         MultilineQuoteNode<DateTimeNode>.Apply(new DateTimeNode(dateTime, format, provider));
@@ -208,6 +224,7 @@ public static class MultilineQuoteMarkdown
     /// <returns>
     /// A new instance of <see cref="MultilineQuoteNode{TInner}"/> containing the styled DateTimeOffset.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static MultilineQuoteNode<DateTimeOffsetNode> Apply(DateTimeOffset dateTimeOffset, string? format = null,
         IFormatProvider? provider = null) =>
         MultilineQuoteNode<DateTimeOffsetNode>.Apply(new DateTimeOffsetNode(dateTimeOffset, format, provider));
@@ -227,6 +244,7 @@ public static class MultilineQuoteMarkdown
     /// <returns>
     /// A new instance of <see cref="MultilineQuoteNode{TInner}"/> containing the styled DateOnly.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static MultilineQuoteNode<DateOnlyNode> Apply(DateOnly dateOnly, string? format = null,
         IFormatProvider? provider = null) =>
         MultilineQuoteNode<DateOnlyNode>.Apply(new DateOnlyNode(dateOnly, format, provider));
@@ -246,6 +264,7 @@ public static class MultilineQuoteMarkdown
     /// <returns>
     /// A new instance of <see cref="MultilineQuoteNode{TInner}"/> containing the styled TimeOnly.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static MultilineQuoteNode<TimeOnlyNode> Apply(TimeOnly timeOnly, string? format = null,
         IFormatProvider? provider = null) =>
         MultilineQuoteNode<TimeOnlyNode>.Apply(new TimeOnlyNode(timeOnly, format, provider));
@@ -265,6 +284,7 @@ public static class MultilineQuoteMarkdown
     /// <returns>
     /// A new instance of <see cref="MultilineQuoteNode{TInner}"/> containing the styled TimeSpan.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static MultilineQuoteNode<TimeSpanNode> Apply(TimeSpan timeSpan, string? format = null,
         IFormatProvider? provider = null) =>
         MultilineQuoteNode<TimeSpanNode>.Apply(new TimeSpanNode(timeSpan, format, provider));

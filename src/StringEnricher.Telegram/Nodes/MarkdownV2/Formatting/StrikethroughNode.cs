@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using StringEnricher.Configuration;
 using StringEnricher.Extensions;
 using StringEnricher.Nodes;
@@ -189,5 +190,6 @@ public readonly struct StrikethroughNode<TInner> : INode
     /// <returns>
     /// A new instance of <see cref="StrikethroughNode{TInner}"/> containing the specified inner style.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static StrikethroughNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
 }

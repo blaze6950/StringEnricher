@@ -287,6 +287,7 @@ public struct ListNode<TInner> : INode
     /// <returns>
     /// A new instance of <see cref="ListNode{TInner}"/> containing the inner style.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ListNode<TInner> Apply(TInner innerStyle) => new(innerStyle);
 
     /// <summary>
