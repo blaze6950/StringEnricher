@@ -1,4 +1,5 @@
-﻿using StringEnricher.Buffer.States;
+﻿using System.Runtime.CompilerServices;
+using StringEnricher.Buffer.States;
 
 namespace StringEnricher.Buffer.Processors;
 
@@ -22,6 +23,7 @@ public readonly struct BufferWrittenCharsCalculator<T> : IBufferProcessor<Format
     /// <returns>
     /// A <see cref="BufferAllocationResult{T}"/> indicating whether the buffer was sufficient and the number of characters written.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public BufferAllocationResult<int> Process(Span<char> buffer, in FormattingState<T> state)
         => state.Value.TryFormat(buffer, out var written, state.Format, state.Provider)
             ? BufferAllocationResult<int>.BufferIsEnough(written)

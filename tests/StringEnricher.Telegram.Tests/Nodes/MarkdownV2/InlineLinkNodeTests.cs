@@ -1,4 +1,4 @@
-﻿﻿﻿using StringEnricher.Telegram.Helpers.MarkdownV2;
+﻿using StringEnricher.Telegram.Helpers.MarkdownV2;
 
 namespace StringEnricher.Telegram.Tests.Nodes.MarkdownV2;
 

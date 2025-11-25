@@ -1,4 +1,5 @@
-﻿using StringEnricher.Buffer.Results;
+﻿using System.Runtime.CompilerServices;
+using StringEnricher.Buffer.Results;
 using StringEnricher.Buffer.States;
 
 namespace StringEnricher.Buffer.Processors;
@@ -38,6 +39,7 @@ public readonly struct
     /// <returns>
     /// A <see cref="BufferAllocationResult{T}"/> indicating whether the buffer was sufficient and the number of characters written or needed including escape characters.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public BufferAllocationResult<CustomTotalAndEscapedCharCountsResult> Process(Span<char> buffer,
         in FormattingState<T> state)
     {

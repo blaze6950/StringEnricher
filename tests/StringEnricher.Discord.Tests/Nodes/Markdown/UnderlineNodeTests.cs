@@ -1,4 +1,4 @@
-﻿﻿using StringEnricher.Discord.Helpers.Markdown;
+﻿using StringEnricher.Discord.Helpers.Markdown;
 
 namespace StringEnricher.Discord.Tests.Nodes.Markdown;
 

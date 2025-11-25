@@ -1,4 +1,5 @@
-﻿using StringEnricher.Buffer;
+﻿using System.Runtime.CompilerServices;
+using StringEnricher.Buffer;
 using StringEnricher.Buffer.Processors;
 using StringEnricher.Buffer.Results;
 using StringEnricher.Buffer.States;
@@ -33,6 +34,7 @@ public static class SpanFormattableExtensions
     /// <returns>
     /// The length of the formatted representation of the <see cref="ISpanFormattable"/> value.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public static int GetSpanFormattableLength<T>(
         this T value,
         NodeSettings nodeSettings,
@@ -79,6 +81,7 @@ public static class SpanFormattableExtensions
     /// A <see cref="TotalAndEscapedCharCountsResult"/> containing the total number of characters
     /// and the number of escaped characters in the formatted representation.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public static TotalAndEscapedCharCountsResult GetTotalAndEscapedCharsCounts<T>(
         this T value,
         Func<char, bool> escapePredicate,
@@ -126,6 +129,7 @@ public static class SpanFormattableExtensions
     /// A <see cref="CustomTotalAndEscapedCharCountsResult"/> containing the total number of characters
     /// and the number of escaped characters in the formatted representation.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public static CustomTotalAndEscapedCharCountsResult GetCustomTotalAndEscapedCharsCounts<T>(
         this T value,
         Func<char, string?> escaper,
@@ -175,6 +179,7 @@ public static class SpanFormattableExtensions
     /// A <see cref="CharWithTotalWrittenCharsResult"/> containing the character at the specified index
     /// and the total number of characters written during formatting.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public static CharWithTotalWrittenCharsResult GetCharAtIndex<T>(
         this T value,
         int index,

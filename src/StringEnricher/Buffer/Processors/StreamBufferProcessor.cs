@@ -1,4 +1,5 @@
-﻿using StringEnricher.Buffer.States;
+﻿using System.Runtime.CompilerServices;
+using StringEnricher.Buffer.States;
 
 namespace StringEnricher.Buffer.Processors;
 
@@ -44,6 +45,7 @@ public readonly ref struct StreamBufferProcessor<TValue> : IBufferProcessor<Form
     /// <returns>
     /// A <see cref="BufferAllocationResult{T}"/> indicating whether the buffer was sufficient and the total number of characters written to the stream.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public BufferAllocationResult<int> Process(Span<char> buffer, in FormattingState<TValue> state)
     {
         var isSuccess = state.Value.TryFormat(buffer, out var written, state.Format, state.Provider);

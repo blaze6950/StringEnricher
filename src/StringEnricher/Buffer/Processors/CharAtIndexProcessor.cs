@@ -28,7 +28,7 @@ public readonly struct CharAtIndexProcessor<T>
     /// The Result.Value contains the number of characters written to the buffer.
     /// </returns>
     [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public BufferAllocationResult<CharWithTotalWrittenCharsResult> Process(Span<char> buffer,
         in IndexedState<FormattingState<T>> state)
     {
