@@ -1,4 +1,4 @@
-﻿using StringEnricher.Telegram.Helpers.MarkdownV2;
+﻿﻿using StringEnricher.Telegram.Helpers.MarkdownV2;
 
 namespace StringEnricher.Telegram.Tests.Nodes.MarkdownV2;
 
@@ -214,5 +214,192 @@ public class EscapeNodeTests
             Assert.True(result);
             Assert.Equal(expectedString[i], actualChar);
         }
+    }
+
+    [Fact]
+    public void ToString_WithFormatAndProvider_EscapesCorrectly()
+    {
+        // Arrange
+        var node = EscapeMarkdownV2.Apply("Hello_World*Test");
+        const string expected = @"Hello\_World\*Test";
+
+        // Act
+        var result = node.ToString(null, null);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void ToString_WithEmptyString_ReturnsEmptyString()
+    {
+        // Arrange
+        var node = EscapeMarkdownV2.Apply("");
+
+        // Act
+        var result = node.ToString(null, null);
+
+        // Assert
+        Assert.Equal("", result);
+    }
+
+    [Fact]
+    public void ToString_WithAllSpecialCharacters_EscapesAll()
+    {
+        // Arrange
+        var node = EscapeMarkdownV2.Apply("_*[]()~`>#+-=|{}.!");
+        const string expected = @"\_\*\[\]\(\)\~\`\>\#\+\-\=\|\{\}\.\!";
+
+        // Act
+        var result = node.ToString(null, null);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void ToString_WithFormattableInner_FormatsCorrectly()
+    {
+        // Arrange
+        const string value = "123";
+        var node = EscapeMarkdownV2.Apply(value);
+        const string expected = "123";
+
+        // Act
+        var result = node.ToString(null, null);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void TryFormat_WithSufficientSpace_ReturnsTrue()
+    {
+        // Arrange
+        var node = EscapeMarkdownV2.Apply("Hello*World");
+        Span<char> destination = stackalloc char[50];
+        const string expected = @"Hello\*World";
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, ReadOnlySpan<char>.Empty, null);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithInsufficientSpace_ReturnsFalse()
+    {
+        // Arrange
+        var node = EscapeMarkdownV2.Apply("Hello*World_Test");
+        Span<char> destination = stackalloc char[5]; // Too small
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, ReadOnlySpan<char>.Empty, null);
+
+        // Assert
+        Assert.False(success);
+        Assert.Equal(0, charsWritten);
+    }
+
+    [Fact]
+    public void TryFormat_WithExactBuffer_ReturnsTrue()
+    {
+        // Arrange
+        var node = EscapeMarkdownV2.Apply("A*B");
+        const string expected = @"A\*B";
+        Span<char> destination = stackalloc char[expected.Length];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, ReadOnlySpan<char>.Empty, null);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination.ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithEmptyString_ReturnsTrue()
+    {
+        // Arrange
+        var node = EscapeMarkdownV2.Apply("");
+        Span<char> destination = stackalloc char[10];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, ReadOnlySpan<char>.Empty, null);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(0, charsWritten);
+    }
+
+    [Fact]
+    public void TryFormat_WithNoSpecialCharacters_ReturnsOriginal()
+    {
+        // Arrange
+        var node = EscapeMarkdownV2.Apply("SimpleText");
+        Span<char> destination = stackalloc char[50];
+        const string expected = "SimpleText";
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, ReadOnlySpan<char>.Empty, null);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithMultipleSpecialCharacters_EscapesAll()
+    {
+        // Arrange
+        var node = EscapeMarkdownV2.Apply("*_-");
+        Span<char> destination = stackalloc char[50];
+        const string expected = @"\*\_\-";
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, ReadOnlySpan<char>.Empty, null);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_EmptyDestination_ReturnsFalse()
+    {
+        // Arrange
+        var node = EscapeMarkdownV2.Apply("test*");
+        Span<char> destination = Span<char>.Empty;
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, ReadOnlySpan<char>.Empty, null);
+
+        // Assert
+        Assert.False(success);
+        Assert.Equal(0, charsWritten);
+    }
+
+    [Fact]
+    public void TryFormat_WithFormattableInner_FormatsCorrectly()
+    {
+        // Arrange
+        const string value = "456";
+        var node = EscapeMarkdownV2.Apply(value);
+        Span<char> destination = stackalloc char[50];
+        const string expected = "456";
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, ReadOnlySpan<char>.Empty, null);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
     }
 }

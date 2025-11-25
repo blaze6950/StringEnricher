@@ -404,4 +404,238 @@ public class EscapeNodeTests
         var exception = Assert.Throws<ArgumentException>(() => escapeStyle.CopyTo(destination));
         Assert.Contains("Destination span is not large enough to hold the written characters.", exception.Message);
     }
+
+    [Fact]
+    public void ToString_WithFormatAndProvider_EscapesCorrectly()
+    {
+        // Arrange
+        var node = EscapeHtml.Apply("Hello<World>&Test");
+        const string expected = "Hello&lt;World&gt;&amp;Test";
+
+        // Act
+        var result = node.ToString(null, null);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void ToString_WithEmptyString_ReturnsEmptyString()
+    {
+        // Arrange
+        var node = EscapeHtml.Apply("");
+
+        // Act
+        var result = node.ToString(null, null);
+
+        // Assert
+        Assert.Equal("", result);
+    }
+
+    [Fact]
+    public void ToString_WithAllSpecialCharacters_EscapesAll()
+    {
+        // Arrange
+        var node = EscapeHtml.Apply("<>&<>&");
+        const string expected = "&lt;&gt;&amp;&lt;&gt;&amp;";
+
+        // Act
+        var result = node.ToString(null, null);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void ToString_WithNoSpecialCharacters_ReturnsOriginal()
+    {
+        // Arrange
+        var node = EscapeHtml.Apply("HelloWorld");
+
+        // Act
+        var result = node.ToString(null, null);
+
+        // Assert
+        Assert.Equal("HelloWorld", result);
+    }
+
+    [Fact]
+    public void ToString_WithFormattableInner_FormatsCorrectly()
+    {
+        // Arrange
+        const string value = "123";
+        var node = EscapeHtml.Apply(value);
+        const string expected = "123";
+
+        // Act
+        var result = node.ToString(null, null);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void TryFormat_WithSufficientSpace_ReturnsTrue()
+    {
+        // Arrange
+        var node = EscapeHtml.Apply("Hello<World>");
+        Span<char> destination = stackalloc char[50];
+        const string expected = "Hello&lt;World&gt;";
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, ReadOnlySpan<char>.Empty, null);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithInsufficientSpace_ReturnsFalse()
+    {
+        // Arrange
+        var node = EscapeHtml.Apply("Hello<World>&Test");
+        Span<char> destination = stackalloc char[5]; // Too small
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, ReadOnlySpan<char>.Empty, null);
+
+        // Assert
+        Assert.False(success);
+        Assert.Equal(0, charsWritten);
+    }
+
+    [Fact]
+    public void TryFormat_WithExactBuffer_ReturnsTrue()
+    {
+        // Arrange
+        var node = EscapeHtml.Apply("<");
+        const string expected = "&lt;";
+        Span<char> destination = stackalloc char[expected.Length];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, ReadOnlySpan<char>.Empty, null);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination.ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithEmptyString_ReturnsTrue()
+    {
+        // Arrange
+        var node = EscapeHtml.Apply("");
+        Span<char> destination = stackalloc char[10];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, ReadOnlySpan<char>.Empty, null);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(0, charsWritten);
+    }
+
+    [Fact]
+    public void TryFormat_WithNoSpecialCharacters_ReturnsOriginal()
+    {
+        // Arrange
+        var node = EscapeHtml.Apply("SimpleText");
+        Span<char> destination = stackalloc char[50];
+        const string expected = "SimpleText";
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, ReadOnlySpan<char>.Empty, null);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithMultipleSpecialCharacters_EscapesAll()
+    {
+        // Arrange
+        var node = EscapeHtml.Apply("<>&");
+        Span<char> destination = stackalloc char[50];
+        const string expected = "&lt;&gt;&amp;";
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, ReadOnlySpan<char>.Empty, null);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_EmptyDestination_ReturnsFalse()
+    {
+        // Arrange
+        var node = EscapeHtml.Apply("test<");
+        Span<char> destination = Span<char>.Empty;
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, ReadOnlySpan<char>.Empty, null);
+
+        // Assert
+        Assert.False(success);
+        Assert.Equal(0, charsWritten);
+    }
+
+    [Fact]
+    public void TryFormat_WithFormattableInner_FormatsCorrectly()
+    {
+        // Arrange
+        const string value = "789";
+        var node = EscapeHtml.Apply(value);
+        Span<char> destination = stackalloc char[50];
+        const string expected = "789";
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, ReadOnlySpan<char>.Empty, null);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithAmpersandOnly_EscapesCorrectly()
+    {
+        // Arrange
+        var node = EscapeHtml.Apply("&");
+        Span<char> destination = stackalloc char[50];
+        const string expected = "&amp;";
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, ReadOnlySpan<char>.Empty, null);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithMixedContent_EscapesCorrectly()
+    {
+        // Arrange
+        var node = EscapeHtml.Apply("test<tag>&value");
+        Span<char> destination = stackalloc char[50];
+        const string expected = "test&lt;tag&gt;&amp;value";
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten, ReadOnlySpan<char>.Empty, null);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
 }

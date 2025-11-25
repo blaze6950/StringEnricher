@@ -1,4 +1,4 @@
-﻿using StringEnricher.Discord.Helpers.Markdown;
+﻿﻿using StringEnricher.Discord.Helpers.Markdown;
 
 namespace StringEnricher.Discord.Tests.Nodes.Markdown;
 
@@ -140,6 +140,108 @@ public class InlineLinkNodeTests
         // Arrange
         var node = InlineLinkMarkdown.Apply("test", "https://example.com");
         Span<char> destination = stackalloc char[10]; // Too small for "[test](https://example.com)"
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.False(success);
+    }
+
+    [Fact]
+    public void TryFormat_WithExactlyPrefixSpace_ReturnsFalse()
+    {
+        // Arrange
+        const string text = "test";
+        const string url = "https://example.com";
+        var node = InlineLinkMarkdown.Apply(text, url);
+        Span<char> destination = stackalloc char[1]; // Only space for prefix "["
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.False(success);
+        Assert.Equal(1, charsWritten); // Prefix was written before failure
+    }
+
+    [Fact]
+    public void TryFormat_WithPrefixPlusPartialTextSpace_ReturnsFalse()
+    {
+        // Arrange
+        const string text = "test";
+        const string url = "https://example.com";
+        var node = InlineLinkMarkdown.Apply(text, url);
+        Span<char> destination = stackalloc char[3]; // Space for prefix "[" + 2 chars
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.False(success);
+    }
+
+    [Fact]
+    public void TryFormat_WithoutSpaceForUrl_ReturnsFalse()
+    {
+        // Arrange
+        const string text = "test";
+        const string url = "https://example.com";
+        var node = InlineLinkMarkdown.Apply(text, url);
+        Span<char> destination = stackalloc char[7]; // Space for "[test](" but not url
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.False(success);
+    }
+
+    [Fact]
+    public void TryFormat_EmptyDestination_ReturnsFalse()
+    {
+        // Arrange
+        const string text = "text";
+        const string url = "https://example.com";
+        var node = InlineLinkMarkdown.Apply(text, url);
+        Span<char> destination = Span<char>.Empty;
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.False(success);
+        Assert.Equal(0, charsWritten);
+    }
+
+    [Fact]
+    public void TryFormat_ExactSizeDestination_ReturnsTrue()
+    {
+        // Arrange
+        const string text = "test";
+        const string url = "https://example.com";
+        var node = InlineLinkMarkdown.Apply(text, url);
+        const string expected = "[test](https://example.com)";
+        Span<char> destination = stackalloc char[expected.Length]; // Exactly the right size
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_OneCharLessThanNeeded_ReturnsFalse()
+    {
+        // Arrange
+        const string text = "test";
+        const string url = "https://example.com";
+        var node = InlineLinkMarkdown.Apply(text, url);
+        const string expected = "[test](https://example.com)";
+        Span<char> destination = stackalloc char[expected.Length - 1]; // One char too small
 
         // Act
         var success = node.TryFormat(destination, out var charsWritten);

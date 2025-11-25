@@ -160,6 +160,98 @@ public class InlineCodeMarkdownTests
     }
 
     [Fact]
+    public void TryFormat_WithExactlyPrefixSpace_ReturnsFalse()
+    {
+        // Arrange
+        var node = InlineCodeMarkdown.Apply("code");
+        Span<char> destination = stackalloc char[1]; // Only space for prefix "`"
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.False(success);
+        Assert.Equal(1, charsWritten); // Prefix was written before failure
+    }
+
+    [Fact]
+    public void TryFormat_WithPrefixPlusPartialInnerSpace_ReturnsFalse()
+    {
+        // Arrange
+        var node = InlineCodeMarkdown.Apply("code");
+        Span<char> destination = stackalloc char[3]; // Space for prefix "`" + 2 chars
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.False(success);
+    }
+
+    [Fact]
+    public void TryFormat_WithoutSpaceForSuffix_ReturnsFalse()
+    {
+        // Arrange
+        var node = InlineCodeMarkdown.Apply("code");
+        Span<char> destination = stackalloc char[5]; // Space for prefix "`" + "code" but not suffix
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.False(success);
+    }
+
+    [Fact]
+    public void TryFormat_EmptyDestination_ReturnsFalse()
+    {
+        // Arrange
+        var node = InlineCodeMarkdown.Apply("text");
+        Span<char> destination = Span<char>.Empty;
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.False(success);
+        Assert.Equal(0, charsWritten);
+    }
+
+    [Fact]
+    public void TryFormat_ExactSizeDestination_ReturnsTrue()
+    {
+        // Arrange
+        const string innerText = "code";
+        var node = InlineCodeMarkdown.Apply(innerText);
+        const string expected = "`code`";
+        Span<char> destination = stackalloc char[expected.Length]; // Exactly the right size
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_OneCharLessThanNeeded_ReturnsFalse()
+    {
+        // Arrange
+        const string innerText = "code";
+        var node = InlineCodeMarkdown.Apply(innerText);
+        const string expected = "`code`";
+        Span<char> destination = stackalloc char[expected.Length - 1]; // One char too small
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.False(success);
+    }
+
+    [Fact]
     public void ToString_WithFormatParameter_PassesFormatToInnerNode()
     {
         // Arrange

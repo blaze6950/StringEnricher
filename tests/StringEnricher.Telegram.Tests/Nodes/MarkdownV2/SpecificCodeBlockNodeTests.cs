@@ -1,4 +1,4 @@
-﻿using StringEnricher.Telegram.Helpers.MarkdownV2;
+﻿﻿﻿using StringEnricher.Telegram.Helpers.MarkdownV2;
 
 namespace StringEnricher.Telegram.Tests.Nodes.MarkdownV2;
 
@@ -49,5 +49,92 @@ public class SpecificCodeBlockNodeTests
         // Assert
         Assert.False(result);
         Assert.Equal('\0', ch);
+    }
+
+    [Fact]
+    public void TryFormat_WithSufficientSpace_FormatsCorrectly()
+    {
+        // Arrange
+        const string code = "var x = 1;";
+        const string language = "csharp";
+        var node = SpecificCodeBlockMarkdownV2.Apply(code, language);
+        Span<char> destination = stackalloc char[50];
+        const string expected = "```csharp\nvar x = 1;\n```";
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void TryFormat_WithInsufficientSpace_ReturnsFalse()
+    {
+        // Arrange
+        const string code = "var x = 1;";
+        const string language = "csharp";
+        var node = SpecificCodeBlockMarkdownV2.Apply(code, language);
+        Span<char> destination = stackalloc char[10];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.False(success);
+    }
+
+    [Fact]
+    public void TryFormat_EmptyDestination_ReturnsFalse()
+    {
+        // Arrange
+        const string code = "test";
+        const string language = "js";
+        var node = SpecificCodeBlockMarkdownV2.Apply(code, language);
+        Span<char> destination = Span<char>.Empty;
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.False(success);
+        Assert.Equal(0, charsWritten);
+    }
+
+    [Fact]
+    public void TryFormat_ExactSizeDestination_ReturnsTrue()
+    {
+        // Arrange
+        const string code = "test";
+        const string language = "js";
+        var node = SpecificCodeBlockMarkdownV2.Apply(code, language);
+        const string expected = "```js\ntest\n```";
+        Span<char> destination = stackalloc char[expected.Length];
+
+        // Act
+        var success = node.TryFormat(destination, out var charsWritten);
+
+        // Assert
+        Assert.True(success);
+        Assert.Equal(expected.Length, charsWritten);
+        Assert.Equal(expected, destination[..charsWritten].ToString());
+    }
+
+    [Fact]
+    public void ToString_WithFormatAndProvider_ReturnsCorrectString()
+    {
+        // Arrange
+        const int value = 123;
+        const string language = "csharp";
+        var node = SpecificCodeBlockMarkdownV2.Apply(value, language);
+        const string expected = "```csharp\n123\n```";
+
+        // Act
+        var result = node.ToString(null, null);
+
+        // Assert
+        Assert.Equal(expected, result);
     }
 }
