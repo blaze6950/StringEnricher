@@ -1,4 +1,6 @@
-﻿namespace StringEnricher.Extensions;
+﻿using System.Runtime.CompilerServices;
+
+namespace StringEnricher.Extensions;
 
 /// <summary>
 /// Extension methods for working with <see cref="Span{T}"/> values.
@@ -20,11 +22,12 @@ public static class SpanExtensions
     /// <returns>
     /// >The sliced span, or an empty span if the specified range is out of bounds.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public static Span<char> SliceSafe(this Span<char> span, int start, int length)
     {
-        if (start < 0 || length < 0 || start + length > span.Length)
+        // Use unsigned comparison for better JIT optimization (single bounds check)
+        if ((uint)start > (uint)span.Length || (uint)length > (uint)(span.Length - start))
         {
-            // Out of bounds, return empty span
             return Span<char>.Empty;
         }
 
@@ -44,11 +47,12 @@ public static class SpanExtensions
     /// <returns>
     /// The sliced span, or an empty span if the start index is out of bounds.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public static Span<char> SliceSafe(this Span<char> span, int start)
     {
-        if (start < 0 || start > span.Length)
+        // Use unsigned comparison for better JIT optimization
+        if ((uint)start > (uint)span.Length)
         {
-            // Out of bounds, return empty span
             return Span<char>.Empty;
         }
 
@@ -67,12 +71,13 @@ public static class SpanExtensions
     /// <returns>
     /// >The sliced span, or an empty span if the specified range is out of bounds.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public static Span<char> SliceSafe(this Span<char> span, Range range)
     {
         var (offset, length) = range.GetOffsetAndLength(span.Length);
-        if (offset < 0 || length < 0 || offset + length > span.Length)
+        // Use unsigned comparison for better JIT optimization
+        if ((uint)offset > (uint)span.Length || (uint)length > (uint)(span.Length - offset))
         {
-            // Out of bounds, return empty span
             return Span<char>.Empty;
         }
 
