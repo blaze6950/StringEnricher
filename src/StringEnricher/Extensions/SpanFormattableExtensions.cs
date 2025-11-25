@@ -186,7 +186,9 @@ public static class SpanFormattableExtensions
     {
         // prepare state - the value and everything needed for formatting into an allocated buffer
         var state = new IndexedState<FormattingState<T>>(
-            new FormattingState<T>(value, format, provider), index);
+            value: new FormattingState<T>(value, format, provider),
+            index: index
+        );
 
         CharWithTotalWrittenCharsResult result;
         try
