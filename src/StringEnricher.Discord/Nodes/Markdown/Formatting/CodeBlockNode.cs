@@ -89,7 +89,7 @@ public readonly struct CodeBlockNode<TInner> : INode
 
         // Copy inner text
         var isInnerTextFormatSuccess = _innerCodeBlock.TryFormat(
-            destination[charsWritten..],
+            destination.SliceSafe(charsWritten),
             out var innerCharsWritten,
             format,
             provider
