@@ -1,9 +1,9 @@
-﻿#if UNIT_TESTS
-using StringEnricher.Buffer;
+﻿using StringEnricher.Buffer;
 using StringEnricher.Nodes.Shared;
 
 namespace StringEnricher.Debug;
 
+#if UNIT_TESTS
 /// <summary>
 /// Contains debug counters for various components of the StringEnricher library.
 /// This class is intended for internal use and debugging purposes only - to propagate events to the test environment.
