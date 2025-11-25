@@ -180,7 +180,7 @@ public struct BlockquoteNode<TInner> : INode
                 return 2;
             },
             nodeSettings: (NodeSettingsInternal)StringEnricherSettings.Extensions.StringBuilder,
-            initialBufferLengthHint: _syntaxLength.HasValue ? _innerText.TotalLength : null
+            initialBufferLengthHint: _innerLength
         );
 
         return writtenChars + 1; // +1 for the initial line prefix

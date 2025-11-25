@@ -91,7 +91,7 @@ public readonly struct SpecificCodeBlockNode<TInner> : INode
         charsWritten = 0;
 
         // Copy prefix
-        if (!Prefix.AsSpan().TryCopyTo(destination.SliceSafe(charsWritten, Prefix.Length)))
+        if (!Prefix.AsSpan().TryCopyTo(destination))
         {
             return false;
         }
@@ -99,7 +99,7 @@ public readonly struct SpecificCodeBlockNode<TInner> : INode
         charsWritten += Prefix.Length;
 
         // Copy link title
-        var isLinkTitleFormatSuccess = _language.AsSpan().TryCopyTo(destination.SliceSafe(charsWritten, _language.Length));
+        var isLinkTitleFormatSuccess = _language.AsSpan().TryCopyTo(destination.SliceSafe(charsWritten));
 
         if (!isLinkTitleFormatSuccess)
         {
@@ -109,7 +109,7 @@ public readonly struct SpecificCodeBlockNode<TInner> : INode
         charsWritten += _language.Length;
 
         // Copy link separator
-        if (!Separator.AsSpan().TryCopyTo(destination.SliceSafe(charsWritten, Separator.Length)))
+        if (!Separator.AsSpan().TryCopyTo(destination.SliceSafe(charsWritten)))
         {
             return false;
         }
@@ -125,7 +125,7 @@ public readonly struct SpecificCodeBlockNode<TInner> : INode
         charsWritten += innerCharsWritten;
 
         // Copy suffix
-        if (!Suffix.AsSpan().TryCopyTo(destination.SliceSafe(charsWritten, Suffix.Length)))
+        if (!Suffix.AsSpan().TryCopyTo(destination.SliceSafe(charsWritten)))
         {
             return false;
         }
@@ -154,22 +154,22 @@ public readonly struct SpecificCodeBlockNode<TInner> : INode
         var writtenChars = 0;
 
         // Copy prefix
-        Prefix.AsSpan().CopyTo(destination.Slice(writtenChars, Prefix.Length));
+        Prefix.AsSpan().CopyTo(destination);
         writtenChars += Prefix.Length;
 
         // Copy language
-        _language.CopyTo(destination.Slice(writtenChars, _language.Length));
+        _language.CopyTo(destination[writtenChars..]);
         writtenChars += _language.Length;
 
         // Copy separator
-        Separator.AsSpan().CopyTo(destination.Slice(writtenChars, Separator.Length));
+        Separator.AsSpan().CopyTo(destination[writtenChars..]);
         writtenChars += Separator.Length;
 
         // Copy code block
         writtenChars += _innerCodeBlock.CopyTo(destination[writtenChars..]);
 
         // Copy suffix
-        Suffix.AsSpan().CopyTo(destination.Slice(writtenChars, Suffix.Length));
+        Suffix.AsSpan().CopyTo(destination[writtenChars..]);
         writtenChars += Suffix.Length;
 
         return writtenChars;

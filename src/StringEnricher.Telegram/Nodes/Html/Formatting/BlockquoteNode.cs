@@ -70,7 +70,7 @@ public readonly struct BlockquoteNode<TInner> : INode
         charsWritten = 0;
 
         // Copy prefix
-        if (!Prefix.AsSpan().TryCopyTo(destination.SliceSafe(charsWritten, Prefix.Length)))
+        if (!Prefix.AsSpan().TryCopyTo(destination))
         {
             return false;
         }
@@ -93,7 +93,7 @@ public readonly struct BlockquoteNode<TInner> : INode
         charsWritten += innerCharsWritten;
 
         // Copy suffix
-        if (!Suffix.AsSpan().TryCopyTo(destination.SliceSafe(charsWritten, Suffix.Length)))
+        if (!Suffix.AsSpan().TryCopyTo(destination.SliceSafe(charsWritten)))
         {
             return false;
         }
@@ -129,12 +129,12 @@ public readonly struct BlockquoteNode<TInner> : INode
     public int CopyTo(Span<char> destination)
     {
         var writtenChars = 0;
-        Prefix.AsSpan().CopyTo(destination.Slice(writtenChars, Prefix.Length));
+        Prefix.AsSpan().CopyTo(destination);
         writtenChars += Prefix.Length;
 
         writtenChars += _innerText.CopyTo(destination[writtenChars..]);
 
-        Suffix.AsSpan().CopyTo(destination.Slice(writtenChars, Suffix.Length));
+        Suffix.AsSpan().CopyTo(destination[writtenChars..]);
         writtenChars += Suffix.Length;
 
         return writtenChars;

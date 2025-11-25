@@ -90,7 +90,7 @@ public readonly struct InlineLinkNode<TInner> : INode
         charsWritten = 0;
 
         // Copy prefix
-        if (!Prefix.AsSpan().TryCopyTo(destination.SliceSafe(charsWritten, Prefix.Length)))
+        if (!Prefix.AsSpan().TryCopyTo(destination))
         {
             return false;
         }
@@ -113,7 +113,7 @@ public readonly struct InlineLinkNode<TInner> : INode
         charsWritten += innerCharsWritten;
 
         // Copy link separator
-        if (!LinkSeparator.AsSpan().TryCopyTo(destination.SliceSafe(charsWritten, LinkSeparator.Length)))
+        if (!LinkSeparator.AsSpan().TryCopyTo(destination.SliceSafe(charsWritten)))
         {
             return false;
         }
@@ -158,22 +158,22 @@ public readonly struct InlineLinkNode<TInner> : INode
         var writtenChars = 0;
 
         // Copy Prefix
-        Prefix.AsSpan().CopyTo(destination.Slice(writtenChars, Prefix.Length));
+        Prefix.AsSpan().CopyTo(destination);
         writtenChars += Prefix.Length;
 
         // Copy Link Title
         writtenChars += _linkTitle.CopyTo(destination[writtenChars..]);
 
         // Copy Link Separator
-        LinkSeparator.AsSpan().CopyTo(destination.Slice(writtenChars, LinkSeparator.Length));
+        LinkSeparator.AsSpan().CopyTo(destination[writtenChars..]);
         writtenChars += LinkSeparator.Length;
 
         // Copy Link URL
-        _linkUrl.CopyTo(destination.Slice(writtenChars, _linkUrl.Length));
+        _linkUrl.CopyTo(destination[writtenChars..]);
         writtenChars += _linkUrl.Length;
 
         // Copy Suffix
-        Suffix.AsSpan().CopyTo(destination.Slice(writtenChars, Suffix.Length));
+        Suffix.AsSpan().CopyTo(destination[writtenChars..]);
         writtenChars += Suffix.Length;
 
         return writtenChars;

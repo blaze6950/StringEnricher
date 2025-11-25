@@ -80,7 +80,7 @@ public readonly struct StrikethroughNode<TInner> : INode
         charsWritten = 0;
 
         // Copy prefix
-        if (!Prefix.AsSpan().TryCopyTo(destination.SliceSafe(charsWritten, Prefix.Length)))
+        if (!Prefix.AsSpan().TryCopyTo(destination))
         {
             return false;
         }
@@ -103,7 +103,7 @@ public readonly struct StrikethroughNode<TInner> : INode
         charsWritten += innerCharsWritten;
 
         // Copy suffix
-        if (!Suffix.AsSpan().TryCopyTo(destination.SliceSafe(charsWritten, Suffix.Length)))
+        if (!Suffix.AsSpan().TryCopyTo(destination.SliceSafe(charsWritten)))
         {
             return false;
         }
@@ -132,14 +132,14 @@ public readonly struct StrikethroughNode<TInner> : INode
         var writtenChars = 0;
 
         // Copy prefix
-        Prefix.AsSpan().CopyTo(destination.Slice(writtenChars, Prefix.Length));
+        Prefix.AsSpan().CopyTo(destination);
         writtenChars += Prefix.Length;
 
         // Copy inner text
         writtenChars += _innerText.CopyTo(destination[writtenChars..]);
 
         // Copy suffix
-        Suffix.AsSpan().CopyTo(destination.Slice(writtenChars, Suffix.Length));
+        Suffix.AsSpan().CopyTo(destination[writtenChars..]);
         writtenChars += Suffix.Length;
 
         return writtenChars;

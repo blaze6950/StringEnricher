@@ -205,7 +205,7 @@ public struct ExpandableBlockquoteNode<TInner> : INode
                 return 2;
             },
             nodeSettings: (NodeSettingsInternal)StringEnricherSettings.Extensions.StringBuilder,
-            initialBufferLengthHint: _syntaxLength.HasValue ? _innerText.TotalLength : null
+            initialBufferLengthHint: _innerLength
         );
 
         // Add the suffix length
