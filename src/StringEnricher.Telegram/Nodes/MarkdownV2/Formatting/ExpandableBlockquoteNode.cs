@@ -59,7 +59,7 @@ public struct ExpandableBlockquoteNode<TInner> : INode
     /// <inheritdoc />
     public string ToString(string? format, IFormatProvider? formatProvider)
     {
-        var charCountsResult = _innerText.GetTotalAndEscapedCharsCounts(
+        var charCountsResult = this.GetTotalAndEscapedCharsCounts(
             IsLineSeparator,
             StringEnricherSettings.Extensions.StringBuilder,
             format,
@@ -73,9 +73,12 @@ public struct ExpandableBlockquoteNode<TInner> : INode
             {
                 span[0] = LinePrefix; // Write the line prefix
 
-                BufferUtils.StreamBuffer(
+                // Start writing after the first line prefix
+                span = span[1..];
+
+                var writtenChars = BufferUtils.StreamBuffer(
                     source: state.Item1,
-                    destination: span[1..], // Start writing after the first line prefix
+                    destination: span,
                     streamWriter: static (c, _, destination) =>
                     {
                         if (!IsLineSeparator(c))
@@ -96,6 +99,13 @@ public struct ExpandableBlockquoteNode<TInner> : INode
                     provider: state.Item4,
                     initialBufferLengthHint: state.Item2.TotalCount // Inner length before escaping
                 );
+
+                // Add the suffix length
+                span = span[writtenChars..];
+                for (var i = 0; i < Suffix.Length; i++)
+                {
+                    span[i] = Suffix[i];
+                }
             });
     }
 
@@ -140,7 +150,7 @@ public struct ExpandableBlockquoteNode<TInner> : INode
 
             charsWritten += Suffix.Length;
         }
-        catch (IndexOutOfRangeException)
+        catch (Exception)
         {
             charsWritten = 0;
             return false;

@@ -91,7 +91,7 @@ public readonly struct SpecificCodeBlockNode<TInner> : INode
         charsWritten = 0;
 
         // Copy prefix
-        if (!Prefix.AsSpan().TryCopyTo(destination.Slice(charsWritten, Prefix.Length)))
+        if (!Prefix.AsSpan().TryCopyTo(destination.SliceSafe(charsWritten, Prefix.Length)))
         {
             return false;
         }
@@ -99,7 +99,7 @@ public readonly struct SpecificCodeBlockNode<TInner> : INode
         charsWritten += Prefix.Length;
 
         // Copy link title
-        var isLinkTitleFormatSuccess = _language.AsSpan().TryCopyTo(destination[charsWritten..]);
+        var isLinkTitleFormatSuccess = _language.AsSpan().TryCopyTo(destination.SliceSafe(charsWritten, _language.Length));
 
         if (!isLinkTitleFormatSuccess)
         {
@@ -109,7 +109,7 @@ public readonly struct SpecificCodeBlockNode<TInner> : INode
         charsWritten += _language.Length;
 
         // Copy link separator
-        if (!Separator.AsSpan().TryCopyTo(destination.Slice(charsWritten, Separator.Length)))
+        if (!Separator.AsSpan().TryCopyTo(destination.SliceSafe(charsWritten, Separator.Length)))
         {
             return false;
         }
@@ -117,7 +117,7 @@ public readonly struct SpecificCodeBlockNode<TInner> : INode
         charsWritten += Separator.Length;
 
         // Copy code block
-        if (!_innerCodeBlock.TryFormat(destination.Slice(charsWritten), out var innerCharsWritten, format, provider))
+        if (!_innerCodeBlock.TryFormat(destination.SliceSafe(charsWritten), out var innerCharsWritten, format, provider))
         {
             return false;
         }
@@ -125,7 +125,7 @@ public readonly struct SpecificCodeBlockNode<TInner> : INode
         charsWritten += innerCharsWritten;
 
         // Copy suffix
-        if (!Suffix.AsSpan().TryCopyTo(destination.Slice(charsWritten, Suffix.Length)))
+        if (!Suffix.AsSpan().TryCopyTo(destination.SliceSafe(charsWritten, Suffix.Length)))
         {
             return false;
         }

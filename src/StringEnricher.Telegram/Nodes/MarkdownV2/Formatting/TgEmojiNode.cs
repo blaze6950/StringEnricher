@@ -87,7 +87,7 @@ public readonly struct TgEmojiNode : INode
         charsWritten = 0;
 
         // Copy prefix
-        if (!Prefix.AsSpan().TryCopyTo(destination.Slice(charsWritten, Prefix.Length)))
+        if (!Prefix.AsSpan().TryCopyTo(destination.SliceSafe(charsWritten, Prefix.Length)))
         {
             return false;
         }
@@ -96,7 +96,7 @@ public readonly struct TgEmojiNode : INode
 
         // Copy default emoji
         var isDefaultEmojiFormatSuccess = _defaultEmoji.TryFormat(
-            destination[charsWritten..],
+            destination.SliceSafe(charsWritten),
             out var innerCharsWritten,
             format,
             provider
@@ -110,7 +110,7 @@ public readonly struct TgEmojiNode : INode
         charsWritten += innerCharsWritten;
 
         // Copy separator
-        if (!Separator.AsSpan().TryCopyTo(destination.Slice(charsWritten, Separator.Length)))
+        if (!Separator.AsSpan().TryCopyTo(destination.SliceSafe(charsWritten, Separator.Length)))
         {
             return false;
         }
@@ -119,7 +119,7 @@ public readonly struct TgEmojiNode : INode
 
         // Copy custom emoji ID
         var isCustomEmojiIdFormatSuccess = _customEmojiId.TryFormat(
-            destination[charsWritten..],
+            destination.SliceSafe(charsWritten),
             out var customEmojiIdCharsWritten,
             format,
             provider
@@ -133,7 +133,7 @@ public readonly struct TgEmojiNode : INode
         charsWritten += customEmojiIdCharsWritten;
 
         // Copy suffix
-        if (!Suffix.AsSpan().TryCopyTo(destination.Slice(charsWritten, Suffix.Length)))
+        if (!Suffix.AsSpan().TryCopyTo(destination.SliceSafe(charsWritten, Suffix.Length)))
         {
             return false;
         }

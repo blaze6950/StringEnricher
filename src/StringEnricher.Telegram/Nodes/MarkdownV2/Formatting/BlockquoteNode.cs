@@ -53,7 +53,7 @@ public struct BlockquoteNode<TInner> : INode
     /// <inheritdoc />
     public string ToString(string? format, IFormatProvider? formatProvider)
     {
-        var charCountsResult = _innerText.GetTotalAndEscapedCharsCounts(
+        var charCountsResult = this.GetTotalAndEscapedCharsCounts(
             IsLineSeparator,
             StringEnricherSettings.Extensions.StringBuilder,
             format,
@@ -126,7 +126,7 @@ public struct BlockquoteNode<TInner> : INode
                 initialBufferLengthHint: _innerLength
             );
         }
-        catch (IndexOutOfRangeException)
+        catch (Exception)
         {
             charsWritten = 0;
             return false;

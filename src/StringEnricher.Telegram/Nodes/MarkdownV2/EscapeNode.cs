@@ -107,7 +107,7 @@ public struct EscapeNode<TInner> : INode
                 initialBufferLengthHint: _innerLength
             );
         }
-        catch (IndexOutOfRangeException)
+        catch (Exception)
         {
             charsWritten = 0;
             return false;

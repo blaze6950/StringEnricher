@@ -9,7 +9,8 @@ namespace StringEnricher.Telegram.Nodes.Html.Formatting;
 /// Represents a specific code block in HTML format with language class.
 /// Example: "&lt;pre&gt;&lt;code class="language-csharp"&gt;code block&lt;/code&gt;&lt;/pre&gt;"
 /// </summary>
-[DebuggerDisplay("{typeof(SpecificCodeBlockNode).Name,nq} Prefix={Prefix} InnerType={typeof(TInner).Name,nq} Suffix={Suffix}")]
+[DebuggerDisplay(
+    "{typeof(SpecificCodeBlockNode).Name,nq} Prefix={Prefix} InnerType={typeof(TInner).Name,nq} Suffix={Suffix}")]
 public readonly struct SpecificCodeBlockNode<TInner> : INode
     where TInner : INode
 {
@@ -78,16 +79,32 @@ public readonly struct SpecificCodeBlockNode<TInner> : INode
         charsWritten = 0;
 
         // Copy prefix
-        if (!Prefix.AsSpan().TryCopyTo(destination.Slice(charsWritten, Prefix.Length)))
+        if (!Prefix.AsSpan().TryCopyTo(destination.SliceSafe(charsWritten, Prefix.Length)))
         {
             return false;
         }
 
         charsWritten += Prefix.Length;
 
+        // Copy language
+        if (!_language.AsSpan().TryCopyTo(destination.SliceSafe(charsWritten, _language.Length)))
+        {
+            return false;
+        }
+
+        charsWritten += _language.Length;
+
+        // Copy separator
+        if (!Separator.AsSpan().TryCopyTo(destination.SliceSafe(charsWritten, Separator.Length)))
+        {
+            return false;
+        }
+
+        charsWritten += Separator.Length;
+
         // Copy inner text
         var isInnerTextFormatSuccess = _innerCodeBlock.TryFormat(
-            destination[charsWritten..],
+            destination.SliceSafe(charsWritten),
             out var innerCharsWritten,
             format,
             provider
@@ -101,7 +118,7 @@ public readonly struct SpecificCodeBlockNode<TInner> : INode
         charsWritten += innerCharsWritten;
 
         // Copy suffix
-        if (!Suffix.AsSpan().TryCopyTo(destination.Slice(charsWritten, Suffix.Length)))
+        if (!Suffix.AsSpan().TryCopyTo(destination.SliceSafe(charsWritten, Suffix.Length)))
         {
             return false;
         }

@@ -55,8 +55,12 @@ public struct EscapeNode<TInner> : INode
             formatProvider
         );
 
+        var totalCountWithoutEscaped = charCountsResult.TotalCount - charCountsResult.ToEscapeCount;
+        var escapedCount = charCountsResult.EscapedCount;
+        var totalLength = totalCountWithoutEscaped + escapedCount;
+
         return string.Create(
-            charCountsResult.TotalCount + charCountsResult.EscapedCount, // Total length after escaping
+            totalLength, // Total length after escaping
             ValueTuple.Create(_innerText, charCountsResult, format, formatProvider),
             static (span, state) =>
             {
@@ -124,7 +128,7 @@ public struct EscapeNode<TInner> : INode
                 initialBufferLengthHint: _innerLength
             );
         }
-        catch (IndexOutOfRangeException)
+        catch (Exception)
         {
             charsWritten = 0;
             return false;
