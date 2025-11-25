@@ -1,6 +1,6 @@
-﻿﻿﻿using System.Diagnostics;
-  using System.Runtime.CompilerServices;
-  using StringEnricher.Configuration;
+﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using StringEnricher.Configuration;
 using StringEnricher.Extensions;
 using StringEnricher.Nodes;
 
