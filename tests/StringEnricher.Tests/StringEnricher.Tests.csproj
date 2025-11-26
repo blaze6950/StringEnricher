@@ -86,6 +86,9 @@
         <Compile Update="Configuration\StringEnricherSettingsTests.Nodes.Shared.UShortNode.cs">
             <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
         </Compile>
+        <Compile Update="Configuration\StringEnricherSettingsTests.Builders.HybridMessageBuilder.cs">
+          <DependentUpon>StringEnricherSettingsTests.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
 </Project>
