@@ -1,4 +1,5 @@
 ﻿using StringEnricher.Buffer;
+using StringEnricher.Buffer.Processors;
 using StringEnricher.Nodes.Shared;
 
 namespace StringEnricher.Debug;
@@ -11,6 +12,11 @@ namespace StringEnricher.Debug;
 /// </summary>
 public class DebugCounters
 {
+    /// <summary>
+    /// Counts the number of times <see cref="StringMaterializer{TValue}.Process"/> was called.
+    /// </summary>
+    public static int StringMaterializer_Process_Calls = 0;
+
     /// <summary>
     /// Counts the number of times the cached total length evaluation was used in <see cref="CompositeNode{T, TT}.TryGetChar"/>.
     /// </summary>
@@ -168,6 +174,8 @@ public class DebugCounters
         ULongNode_TryGetChar_CachedTotalLengthEvaluation = 0;
         UShortNode_TryGetChar_CachedTotalLengthEvaluation = 0;
         CompositeNode_TryGetChar_CachedTotalLengthEvaluation = 0;
+
+        StringMaterializer_Process_Calls = 0;
     }
 }
 #endif
