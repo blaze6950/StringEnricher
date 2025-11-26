@@ -58,29 +58,4 @@ public static class SpanExtensions
 
         return span[start..];
     }
-
-    /// <summary>
-    /// Safely slices a span using a Range, returning an empty span if the specified range is out of bounds.
-    /// </summary>
-    /// <param name="span">
-    /// The span to slice.
-    /// </param>
-    /// <param name="range">
-    /// The range to slice.
-    /// </param>
-    /// <returns>
-    /// >The sliced span, or an empty span if the specified range is out of bounds.
-    /// </returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public static Span<char> SliceSafe(this Span<char> span, Range range)
-    {
-        var (offset, length) = range.GetOffsetAndLength(span.Length);
-        // Use unsigned comparison for better JIT optimization
-        if ((uint)offset > (uint)span.Length || (uint)length > (uint)(span.Length - offset))
-        {
-            return Span<char>.Empty;
-        }
-
-        return span.Slice(offset, length);
-    }
 }
