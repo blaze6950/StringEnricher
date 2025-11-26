@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using StringEnricher.Buffer.Results;
 using StringEnricher.Configuration;
 using StringEnricher.Extensions;
 
