@@ -482,7 +482,6 @@ Feel free to contribute or open issues for feature requests and bug reports!
 ---
 # TODOs
 - Implement additional platform-specific packages:
-  - StringEnricher.Discord - for Discord bot message formatting
   - StringEnricher.Slack - for Slack app message formatting
   - StringEnricher.WhatsApp - for WhatsApp bot message formatting
 - Create a guide on implementing new platform packages:
@@ -494,5 +493,3 @@ Feel free to contribute or open issues for feature requests and bug reports!
   - Make a guide on how to implement INode for custom types.
   - Make a guide on how to extend MessageBuilder to support custom types.
 - Add more benchmarks for different scenarios and use cases.
-  - Consider extending the ci-cd pipeline to run benchmarks and update results.
-- Add more test cases for nodes.
