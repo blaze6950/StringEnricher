@@ -14,6 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		.github\workflows\ci-cd-core.yml = .github\workflows\ci-cd-core.yml
 		.github\workflows\ci-cd-telegram.yml = .github\workflows\ci-cd-telegram.yml
 		.github\workflows\TEMPLATE-ci-cd-platform.yml = .github\workflows\TEMPLATE-ci-cd-platform.yml
+		.github\workflows\ci-cd-discord.yml = .github\workflows\ci-cd-discord.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", "{2E5AD94F-C7E0-4DBB-89B5-204FF3A7D04F}"

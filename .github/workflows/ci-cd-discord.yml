@@ -1,0 +1,77 @@
+﻿name: CI/CD - StringEnricher.Discord
+
+on:
+  push:
+    branches: [ master, main ]
+    paths:
+      - 'src/StringEnricher.Discord/**'
+      - 'tests/StringEnricher.Discord.Tests/**'
+      - 'src/StringEnricher/**' # Also trigger if core changes (dependency)
+      - '*.sln'
+  pull_request:
+    branches: [ master, main ]
+    paths:
+      - 'src/StringEnricher.Discord/**'
+      - 'tests/StringEnricher.Discord.Tests/**'
+      - 'src/StringEnricher/**'
+      - '*.sln'
+  workflow_dispatch: # Allow manual trigger
+
+env:
+  DOTNET_VERSION: '9.x.x'
+  PROJECT_PATH: 'src/StringEnricher.Discord/StringEnricher.Discord.csproj'
+  TEST_PATH: 'tests/StringEnricher.Discord.Tests/StringEnricher.Discord.Tests.csproj'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build solution
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Run StringEnricher.Discord tests
+        run: dotnet test ${{ env.TEST_PATH }} --configuration Release --no-build --verbosity normal
+
+  publish-nuget:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build StringEnricher.Discord
+        run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
+
+      - name: Pack StringEnricher.Discord
+        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration Release --no-build --output ./artifacts
+
+      - name: Publish StringEnricher.Discord to NuGet
+        run: dotnet nuget push ./artifacts/StringEnricher.Discord.*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+      - name: Upload package artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: stringenricher-discord-package
+          path: ./artifacts/*.nupkg
