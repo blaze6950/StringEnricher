@@ -1,4 +1,4 @@
-﻿﻿name: CI/CD - StringEnricher.Telegram
+﻿name: CI/CD - StringEnricher.Telegram
 
 on:
   push:
