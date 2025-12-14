@@ -2,48 +2,56 @@
 
 [![Core Build](https://github.com/blaze6950/StringEnricher/actions/workflows/ci-cd-core.yml/badge.svg)](https://github.com/blaze6950/StringEnricher/actions)
 [![Telegram Build](https://github.com/blaze6950/StringEnricher/actions/workflows/ci-cd-telegram.yml/badge.svg)](https://github.com/blaze6950/StringEnricher/actions)
+[![Discord Build](https://github.com/blaze6950/StringEnricher/actions/workflows/ci-cd-discord.yml/badge.svg)](https://github.com/blaze6950/StringEnricher/actions)
 [![Core NuGet](https://img.shields.io/nuget/v/StringEnricher.svg?label=StringEnricher)](https://www.nuget.org/packages/StringEnricher/)
 [![Telegram NuGet](https://img.shields.io/nuget/v/StringEnricher.Telegram.svg?label=StringEnricher.Telegram)](https://www.nuget.org/packages/StringEnricher.Telegram/)
+[![Discord NuGet](https://img.shields.io/nuget/v/StringEnricher.Discord.svg?label=StringEnricher.Discord)](https://www.nuget.org/packages/StringEnricher.Discord/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![.NET Version](https://img.shields.io/badge/.NET-9.0-purple.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
 [![GitHub Stars](https://img.shields.io/github/stars/blaze6950/StringEnricher.svg)](https://github.com/blaze6950/StringEnricher/stargazers)
 [![GitHub Issues](https://img.shields.io/github/issues/blaze6950/StringEnricher.svg)](https://github.com/blaze6950/StringEnricher/issues)
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/blaze6950/StringEnricher.svg)](https://github.com/blaze6950/StringEnricher/commits)
 
-StringEnricher is a powerful and extensible C# library for building and enriching strings with rich text styles, supporting formats such as HTML and MarkdownV2. It is designed for scenarios where you need to dynamically compose styled messages, such as chatbots, messaging apps, or document generators.
+StringEnricher is a powerful and extensible C# library for building and enriching strings with rich text styles, supporting multiple platforms including Telegram (HTML and MarkdownV2) and Discord (Markdown). It is designed for scenarios where you need to dynamically compose styled messages, such as chatbots, messaging apps, or document generators.
 
 ## Solution Structure
 
 This repository contains multiple NuGet packages organized as follows:
 
 ### Core Package
-- **StringEnricher** - The core library containing shared logic, base node types, builders (`MessageBuilder`, `AutoMessageBuilder`), and extensibility points.
-  - **When to install**: Only needed if you're implementing a new platform-specific package (e.g., for Discord, Slack, WhatsApp, etc.)
-  - **Not required for end users**: If you're just using the library, install a platform-specific package instead
+- **StringEnricher** - The core library containing shared logic, base node types, builders (`MessageBuilder`, `AutoMessageBuilder`, `HybridMessageBuilder`), and extensibility points.
+  - **When to install**: Only needed if you're implementing a new platform-specific package (e.g., for Slack, WhatsApp, Teams, etc.)
+  - **Not required for end users**: If you're just using the library, install a platform-specific package instead (StringEnricher.Telegram or StringEnricher.Discord)
 
 ### Platform-Specific Packages
 - **StringEnricher.Telegram** - Contains Telegram-specific formatting nodes and helpers for HTML and MarkdownV2 formats
   - **Includes all dependencies**: The core package is automatically included, no need to install separately
   - **Ready to use**: Install this package and start building styled strings for Telegram bots immediately
 
+- **StringEnricher.Discord** - Contains Discord-specific formatting nodes and helpers for Markdown format
+  - **Includes all dependencies**: The core package is automatically included, no need to install separately
+  - **Ready to use**: Install this package and start building styled strings for Discord bots immediately
+  - **Discord-specific features**: Supports unique Discord markdown features like headers, lists, subtext, and multiline quotes
+
 ### Future Packages (Planned)
-- **StringEnricher.Discord** - For Discord bot message formatting
 - **StringEnricher.Slack** - For Slack app message formatting
+- **StringEnricher.WhatsApp** - For WhatsApp bot message formatting
 - And more platforms as needed...
 
 ### Why This Structure?
 
 ✅ **Smaller installs** - Only install what you need for your platform  
-✅ **No redundant code** - Work with Discord? No need for Telegram-specific code  
+✅ **No redundant code** - Work with Telegram? No need for Discord-specific code  
 ✅ **Independent versioning** - Core and platform packages can be updated separately  
 ✅ **Easy extensibility** - Add new platforms by referencing the core package
 
 ## Features
 - **High performance:** Optimized for minimal allocations and fast execution.
 - **Rich style system:** Apply styles like bold, italic, underline, strikethrough, code blocks, blockquotes, spoilers, links, and more.
-- **Multi-format support:** Easily switch between HTML and MarkdownV2.
+- **Multi-platform support:** Telegram (HTML and MarkdownV2), Discord (Markdown) with extensibility for additional platforms.
+- **Flexible builders:** Choose from `MessageBuilder` (exact length), `AutoMessageBuilder` (auto-calculation), or `HybridMessageBuilder` (adaptive) based on your needs.
 - **Composable styles:** Nest and combine styles for complex formatting.
-- **Well-tested:** Comprehensive unit tests for all styles and formats.
+- **Well-tested:** Comprehensive unit tests for all styles and formats across all platforms.
 
 ## Getting Started
 
@@ -59,8 +67,15 @@ dotnet add package StringEnricher.Telegram
 ```
 This automatically includes the core `StringEnricher` package as a dependency.
 
+#### For Discord Bots
+Execute the following command in your project directory:
+```bash
+dotnet add package StringEnricher.Discord
+```
+This automatically includes the core `StringEnricher` package as a dependency.
+
 #### For Custom Platform Implementation
-If you want to create a new platform-specific package (e.g., for Discord, Slack):
+If you want to create a new platform-specific package (e.g., for Slack, WhatsApp):
 ```bash
 dotnet add package StringEnricher
 ```
@@ -188,6 +203,45 @@ var string result = autoMessageBuilder.Create(state, static (state, writer) =>
 }); // 1 final string allocated in heap without any intermediate allocations
 ```
 
+### `HybridMessageBuilder` for Adaptive Buffer Allocation
+This is a hybrid approach between `MessageBuilder` and `AutoMessageBuilder` that provides flexibility when the exact total length is uncertain but you have a reasonable estimate. Unlike `AutoMessageBuilder` which requires two passes, `HybridMessageBuilder` uses adaptive buffer allocation with a capacity hint.
+
+**Key Differences:**
+- **vs MessageBuilder**: Accepts an initial capacity hint that can be larger than the actual final length, avoiding errors if the estimate is slightly off
+- **vs AutoMessageBuilder**: Only one pass through the build action, but may require buffer reallocation if the hint is too small
+- **Best for**: Scenarios where you have an approximate length estimate but want insurance against slight miscalculations
+
+```csharp
+var hybridBuilder = new HybridMessageBuilder(initialCapacityHint: 100); // Hint: expect ~100 chars
+var state = ["Hello, ", "World! ", "Every ", "word ", "is ", "in ", "different ", "style&"];
+var result = hybridBuilder.Create(state, static (state, writer) => 
+{
+    writer.Append(BoldMarkdownV2.Apply(state[0])); // "*Hello, *" - 0 heap allocations here
+    writer.Append(ItalicMarkdownV2.Apply(state[1])); // "_World! _" - 0 heap allocations here
+    writer.Append(UnderlineMarkdownV2.Apply(state[2])); // "__Every __" - 0 heap allocations here
+    writer.Append(StrikethroughMarkdownV2.Apply(state[3])); // "~word ~" - 0 heap allocations here
+    writer.Append(CodeMarkdownV2.Apply(state[4])); // "`is`" - 0 heap allocations here
+    writer.Append(BlockquoteMarkdownV2.Apply(state[5])); // "> in " - 0 heap allocations here
+    writer.Append(SpoilerMarkdownV2.Apply(state[6])); // "||different||" - 0 heap allocations here
+    writer.Append(EscapeMarkdownV2.Apply(state[7])); // "style\\&" - 0 heap allocations here
+}); // 1 or more buffer allocations (stack/pool/heap based on settings) + 1 final string allocation
+
+// If hint was accurate: 1 buffer allocation + 1 final string allocation
+// If hint was too small: multiple buffer allocations + 1 final string allocation
+```
+
+**Performance Characteristics:**
+- **Single pass**: Build action executes only once (unlike `AutoMessageBuilder`)
+- **Adaptive allocation**: Buffer grows automatically if needed (unlike `MessageBuilder` which requires exact length)
+- **Configurable strategy**: Uses `StringEnricherSettings` to determine stack/pool/heap allocation thresholds
+- **No side effect restrictions**: Build action can have side effects (unlike `AutoMessageBuilder` which executes twice)
+
+**When to Use:**
+- You have a reasonable capacity estimate but want safety margin
+- You cannot pre-calculate exact length but can approximate it
+- You want to avoid the two-pass overhead of `AutoMessageBuilder`
+- Your build action has side effects that shouldn't be executed twice
+
 ### `TextCollectionNode<TCollection>` for Joining Collections of Plain Text
 The `TextCollectionNode<TCollection>` struct enables efficient joining of a collection of plain text strings, optionally separated by a custom separator, with zero intermediate allocations until the final string is created. This is especially useful for scenarios where you need to concatenate multiple strings (such as words, phrases, or values) into a single message.
 
@@ -230,46 +284,67 @@ var result = builder.Create(words, static (state, writer) =>
 
 ## Using Aliases for Node via GlobalUsings.cs
 
-To simplify switching between HTML and MarkdownV2 styles across your project, you can use C# `using` aliases in a `GlobalUsings.cs` file. This allows you to reference style helpers (like `Bold`, `Italic`, etc.) generically, and change the underlying format by updating just one file.
+To simplify switching between different formatting styles across your project, you can use C# `using` aliases in a `GlobalUsings.cs` file. This allows you to reference style helpers (like `Bold`, `Italic`, etc.) generically, and change the underlying format by updating just one file.
 
-### Example: GlobalUsings.cs
+### Example: GlobalUsings.cs for Telegram HTML
 ```csharp
 // GlobalUsings.cs
 // Place this file in your project root or any folder included in compilation.
 
-// HTML formatting nodes
-global using Bold = StringEnricher.Helpers.Html.BoldHtml;
-global using Italic = StringEnricher.Helpers.Html.ItalicHtml;
-global using Underline = StringEnricher.Helpers.Html.UnderlineHtml;
-global using Strikethrough = StringEnricher.Helpers.Html.StrikethroughHtml;
-global using Spoiler = StringEnricher.Helpers.Html.SpoilerHtml;
-global using InlineLink = StringEnricher.Helpers.Html.InlineLinkHtml;
-global using Blockquote = StringEnricher.Helpers.Html.BlockquoteHtml;
-global using ExpandableBlockquote = StringEnricher.Helpers.Html.ExpandableBlockquoteHtml;
-global using CodeBlock = StringEnricher.Helpers.Html.CodeBlockHtml;
-global using SpecificCodeBlock = StringEnricher.Helpers.Html.SpecificCodeBlockHtml;
-global using InlineCode = StringEnricher.Helpers.Html.InlineCodeHtml;
-global using TgEmoji = StringEnricher.Helpers.Html.TgEmojiHtml;
-global using Escape = StringEnricher.Helpers.Html.EscapeHtml;
+// Telegram HTML formatting nodes
+global using Bold = StringEnricher.Telegram.Helpers.Html.BoldHtml;
+global using Italic = StringEnricher.Telegram.Helpers.Html.ItalicHtml;
+global using Underline = StringEnricher.Telegram.Helpers.Html.UnderlineHtml;
+global using Strikethrough = StringEnricher.Telegram.Helpers.Html.StrikethroughHtml;
+global using Spoiler = StringEnricher.Telegram.Helpers.Html.SpoilerHtml;
+global using InlineLink = StringEnricher.Telegram.Helpers.Html.InlineLinkHtml;
+global using Blockquote = StringEnricher.Telegram.Helpers.Html.BlockquoteHtml;
+global using ExpandableBlockquote = StringEnricher.Telegram.Helpers.Html.ExpandableBlockquoteHtml;
+global using CodeBlock = StringEnricher.Telegram.Helpers.Html.CodeBlockHtml;
+global using SpecificCodeBlock = StringEnricher.Telegram.Helpers.Html.SpecificCodeBlockHtml;
+global using InlineCode = StringEnricher.Telegram.Helpers.Html.InlineCodeHtml;
+global using TgEmoji = StringEnricher.Telegram.Helpers.Html.TgEmojiHtml;
+global using Escape = StringEnricher.Telegram.Helpers.Html.EscapeHtml;
 ```
 
-To switch to MarkdownV2, simply update the aliases:
+### Example: GlobalUsings.cs for Telegram MarkdownV2
 ```csharp
 // GlobalUsings.cs
 
-global using Bold = StringEnricher.Helpers.MarkdownV2.BoldMarkdownV2;
-global using Italic = StringEnricher.Helpers.MarkdownV2.ItalicMarkdownV2;
-global using Underline = StringEnricher.Helpers.MarkdownV2.UnderlineMarkdownV2;
-global using Strikethrough = StringEnricher.Helpers.MarkdownV2.StrikethroughMarkdownV2;
-global using Spoiler = StringEnricher.Helpers.MarkdownV2.SpoilerMarkdownV2;
-global using InlineLink = StringEnricher.Helpers.MarkdownV2.InlineLinkMarkdownV2;
-global using Blockquote = StringEnricher.Helpers.MarkdownV2.BlockquoteMarkdownV2;
-global using ExpandableBlockquote = StringEnricher.Helpers.MarkdownV2.ExpandableBlockquoteMarkdownV2;
-global using CodeBlock = StringEnricher.Helpers.MarkdownV2.CodeBlockMarkdownV2;
-global using SpecificCodeBlock = StringEnricher.Helpers.MarkdownV2.SpecificCodeBlockMarkdownV2;
-global using InlineCode = StringEnricher.Helpers.MarkdownV2.InlineCodeMarkdownV2;
-global using TgEmoji = StringEnricher.Helpers.MarkdownV2.TgEmojiMarkdownV2;
-global using Escape = StringEnricher.Helpers.MarkdownV2.EscapeMarkdownV2;
+global using Bold = StringEnricher.Telegram.Helpers.MarkdownV2.BoldMarkdownV2;
+global using Italic = StringEnricher.Telegram.Helpers.MarkdownV2.ItalicMarkdownV2;
+global using Underline = StringEnricher.Telegram.Helpers.MarkdownV2.UnderlineMarkdownV2;
+global using Strikethrough = StringEnricher.Telegram.Helpers.MarkdownV2.StrikethroughMarkdownV2;
+global using Spoiler = StringEnricher.Telegram.Helpers.MarkdownV2.SpoilerMarkdownV2;
+global using InlineLink = StringEnricher.Telegram.Helpers.MarkdownV2.InlineLinkMarkdownV2;
+global using Blockquote = StringEnricher.Telegram.Helpers.MarkdownV2.BlockquoteMarkdownV2;
+global using ExpandableBlockquote = StringEnricher.Telegram.Helpers.MarkdownV2.ExpandableBlockquoteMarkdownV2;
+global using CodeBlock = StringEnricher.Telegram.Helpers.MarkdownV2.CodeBlockMarkdownV2;
+global using SpecificCodeBlock = StringEnricher.Telegram.Helpers.MarkdownV2.SpecificCodeBlockMarkdownV2;
+global using InlineCode = StringEnricher.Telegram.Helpers.MarkdownV2.InlineCodeMarkdownV2;
+global using TgEmoji = StringEnricher.Telegram.Helpers.MarkdownV2.TgEmojiMarkdownV2;
+global using Escape = StringEnricher.Telegram.Helpers.MarkdownV2.EscapeMarkdownV2;
+```
+
+### Example: GlobalUsings.cs for Discord Markdown
+```csharp
+// GlobalUsings.cs
+
+// Discord Markdown formatting nodes
+global using Bold = StringEnricher.Discord.Helpers.Markdown.BoldMarkdown;
+global using Italic = StringEnricher.Discord.Helpers.Markdown.ItalicMarkdown;
+global using Underline = StringEnricher.Discord.Helpers.Markdown.UnderlineMarkdown;
+global using Strikethrough = StringEnricher.Discord.Helpers.Markdown.StrikethroughMarkdown;
+global using Spoiler = StringEnricher.Discord.Helpers.Markdown.SpoilerMarkdown;
+global using InlineLink = StringEnricher.Discord.Helpers.Markdown.InlineLinkMarkdown;
+global using Blockquote = StringEnricher.Discord.Helpers.Markdown.BlockquoteMarkdown;
+global using MultilineQuote = StringEnricher.Discord.Helpers.Markdown.MultilineQuoteMarkdown;
+global using CodeBlock = StringEnricher.Discord.Helpers.Markdown.CodeBlockMarkdown;
+global using InlineCode = StringEnricher.Discord.Helpers.Markdown.InlineCodeMarkdown;
+global using Header = StringEnricher.Discord.Helpers.Markdown.HeaderMarkdown;
+global using List = StringEnricher.Discord.Helpers.Markdown.ListMarkdown;
+global using Subtext = StringEnricher.Discord.Helpers.Markdown.SubtextMarkdown;
+global using Escape = StringEnricher.Discord.Helpers.Markdown.EscapeMarkdown;
 ```
 
 #### Usage in Your Code
@@ -278,8 +353,9 @@ var styled = Bold.Apply(
     Italic.Apply("important text") // 0 heap allocations here
 ); // 0 heap allocations here
 var styledString = styled.ToString(); // 1 final string heap allocation here
-// styled == "<b><i>important text</i></b>" (HTML)
-// styled == "* _important text_ *" (MarkdownV2)
+// styled == "<b><i>important text</i></b>" (Telegram HTML)
+// styled == "*_important text_*" (Telegram MarkdownV2)
+// styled == "***important text***" (Discord Markdown)
 ```
 
 This approach centralizes format selection, making it easy to switch formats for the entire project by editing only `GlobalUsings.cs`.
@@ -399,6 +475,11 @@ This class is intended for advanced users who need to optimize StringEnricher fo
   - "Less efficient" than MessageBuilder as it requires two passes over the data: one to calculate the total length and another to build the final string. But in practice, you just avoid the manual pre-calculation step. So, there is no huge performance difference.
   - Make sure your build action is idempotent and does not have any side effects, as it will be executed twice internally.
   - VERY IMPORTANT: Your build action must return the correct total length of the final string to ensure correct string construction.
+- HybridMessageBuilder for adaptive buffer allocation when you have a capacity estimate.
+  - Single pass execution (unlike AutoMessageBuilder) with automatic buffer growth if needed (unlike MessageBuilder).
+  - Ideal when you have a reasonable length estimate but want safety margin.
+  - Build action can have side effects (unlike AutoMessageBuilder which executes twice).
+  - Configurable allocation strategy via StringEnricherSettings.
 - Utilize the System.Text.StringBuilder integration for scenarios where you need to build strings in multiple steps.
   - Less optimal than MessageBuilder or AutoMessageBuilder when total length is known in advance, as it may involve multiple allocations and copies.
   - Provides flexibility for dynamic string construction.
@@ -409,10 +490,12 @@ This class is intended for advanced users who need to optimize StringEnricher fo
   - Adjust extension settings only if you understand the performance and memory implications. Default values are recommended for most scenarios.
   - Use debug logging to monitor configuration changes and warnings about potentially suboptimal values.
   - WARNING: If you don't know what you are doing, do not change the default values. If you change them, make sure to test thoroughly.
-- Use `using` aliases in a `GlobalUsings.cs` file to easily switch between HTML and MarkdownV2 formats across your project.
-- Escape special characters using EscapeHtml or EscapeMarkdownV2 nodes.
-  - Also, available as static methods: `HtmlEscaper.Escape(string)` and `MarkdownV2Escaper.Escape(string)`. But these create returns strings as the result, while nodes provides lazy evaluation and zero allocations until the final string is created. So prefer nodes over static methods when possible.
-- It is recommended to use Html format for better performance and stability by format consumers (like TG) unless MarkdownV2 is specifically required.
+- Use `using` aliases in a `GlobalUsings.cs` file to easily switch between different formats (Telegram HTML, Telegram MarkdownV2, Discord Markdown) across your project.
+- Escape special characters using platform-specific escape nodes:
+  - Telegram: `EscapeHtml` or `EscapeMarkdownV2` nodes
+  - Discord: `EscapeMarkdown` node
+  - Also available as static methods on helper classes, but nodes provide lazy evaluation and zero allocations until the final string is created. So prefer nodes over static methods when possible.
+- It is recommended to use Html format (for Telegram) for better performance and stability by format consumers unless MarkdownV2 is specifically required.
   - Html by its nature is more robust and less error-prone than MarkdownV2.
   - MarkdownV2 has many edge cases and limitations that can lead to formatting issues.
   - Html-related code paths are generally faster and more memory efficient than MarkdownV2 paths.
@@ -429,7 +512,7 @@ This class is intended for advanced users who need to optimize StringEnricher fo
 ### Source Code
 - **`src/StringEnricher/`** - Core library (base package)
   - Shared logic, base node types, and extensibility points
-  - `Builders`: Contains `MessageBuilder` and `AutoMessageBuilder`
+  - `Builders`: Contains `MessageBuilder`, `AutoMessageBuilder`, and `HybridMessageBuilder`
   - `Configuration`: Contains `StringEnricherSettings` for performance tuning
   - `Extensions`: Contains extensions for `StringBuilder` integration
   - `Nodes/Shared`: Shared node implementations like `PlainTextNode`, primitive type nodes
@@ -445,12 +528,21 @@ This class is intended for advanced users who need to optimize StringEnricher fo
     - `MarkdownV2`: MarkdownV2 nodes for Telegram formatting
   - Telegram-specific escapers and utilities
 
-- **Future**: `src/StringEnricher.Discord/`, `src/StringEnricher.Slack/`, etc.
+- **`src/StringEnricher.Discord/`** - Discord-specific package
+  - References the core package via `ProjectReference` (in this repo)
+  - `Helpers`: Discord style helpers for Markdown
+    - `Markdown`: Discord Markdown helpers (BoldMarkdown, ItalicMarkdown, HeaderMarkdown, ListMarkdown, SubtextMarkdown, MultilineQuoteMarkdown, etc.)
+  - `Nodes`: Discord-specific node implementations
+    - `Markdown`: Discord Markdown nodes for formatting
+  - Discord-specific escapers and utilities
+
+- **Future**: `src/StringEnricher.Slack/`, `src/StringEnricher.WhatsApp/`, etc.
 
 ### Tests
 - **`tests/StringEnricher.Tests/`** - Core library unit tests
 - **`tests/StringEnricher.Telegram.Tests/`** - Telegram package unit tests
-- Future: Test projects for Discord, Slack, and other platform packages
+- **`tests/StringEnricher.Discord.Tests/`** - Discord package unit tests
+- Future: Test projects for Slack, WhatsApp, and other platform packages
 
 ### Benchmarks
 - **`benchmarks/StringEnricher.Benchmarks/`** - Performance benchmarks using BenchmarkDotNet
@@ -461,6 +553,7 @@ This class is intended for advanced users who need to optimize StringEnricher fo
 - **`.github/workflows/`** - GitHub Actions workflows
   - `ci-cd-core.yml` - Build, test, and publish the core package
   - `ci-cd-telegram.yml` - Build, test, and publish the Telegram package
+  - `ci-cd-discord.yml` - Build, test, and publish the Discord package
   - `TEMPLATE-ci-cd-platform.yml` - Template for future platform packages
   - Independent workflows allow separate versioning and publishing
 
@@ -484,12 +577,14 @@ Feel free to contribute or open issues for feature requests and bug reports!
 - Implement additional platform-specific packages:
   - StringEnricher.Slack - for Slack app message formatting
   - StringEnricher.WhatsApp - for WhatsApp bot message formatting
-- Create a guide on implementing new platform packages:
+  - StringEnricher.Teams - for Microsoft Teams message formatting
+- Create a comprehensive guide on implementing new platform packages:
   - How to reference the core package
   - How to implement platform-specific nodes
   - How to create platform-specific helpers and escapers
   - Best practices for naming and organization
+  - Use existing Discord and Telegram implementations as reference examples
 - Think about the possibility to add support for custom user-defined types in MessageBuilder.Append() and Node types.
   - Make a guide on how to implement INode for custom types.
   - Make a guide on how to extend MessageBuilder to support custom types.
-- Add more benchmarks for different scenarios and use cases.
+- Add more benchmarks for different scenarios and use cases, including cross-platform comparisons.
