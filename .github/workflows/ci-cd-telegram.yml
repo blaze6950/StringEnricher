@@ -1,4 +1,4 @@
-﻿name: CI/CD - StringEnricher.Telegram
+﻿﻿name: CI/CD - StringEnricher.Telegram
 
 on:
   push:
@@ -39,7 +39,7 @@ jobs:
         run: dotnet restore
 
       - name: Build solution
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build --configuration Release --no-restore /p:DefineConstants=UNIT_TESTS
 
       - name: Run StringEnricher.Telegram tests
         run: dotnet test ${{ env.TEST_PATH }} --configuration Release --no-build --verbosity normal
